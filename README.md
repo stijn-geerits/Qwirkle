@@ -1,6 +1,6 @@
 # Qwirkle
 
-* Er zullen 108 blokken .
+* Er zullen 108 blokken zijn.
 * Er zullen zes kleuren zijn: rood, oranje, geel, groen, blauw en paars.
 * Er zullen zes vormen zijn: cirkel, x, diamant, vierkant, ster en klaver.
 * Elk blokje zal een kleur en een vorm hebben.

@@ -5,12 +5,16 @@ import inspect, pygame
 #initialize pygame (necessary for fonts)
 pygame.init()
 
+
+
 ### Global variables ###
 # global constants #
 CLASSESDIR = "Classes/"
 CONFIGDIR = ""
 GRAPHICSDIR = "Graphics/"
 LANGUAGEDIR = "Lang/"
+
+
 
 ### Classes ###
 # Container for storing and retreiving user config files #
@@ -41,49 +45,126 @@ class user:
 class lang:
 	exec(open(LANGUAGEDIR + user.lang + ".lang", 'r').read())
 
+# General class for graphical widgets #
+class Widget(pygame.Surface):
+	"""
+	General class for widgets in the pygame environment
+	"""
+	#possible state values
+	IDLE = 0
+	HOVER = 1
+	ACTIVE = 2
+	UNAVAILABLE = 3
+	
+	def __init__(self):
+		#set class properties
+		self.current_state = self.IDLE
+		self.states = [pygame.Surface([0, 0])] * 4
+		self.rect = self.states[self.current_state].get_rect()
+		return
+	
+	def get_current_state(self):
+		"""
+		Returns the current state of the widget
+		"""
+		return self.current_state
+	
+	def set_current_state(self, state):
+		"""
+		Update the current state of the widget
+		"""
+		self.current_state = state
+		self.rect = self.states[state]
+		self.update()
+		return
+	
+	def get_states(self):
+		"""
+		Returns all possible states of the widget
+		"""
+		return self.states
+	
+	def define_states(self, idle, hover, active, unavailable):
+		"""
+		Define the presentation of the widget for all four states
+		
+		All variables should contain pygame.Surface objects
+		Any state defined prior will be overridden
+		"""
+		self.states = [idle, hover, active, unavailable]
+		self.rect = self.states[self.current_state].get_rect()
+		return
+	
+	def get_rect(self):
+		"""
+		Returns the pygame.Rect object for the current state of the widget
+		"""
+		return self.rect
+	
+	def place(self, location, relpos="topleft"):
+		"""
+		Move the widget to the specified location
+		"""
+		self.rect = set_relpos(self.rect, location, relpos)
+		return
+	
+	def update(self):
+		"""
+		Updates the appearance of the widget
+		"""
+		self.blit(self.states[self.current_state], self.rect)
+		return
+
+
+
 ### Functions ###
+def set_relpos(rect, location, relpos):
+	"""
+	Set the location of the pygame.Rect object using the relpos value
+	"""
+	if relpos == "bottomleft":
+		rect.bottomleft = location
+	elif relpos == "bottomright":
+		rect.bottomright = location
+	elif relpos == "center":
+		rect.center = location
+	elif relpos == "centerx":
+		rect.centerx = location
+	elif relpos == "centery":
+		rect.centery = location
+	elif relpos == "midbottom":
+		rect.midbottom = location
+	elif relpos == "midleft":
+		rect.midleft = location
+	elif relpos == "midright":
+		rect.midright = location
+	elif relpos == "midtop":
+		rect.midtop = location
+	elif relpos == "topleft":
+		rect.topleft = location
+	elif relpos == "topright":
+		rect.topright = location
+	else:
+		#invalid relpos value given, go with standard setting
+		print("[Qwirkle]set_relpos:\x1b[91m Invalid relpos value '%s' received, defaulting to 'topleft'.\x1b[97m" % relpos)
+		rect.topleft = location
+	return rect
+
 def renderimage(surface, image, location=[0, 0], relpos="topleft"):
 	"""
-	This function loads and displays an image on the given surface at the given location
+	Load and display an image on the given surface at the given location
 	"""
 	#load the image
 	img = pygame.image.load(image)
-	#get the Rect object for the image
-	imgRect = img.get_rect()
 	#place the image in the correct location based on the relpos value
-	if relpos == "bottomleft":
-		imgRect.bottomleft = location
-	elif relpos == "bottomright":
-		imgRect.bottomright = location
-	elif relpos == "center":
-		imgRect.center = location
-	elif relpos == "centerx":
-		imgRect.centerx = location
-	elif relpos == "centery":
-		imgRect.centery = location
-	elif relpos == "midbottom":
-		imgRect.midbottom = location
-	elif relpos == "midleft":
-		imgRect.midleft = location
-	elif relpos == "midright":
-		imgRect.midright = location
-	elif relpos == "midtop":
-		imgRect.midtop = location
-	elif relpos == "topleft":
-		imgRect.topleft = location
-	elif relpos == "topright":
-		imgRect.topright = location
-	else:
-		#invalid relpos value given, go with standard setting
-		print("\x1b[91m[Qwirkle]renderimage: Invalid relpos value:\x1b[97m %s\x1b[91m.\x1b[97m" % relpos)
-		imgRect.topleft = location
+	imgRect = set_relpos(img.get_rect(), location, relpos)
 	#place the image on the surface
 	surface.blit(img, imgRect)
 	return
 
 def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="topleft", color=(32, 32, 32)):
 	"""
-	This function displays the given text on the surface, with the given font and size, at the given location
+	Display the given text on the surface, with the given font and size, at the given location
 	"""
 	#render the font for the text
 	if font == None:
@@ -102,39 +183,15 @@ def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="tople
 	textpos = []
 	for line in range(0, lines):
 		text[line] = font.render(text[line], True, color)
-		textpos.append(text[line].get_rect())
 		#update the position according to the relpos variable
-		if relpos == "bottomleft":
-			textpos[line].bottomleft = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "bottomright":
-			textpos[line].bottomright = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "center":
-			textpos[line].center = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "centerx":
-			textpos[line].centerx = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "centery":
-			textpos[line].centery = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "midbottom":
-			textpos[line].midbottom = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "midleft":
-			textpos[line].midleft = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "midright":
-			textpos[line].midright = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "midtop":
-			textpos[line].midtop = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "topleft":
-			textpos[line].topleft = [location[0], location[1]+int(1.25*size*line)]
-		elif relpos == "topright":
-			textpos[line].topright = [location[0], location[1]+int(1.25*size*line)]
-		else:
-			#invalid relpos value given, go with standard setting
-			print("\x1b[91m[Qwirkle]rendertext: Invalid relpos value:\x1b[97m %s\x1b[91m.\x1b[97m" % relpos)
-			textpos[line].topleft = [location[0], location[1]+int(1.25*size*line)]
+		textpos.append(set_relpos(text[line].get_rect(), [location[0], location[1]+int(1.25*size*line)], relpos))
 	
 	#place the text on the surface
 	for line in range(0, lines):
 		surface.blit(text[line], textpos[line])
 	return
+
+
 
 ### Main program ###
 if __name__ == "__main__":

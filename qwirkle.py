@@ -7,13 +7,19 @@ pygame.init()
 
 ### Global variables ###
 # global constants #
-LANGDIR = "Lang/"
+CLASSESDIR = "Classes/"
+CONFIGDIR = ""
+GRAPHICSDIR = "Graphics/"
+LANGUAGEDIR = "Lang/"
 
 ### Classes ###
 # Container for storing and retreiving user config files #
 class user:
-	exec(open("user.conf", 'r').read())
+	exec(open(CONFIGDIR + "user.conf", 'r').read())
 	def get_config(self):
+		"""
+		Returns multiline string containing formatted user config data
+		"""
 		#get all class attributes with their values
 		attr = inspect.getmembers(self, lambda a:not(inspect.isroutine(a)))
 		attr = [a for a in attr if not(a[0].startswith("__") and a[0].endswith("__"))]
@@ -33,7 +39,7 @@ class user:
 
 # Container for storing language files #
 class lang:
-	exec(open(LANGDIR + user.lang + ".lang", 'r').read())
+	exec(open(LANGUAGEDIR + user.lang + ".lang", 'r').read())
 
 ### Functions ###
 def renderimage(surface, image, location=[0, 0], relpos="topleft"):
@@ -142,7 +148,7 @@ if __name__ == "__main__":
 	#change window background
 	window.fill((200, 200, 200))
 	#show qwirkle title graphic
-	renderimage(window, "Graphics/qwirkle.png", [int(user.winsize[0]*.5), int(user.winsize[1]*.05)], "midtop")
+	renderimage(window, GRAPHICSDIR + "qwirkle.png", [int(user.winsize[0]*.5), int(user.winsize[1]*.05)], "midtop")
 	#show the copyright notice
 	rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
 	#update the display

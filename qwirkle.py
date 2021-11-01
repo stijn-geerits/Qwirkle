@@ -59,7 +59,6 @@ class Widget(pygame.Surface):
 	#other class variables
 	current_state = 1
 	states = [pygame.Surface([0, 0])] * 4
-	#rect = pygame.Rect([0, 0, 0, 0])
 	
 	def get_current_state(self):
 		"""
@@ -89,16 +88,8 @@ class Widget(pygame.Surface):
 		Any state defined prior will be overridden
 		"""
 		self.states = [unavailable, idle, hover, active]
-		#self.rect = self.states[self.current_state].get_rect()
 		self.update()
 		return
-	
-	#def place(self, location, relpos="topleft"):
-	#	"""
-	#	Move the widget to the specified location
-	#	"""
-	#	self.rect = set_relpos(self.rect, location, relpos)
-	#	return
 	
 	def update(self):
 		"""

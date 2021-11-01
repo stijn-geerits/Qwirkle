@@ -36,6 +36,45 @@ class lang:
 	exec(open(LANGDIR + user.lang + ".lang", 'r').read())
 
 ### Functions ###
+def renderimage(surface, image, location=[0, 0], relpos="topleft"):
+	"""
+	This function loads and displays an image on the given surface at the given location
+	"""
+	#load the image
+	img = pygame.image.load(image)
+	#get the Rect object for the image
+	imgRect = img.get_rect()
+	#place the image in the correct location based on the relpos value
+	if relpos == "bottomleft":
+		imgRect.bottomleft = location
+	elif relpos == "bottomright":
+		imgRect.bottomright = location
+	elif relpos == "center":
+		imgRect.center = location
+	elif relpos == "centerx":
+		imgRect.centerx = location
+	elif relpos == "centery":
+		imgRect.centery = location
+	elif relpos == "midbottom":
+		imgRect.midbottom = location
+	elif relpos == "midleft":
+		imgRect.midleft = location
+	elif relpos == "midright":
+		imgRect.midright = location
+	elif relpos == "midtop":
+		imgRect.midtop = location
+	elif relpos == "topleft":
+		imgRect.topleft = location
+	elif relpos == "topright":
+		imgRect.topright = location
+	else:
+		#invalid relpos value given, go with standard setting
+		print("\x1b[91m[Qwirkle]renderimage: Invalid relpos value:\x1b[97m %s\x1b[91m.\x1b[97m" % relpos)
+		imgRect.topleft = location
+	#place the image on the surface
+	surface.blit(img, imgRect)
+	return
+
 def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="topleft", color=(32, 32, 32)):
 	"""
 	This function displays the given text on the surface, with the given font and size, at the given location
@@ -86,7 +125,7 @@ def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="tople
 			print("\x1b[91m[Qwirkle]rendertext: Invalid relpos value:\x1b[97m %s\x1b[91m.\x1b[97m" % relpos)
 			textpos[line].topleft = [location[0], location[1]+int(1.25*size*line)]
 	
-	#show the text on the surface
+	#place the text on the surface
 	for line in range(0, lines):
 		surface.blit(text[line], textpos[line])
 	return
@@ -103,10 +142,7 @@ if __name__ == "__main__":
 	#change window background
 	window.fill((200, 200, 200))
 	#show qwirkle title graphic
-	qwirkle = pygame.image.load("Graphics/qwirkle.png")
-	qwirkleRect = qwirkle.get_rect()
-	qwirkleRect.midtop = [int(user.winsize[0]*.5), int(user.winsize[1]*.05)]
-	window.blit(qwirkle, qwirkleRect)
+	renderimage(window, "Graphics/qwirkle.png", [int(user.winsize[0]*.5), int(user.winsize[1]*.05)], "midtop")
 	#show the copyright notice
 	rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
 	#update the display

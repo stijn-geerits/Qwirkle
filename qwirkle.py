@@ -2,6 +2,9 @@
 
 import inspect, pygame
 
+# global constants #
+LANGDIR = "Lang/"
+
 ### Container for storing and retreiving user config files ###
 class user:
 	exec(open("user.conf", 'r').read())
@@ -23,6 +26,10 @@ class user:
 			cfg += '\n'
 		return cfg.rstrip('\n')
 
+### Container for storing language files ###
+class lang:
+	exec(open(LANGDIR + user.lang + ".lang", 'r').read())
+
 ### Main program ###
 if __name__ == "__main__":
 	#set variables
@@ -31,7 +38,7 @@ if __name__ == "__main__":
 	
 	#window setup
 	window = pygame.display.set_mode(user.winsize)
-	pygame.display.set_caption("Qwirkle")
+	pygame.display.set_caption(lang.qwirkle)
 	#change window background
 	window.fill((200, 200, 200))
 	#show qwirkle title graphic

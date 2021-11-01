@@ -20,6 +20,7 @@ LANGUAGEDIR = "Lang/"
 # Container for storing and retreiving user config files #
 class user:
 	exec(open(CONFIGDIR + "user.conf", 'r').read())
+	
 	def get_config(self):
 		"""
 		Returns multiline string containing formatted user config data
@@ -115,6 +116,68 @@ class Widget(pygame.Surface):
 		self.blit(self.states[self.current_state], self.rect)
 		return
 
+# Class for graphical button widgets #
+class Button(Widget):
+	"""
+	Class for button widgets in the pygame environment
+	"""
+	
+	def __init__(self):
+		self.label = "Button"
+		self.function = None
+		return
+	
+	def set_label(self, label, color=(32, 32, 32), pad=4):
+		"""
+		Set the label to place on the button
+		
+		label should contain a string without line breaks
+		color should contain a triplet with RGB color values
+		pad should contain a positive integer defining the amount of padding
+			between the edge of the button and the label text
+		"""
+		self.label = label
+		#render the label on each state
+		for state in self.states:
+			#get the pygame.Rect object for the state
+			state_rect = state.get_rect()
+			#don't try rendering the label on a state that is too small
+			if state_rect.width > pad and state_rect.height > pad:
+				#render the font for the label
+				font = pygame.font.SysFont(None, state_rect.height - pad)
+				#render the label text
+				text = font.render(label, True, color)
+				#get the pygame.Rect object for the label
+				rect = text.get_rect()
+				if rect.width > state_rect.width - pad:
+					#resize the label to fit within the button
+					ratio = rect.width // (state_rect.width - pad)
+					font = pygame.font.SysFont(None, ratio)
+					text = font.render(label, True, color)
+					rect = text.get_rect()
+				#render the label on the state
+				state.blit(text, rect)
+		return
+	
+	def set_function(self, function):
+		"""
+		Set the function for the button
+		"""
+		self.function = function
+		return
+	
+	def run_function(self):
+		"""
+		Run the function bound to the button
+		"""
+		#verify that the button is active before running the function
+		if self.current_state != self.ACTIVE:
+			print("[Qwirkle]Button.activate:\x1b[91m Cannot run the function of a button that is not active.\x1b[97m")
+		#prevent running the function prior to its definition
+		elif self.function != None:
+			self.function()
+		return
+
 
 
 ### Functions ###
@@ -199,15 +262,17 @@ if __name__ == "__main__":
 	clock = pygame.time.Clock()
 	loop = True
 	
-	#window setup
+	# window setup #
 	window = pygame.display.set_mode(user.winsize)
 	pygame.display.set_caption(lang.qwirkle)
+	
 	#change window background
 	window.fill((200, 200, 200))
 	#show qwirkle title graphic
 	renderimage(window, GRAPHICSDIR + "qwirkle.png", [int(user.winsize[0]*.5), int(user.winsize[1]*.05)], "midtop")
 	#show the copyright notice
 	rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
+	
 	#update the display
 	pygame.display.update()
 	

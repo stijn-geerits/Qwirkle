@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #import classes
-import inspect, pygame
+import inspect, pygame, time
 #initialize pygame (necessary for fonts)
 pygame.init()
 
@@ -52,17 +52,13 @@ class Widget(pygame.Surface):
 	General class for widgets in the pygame environment
 	"""
 	#possible state values
-	IDLE = 0
-	HOVER = 1
-	ACTIVE = 2
-	UNAVAILABLE = 3
-	
-	def __init__(self):
-		#set class properties
-		self.current_state = self.IDLE
-		self.states = [pygame.Surface([0, 0])] * 4
-		self.rect = self.states[self.current_state].get_rect()
-		return
+	UNAVAILABLE = 0
+	IDLE = 1
+	HOVER = 2
+	ACTIVE = 3
+	#other class variables
+	current_state = 1
+	states = [pygame.Surface([0, 0])] * 4
 	
 	def get_current_state(self):
 		"""
@@ -75,7 +71,6 @@ class Widget(pygame.Surface):
 		Update the current state of the widget
 		"""
 		self.current_state = state
-		self.rect = self.states[state]
 		self.update()
 		return
 	
@@ -85,35 +80,22 @@ class Widget(pygame.Surface):
 		"""
 		return self.states
 	
-	def define_states(self, idle, hover, active, unavailable):
+	def define_states(self, unavailable, idle, hover, active):
 		"""
 		Define the presentation of the widget for all four states
 		
 		All variables should contain pygame.Surface objects
 		Any state defined prior will be overridden
 		"""
-		self.states = [idle, hover, active, unavailable]
-		self.rect = self.states[self.current_state].get_rect()
-		return
-	
-	def get_rect(self):
-		"""
-		Returns the pygame.Rect object for the current state of the widget
-		"""
-		return self.rect
-	
-	def place(self, location, relpos="topleft"):
-		"""
-		Move the widget to the specified location
-		"""
-		self.rect = set_relpos(self.rect, location, relpos)
+		self.states = [unavailable, idle, hover, active]
+		self.update()
 		return
 	
 	def update(self):
 		"""
 		Updates the appearance of the widget
 		"""
-		self.blit(self.states[self.current_state], self.rect)
+		self.blit(self.states[self.current_state], self.get_rect())
 		return
 
 # Class for graphical button widgets #
@@ -121,11 +103,9 @@ class Button(Widget):
 	"""
 	Class for button widgets in the pygame environment
 	"""
-	
-	def __init__(self):
-		self.label = "Button"
-		self.function = None
-		return
+	#class variables
+	label = "Button"
+	function = None
 	
 	def set_label(self, label, color=(32, 32, 32), pad=4):
 		"""
@@ -155,8 +135,11 @@ class Button(Widget):
 					font = pygame.font.SysFont(None, ratio)
 					text = font.render(label, True, color)
 					rect = text.get_rect()
+				#set the center of the label to the center of the button
+				rect.center = state_rect.center
 				#render the label on the state
 				state.blit(text, rect)
+		self.update()
 		return
 	
 	def set_function(self, function):
@@ -181,6 +164,13 @@ class Button(Widget):
 
 
 ### Functions ###
+def full_quit():
+	"""
+	Quit the pygame environment before exit of program
+	"""
+	pygame.quit()
+	exit()
+
 def set_relpos(rect, location, relpos):
 	"""
 	Set the location of the pygame.Rect object using the relpos value
@@ -273,6 +263,15 @@ if __name__ == "__main__":
 	#show the copyright notice
 	rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
 	
+	#create a test button
+	b = Button([64, 24])
+	b.define_states(pygame.image.load(GRAPHICSDIR+"button_unavailable.png"), pygame.image.load(GRAPHICSDIR+"button_idle.png"), pygame.image.load(GRAPHICSDIR+"button_hover.png"), pygame.image.load(GRAPHICSDIR+"button_active.png"))
+	b.set_label(lang.exit)
+	b.set_function(full_quit)
+	bRect = b.get_rect()
+	bRect.center = [int(user.winsize[0]*.5), int(user.winsize[1]*.5)]
+	window.blit(b, bRect)
+	
 	#update the display
 	pygame.display.update()
 	
@@ -285,7 +284,30 @@ if __name__ == "__main__":
 			#close window event
 			if event.type == pygame.QUIT:
 				loop = False
+			#check mouse button events
+			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1] and b.get_current_state() == Widget.HOVER:
+				b.set_current_state(Widget.ACTIVE)
+				window.blit(b, bRect)
+				pygame.display.update()
+			if event.type == pygame.MOUSEBUTTONUP and b.get_current_state() == Widget.ACTIVE:
+				b.run_function()
+				b.set_current_state(Widget.HOVER)
+				window.blit(b, bRect)
+				pygame.display.update()
+		
+		#look whether the mouse was moved
+		mouse_move = pygame.mouse.get_rel()
+		if mouse_move != (0, 0):
+			#check whether the button is being hovered over (and this has not been set)
+			if bRect.collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() != Widget.HOVER and b.get_current_state() != Widget.ACTIVE):
+				b.set_current_state(Widget.HOVER)
+				window.blit(b, bRect)
+				pygame.display.update()
+			#check whether the button is not being hovered over (and this has not been set)
+			elif not bRect.collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() == Widget.HOVER or b.get_current_state() == Widget.ACTIVE):
+				b.set_current_state(Widget.IDLE)
+				window.blit(b, bRect)
+				pygame.display.update()
 	
 	#quit the program
-	pygame.quit()
-	exit()
+	full_quit()

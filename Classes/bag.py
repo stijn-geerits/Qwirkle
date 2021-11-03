@@ -29,22 +29,21 @@ class Bag:
         self.tiles.append(tile)
         self.__update_current_amount()
 
-    def __take_tile(self):
-        tile_index = self.tiles.index(random.choice(self.tiles))
-        tile = self.tiles.pop(tile_index)
-        return tile
-
     def get_current_amount(self):
         return self.current_amount
 
     def take_tiles(self, amount):
-        tiles = [self.__take_tile() for i in range(amount)]
+        tiles = []
+        for _ in range(amount):
+            tile_index = self.tiles.index(random.choice(self.tiles))
+            tile = self.tiles.pop(tile_index)
+            tiles.append(tile)
 
         self.__update_current_amount()
         return tiles
 
     def trade_tiles(self, old_tiles):
-        new_tiles = [self.__take_tile() for i in range(len(old_tiles))]
+        new_tiles = self.take_tiles(len(old_tiles))
 
         for old_tile in old_tiles:
             self.__add_tile(old_tile)

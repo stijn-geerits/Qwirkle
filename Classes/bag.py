@@ -2,37 +2,53 @@ import random
 from tile import Tile
 
 
-# Generates all tiles in the game
-def generate_tiles():
-    tiles = []
-    tile_id = 0
-    colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
-    shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
-
-    for color in colors:
-        for shape in shapes:
-            tiles.extend([Tile(tile_id + i, color, shape, 0) for i in range(3)])
-            tile_id += 3
-
-    return tiles
-
-
 class Bag:
     def __init__(self):
-        self.tiles = generate_tiles()
+        self.tiles = self.__generate_tiles()
         self.current_amount = len(self.tiles)
 
+    def __generate_tiles(self):
+        """
+        Generates a list of 108 tiles.\n
+        Every possible combination of color and shape appears 3 times.
+        """
+        tiles = []
+        tile_id = 0
+        colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
+        shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
+
+        for color in colors:
+            for shape in shapes:
+                tiles.extend([Tile(tile_id + i, color, shape, 0) for i in range(3)])
+                tile_id += 3
+
+        return tiles
+
     def __update_current_amount(self):
+        """
+        Private method of Bag.\n
+        Updates the current_amount of Bag to match length of tiles list
+        """
         self.current_amount = len(self.tiles)
 
     def __add_tile(self, tile):
+        """
+        Private method of Bag.\n
+        Adds a Tile object to the tiles list.
+        """
         self.tiles.append(tile)
         self.__update_current_amount()
 
     def get_current_amount(self):
+        """
+        Get function for current amount of tiles in the bag.\n
+        """
         return self.current_amount
 
     def take_tiles(self, amount):
+        """
+        Takes a given amount of tiles from the bag and returns them in a list.\n
+        """
         tiles = []
         for _ in range(amount):
             tile_index = self.tiles.index(random.choice(self.tiles))
@@ -43,6 +59,10 @@ class Bag:
         return tiles
 
     def trade_tiles(self, old_tiles):
+        """
+        Takes a list of Tile objects. An amount equal to the amount of old tiles is taken from the tiles list.
+        The old tiles are added back to the bag. \n
+        """
         new_tiles = self.take_tiles(len(old_tiles))
 
         for old_tile in old_tiles:

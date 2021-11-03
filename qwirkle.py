@@ -59,6 +59,7 @@ class Widget(pygame.Surface):
 	#other class variables
 	current_state = 1
 	states = [pygame.Surface([0, 0])] * 4
+	position = [0, 0]
 	
 	def get_current_state(self):
 		"""
@@ -91,11 +92,32 @@ class Widget(pygame.Surface):
 		self.update()
 		return
 	
+	def get_rect(self):
+		"""
+		Get the pygame.Rect object for the widget
+		"""
+		return self.states[self.current_state].get_rect().move(self.position)
+	
+	def place(self, location, relpos="topleft"):
+		"""
+		Set the location at which to blit the widget
+		"""
+		rect = set_relpos(self.get_rect(), location, relpos)
+		self.position = rect.topleft
+		return
+	
 	def update(self):
 		"""
 		Updates the appearance of the widget
 		"""
-		self.blit(self.states[self.current_state], self.get_rect())
+		self.blit(self.states[self.current_state], pygame.Rect(0, 0, self.get_width(), self.get_height()))
+		return
+	
+	def blit_on(self, surface):
+		"""
+		Blit the widget on the surface
+		"""
+		surface.blit(self, self.get_rect())
 		return
 
 # Class for graphical button widgets #
@@ -268,9 +290,8 @@ if __name__ == "__main__":
 	b.define_states(pygame.image.load(GRAPHICSDIR+"button_unavailable.png"), pygame.image.load(GRAPHICSDIR+"button_idle.png"), pygame.image.load(GRAPHICSDIR+"button_hover.png"), pygame.image.load(GRAPHICSDIR+"button_active.png"))
 	b.set_label(lang.exit)
 	b.set_function(full_quit)
-	bRect = b.get_rect()
-	bRect.center = [int(user.winsize[0]*.5), int(user.winsize[1]*.5)]
-	window.blit(b, bRect)
+	b.place([int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
+	b.blit_on(window)
 	
 	#update the display
 	pygame.display.update()
@@ -287,26 +308,26 @@ if __name__ == "__main__":
 			#check mouse button events
 			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1] and b.get_current_state() == Widget.HOVER:
 				b.set_current_state(Widget.ACTIVE)
-				window.blit(b, bRect)
+				b.blit_on(window)
 				pygame.display.update()
 			if event.type == pygame.MOUSEBUTTONUP and b.get_current_state() == Widget.ACTIVE:
 				b.run_function()
 				b.set_current_state(Widget.HOVER)
-				window.blit(b, bRect)
+				b.blit_on(window)
 				pygame.display.update()
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
 		if mouse_move != (0, 0):
 			#check whether the button is being hovered over (and this has not been set)
-			if bRect.collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() != Widget.HOVER and b.get_current_state() != Widget.ACTIVE):
+			if b.get_rect().collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() != Widget.HOVER and b.get_current_state() != Widget.ACTIVE):
 				b.set_current_state(Widget.HOVER)
-				window.blit(b, bRect)
+				b.blit_on(window)
 				pygame.display.update()
 			#check whether the button is not being hovered over (and this has not been set)
-			elif not bRect.collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() == Widget.HOVER or b.get_current_state() == Widget.ACTIVE):
+			elif not b.get_rect().collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() == Widget.HOVER or b.get_current_state() == Widget.ACTIVE):
 				b.set_current_state(Widget.IDLE)
-				window.blit(b, bRect)
+				b.blit_on(window)
 				pygame.display.update()
 	
 	#quit the program

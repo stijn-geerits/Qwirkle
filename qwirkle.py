@@ -387,13 +387,19 @@ if __name__ == "__main__":
 	button_active = Style(button_size)
 	button_active.rect((0, 44, 121), button_edge_size, (34, 85, 170))
 	
-	#create the menu buttons
+	# create the menu buttons #
+	#new game button
 	bRect = set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.4)], "center")
 	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.new_game)
 	b.set_current_state(Widget.UNAVAILABLE)
 	widgets.append(b)
-	
+	#settings button
 	bRect = set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
+	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.settings)
+	b.set_current_state(Widget.UNAVAILABLE)
+	widgets.append(b)
+	#exit button
+	bRect = set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.6)], "center")
 	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], full_quit, lang.exit)
 	widgets.append(b)
 	

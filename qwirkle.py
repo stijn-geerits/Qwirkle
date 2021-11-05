@@ -359,6 +359,8 @@ if __name__ == "__main__":
 	#set variables
 	clock = pygame.time.Clock()
 	loop = True
+	update = []
+	widgets = []
 	
 	# window setup #
 	window = pygame.display.set_mode(user.winsize)
@@ -374,33 +376,29 @@ if __name__ == "__main__":
 	# widgets setup #
 	#define button dimensions
 	button_size = [int(user.winsize[0] * .24), int(user.winsize[1] * .08)]
-	button_edge_size = int(min(user.winsize) * .0016)
+	button_edge_size = int(min(user.winsize) * .004)
 	#create button templates
 	button_unavailable = Style(button_size)
-	button_unavailable.rect((102, 102, 102), int(min(user.winsize) * .005), (61, 61, 61))
+	button_unavailable.rect((102, 102, 102), button_edge_size, (61, 61, 61))
 	button_idle = Style(button_size)
-	button_idle.rect((34, 85, 170), int(min(user.winsize) * .005), (0, 44, 121))
+	button_idle.rect((34, 85, 170), button_edge_size, (0, 44, 121))
 	button_hover = Style(button_size)
-	button_hover.rect((146, 178, 255), int(min(user.winsize) * .005), (34, 85, 170))
+	button_hover.rect((146, 178, 255), button_edge_size, (34, 85, 170))
 	button_active = Style(button_size)
-	button_active.rect((0, 44, 121), int(min(user.winsize) * .005), (34, 85, 170))
+	button_active.rect((0, 44, 121), button_edge_size, (34, 85, 170))
 	
-	#define a list of widgets
-	widgets = []
 	#create the menu buttons
 	bRect = set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.4)], "center")
 	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.new_game)
 	b.set_current_state(Widget.UNAVAILABLE)
-	b.blit_on(window)
 	widgets.append(b)
 	
 	bRect = set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
 	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], full_quit, lang.exit)
-	b.blit_on(window)
 	widgets.append(b)
 	
-	#update the display
-	pygame.display.update()
+	#add the widgets to the update list
+	update.extend(widgets)
 	
 	# main loop #
 	while loop == True:
@@ -416,16 +414,14 @@ if __name__ == "__main__":
 				for w in widgets:
 					if w.get_current_state() == Widget.HOVER:
 						w.set_current_state(Widget.ACTIVE)
-						w.blit_on(window)
-						pygame.display.update()
+						update.append(w)
 			if event.type == pygame.MOUSEBUTTONUP:
 				for w in widgets:
 					if w.get_current_state() == Widget.ACTIVE:
 						if type(w) == Button:
 							w.run_function()
 						w.set_current_state(Widget.HOVER)
-						w.blit_on(window)
-						pygame.display.update()
+						update.append(w)
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
@@ -434,13 +430,18 @@ if __name__ == "__main__":
 				#check whether the widget is being hovered over (and the widget is set to idle)
 				if w.get_rect().collidepoint(pygame.mouse.get_pos()) and w.get_current_state() == Widget.IDLE:
 					w.set_current_state(Widget.HOVER)
-					w.blit_on(window)
-					pygame.display.update()
+					update.append(w)
 				#check whether the widget is not being hovered over (and this has not been set)
 				elif not w.get_rect().collidepoint(pygame.mouse.get_pos()) and (w.get_current_state() == Widget.HOVER or w.get_current_state() == Widget.ACTIVE):
 					w.set_current_state(Widget.IDLE)
-					w.blit_on(window)
-					pygame.display.update()
+					update.append(w)
+		
+		#update the display
+		for u in update:
+			u.blit_on(window)
+		if len(update) > 0:
+			update = []
+			pygame.display.update()
 	
 	#quit the program
 	full_quit()

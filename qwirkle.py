@@ -328,6 +328,30 @@ def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="tople
 		surface.blit(text[line], textpos[line])
 	return
 
+def button_builder(rect, states, function, label, labelcolor=None, labelpadding=None):
+	"""
+	Returns a fully set up button object
+	"""
+	#define the button object with the correct dimensions
+	button = Button(rect.size)
+	#move the button in place
+	button.place(rect.topleft)
+	#define the button's states (seperate list into individual arguments using '*')
+	button.define_states(*states)
+	#set the button's function
+	button.set_function(function)
+	#set the label for the button
+	if labelcolor == None and labelpadding == None:
+		button.set_label(label)
+	elif labelcolor == None:
+		button.set_label(label, pad=labelpadding)
+	elif labelpadding == None:
+		button.set_label(label, labelcolor)
+	else:
+		button.set_label(label, labelcolor, labelpadding)
+	#return the button object
+	return button
+
 
 
 ### Main program ###
@@ -349,7 +373,7 @@ if __name__ == "__main__":
 	
 	# widgets setup #
 	#define button dimensions
-	button_size = [int(user.winsize[0] * .16), int(user.winsize[1] * .08)]
+	button_size = [int(user.winsize[0] * .24), int(user.winsize[1] * .08)]
 	button_edge_size = int(min(user.winsize) * .0016)
 	#create button templates
 	button_unavailable = Style(button_size)
@@ -364,21 +388,16 @@ if __name__ == "__main__":
 	#define a list of widgets
 	widgets = []
 	#create the menu buttons
-	b1 = Button(button_size)
-	b1.define_states(button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy())
-	b1.set_label(lang.new_game, pad=(2*button_edge_size))
-	b1.set_current_state(Widget.UNAVAILABLE)
-	b1.place([int(user.winsize[0]*.5), int(user.winsize[1]*.5-button_size[1]/1.8)], "center")
-	b1.blit_on(window)
-	widgets.append(b1)
+	bRect = set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.4)], "center")
+	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.new_game)
+	b.set_current_state(Widget.UNAVAILABLE)
+	b.blit_on(window)
+	widgets.append(b)
 	
-	b2 = Button(button_size)
-	b2.define_states(button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy())
-	b2.set_label(lang.exit, pad=(2*button_edge_size))
-	b2.set_function(full_quit)
-	b2.place([int(user.winsize[0]*.5), int(user.winsize[1]*.5+button_size[1]/1.8)], "center")
-	b2.blit_on(window)
-	widgets.append(b2)
+	bRect = set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
+	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], full_quit, lang.exit)
+	b.blit_on(window)
+	widgets.append(b)
 	
 	#update the display
 	pygame.display.update()

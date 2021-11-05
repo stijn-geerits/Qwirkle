@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #import classes
-import inspect, pygame, time
+import inspect, pygame
 #initialize pygame (necessary for fonts)
 pygame.init()
 
@@ -96,6 +96,7 @@ class Widget(pygame.Surface):
 		"""
 		Get the pygame.Rect object for the widget
 		"""
+		#pygame.Rect object of a pygame.Surface object is located at [0, 0] => move it into position
 		return self.states[self.current_state].get_rect().move(self.position)
 	
 	def place(self, location, relpos="topleft"):
@@ -110,6 +111,8 @@ class Widget(pygame.Surface):
 		"""
 		Updates the appearance of the widget
 		"""
+		self.set_colorkey((0, 0, 0))
+		self.fill((0, 0, 0))
 		self.blit(self.states[self.current_state], pygame.Rect(0, 0, self.get_width(), self.get_height()))
 		return
 	
@@ -151,10 +154,10 @@ class Button(Widget):
 				text = font.render(label, True, color)
 				#get the pygame.Rect object for the label
 				rect = text.get_rect()
-				if rect.width > state_rect.width - pad:
+				if rect.width > (state_rect.width - pad):
 					#resize the label to fit within the button
-					ratio = rect.width // (state_rect.width - pad)
-					font = pygame.font.SysFont(None, ratio)
+					ratio = (state_rect.width - pad) / rect.width
+					font = pygame.font.SysFont(None, int(ratio * (state_rect.height - pad)))
 					text = font.render(label, True, color)
 					rect = text.get_rect()
 				#set the center of the label to the center of the button
@@ -181,6 +184,65 @@ class Button(Widget):
 		#prevent running the function prior to its definition
 		elif self.function != None:
 			self.function()
+		return
+
+# Container for graphical objects #
+class Style(pygame.Surface):
+	"""
+	Container for graphical objects
+	"""
+	
+	def rect(self, fill, edge_width=0, edge=(0, 0, 0)):
+		"""
+		Draws a rectangular shape with the given fill and edge on a pygame.Surface object
+		
+		fill should contain a triplet with RGB color values
+		edge_width should be a zero or positive integer defining the size of the edge
+		edge should contain a triplet with RGB color values
+		"""
+		#draw a rectangle for the edge
+		if edge_width > 0:
+			pygame.draw.rect(self, edge, self.get_rect())
+		#calculate the pygame.Rect object for the fill
+		fill_rect = self.get_rect().move(edge_width, edge_width)
+		fill_rect.width -= 2 * edge_width
+		fill_rect.height -= 2 * edge_width
+		#fill the rectangle
+		pygame.draw.rect(self, fill, fill_rect)
+		return
+	
+	def circle(self, fill, edge_width=0, edge=(0, 0, 0)):
+		"""
+		Draws a circular shape with the given fill and edge on a pygame.Surface object
+		
+		fill should contain a triplet with RGB color values
+		edge_width should be a zero or positive integer defining the size of the edge
+		edge should contain a triplet with RGB color values
+		"""
+		#draw a circle for the edge
+		if edge_width > 0:
+			pygame.draw.circle(self, edge, self.get_rect().center, self.width // 2)
+		#fill the circle
+		pygame.draw.circle(self, fill, self.get_rect().center, (self.width - edge_width) // 2)
+		return
+	
+	def ellipse(self, fill, edge_width=0, edge=(0, 0, 0)):
+		"""
+		Draws a ellipse shape with the given fill and edge on a pygame.Surface object
+		
+		fill should contain a triplet with RGB color values
+		edge_width should be a zero or positive integer defining the size of the edge
+		edge should contain a triplet with RGB color values
+		"""
+		#draw an ellipse for the edge
+		if edge_width > 0:
+			pygame.draw.ellipse(self, edge, self.get_rect())
+		#calculate the pygame.Rect object for the fill
+		fill_rect = self.get_rect().move(edge_width, edge_width)
+		fill_rect.width -= 2 * edge_width
+		fill_rect.height -= 2 * edge_width
+		#fill the rectangle
+		pygame.draw.ellipse(self, fill, fill_rect)
 		return
 
 
@@ -285,18 +347,43 @@ if __name__ == "__main__":
 	#show the copyright notice
 	rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
 	
-	#create a test button
-	b = Button([64, 24])
-	b.define_states(pygame.image.load(GRAPHICSDIR+"button_unavailable.png"), pygame.image.load(GRAPHICSDIR+"button_idle.png"), pygame.image.load(GRAPHICSDIR+"button_hover.png"), pygame.image.load(GRAPHICSDIR+"button_active.png"))
-	b.set_label(lang.exit)
-	b.set_function(full_quit)
-	b.place([int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
-	b.blit_on(window)
+	# widgets setup #
+	#define button dimensions
+	button_size = [int(user.winsize[0] * .16), int(user.winsize[1] * .08)]
+	button_edge_size = int(min(user.winsize) * .0016)
+	#create button templates
+	button_unavailable = Style(button_size)
+	button_unavailable.rect((102, 102, 102), int(min(user.winsize) * .005), (61, 61, 61))
+	button_idle = Style(button_size)
+	button_idle.rect((34, 85, 170), int(min(user.winsize) * .005), (0, 44, 121))
+	button_hover = Style(button_size)
+	button_hover.rect((146, 178, 255), int(min(user.winsize) * .005), (34, 85, 170))
+	button_active = Style(button_size)
+	button_active.rect((0, 44, 121), int(min(user.winsize) * .005), (34, 85, 170))
+	
+	#define a list of widgets
+	widgets = []
+	#create the menu buttons
+	b1 = Button(button_size)
+	b1.define_states(button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy())
+	b1.set_label(lang.new_game, pad=(2*button_edge_size))
+	b1.set_current_state(Widget.UNAVAILABLE)
+	b1.place([int(user.winsize[0]*.5), int(user.winsize[1]*.5-button_size[1]/1.8)], "center")
+	b1.blit_on(window)
+	widgets.append(b1)
+	
+	b2 = Button(button_size)
+	b2.define_states(button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy())
+	b2.set_label(lang.exit, pad=(2*button_edge_size))
+	b2.set_function(full_quit)
+	b2.place([int(user.winsize[0]*.5), int(user.winsize[1]*.5+button_size[1]/1.8)], "center")
+	b2.blit_on(window)
+	widgets.append(b2)
 	
 	#update the display
 	pygame.display.update()
 	
-	### main loop ###
+	# main loop #
 	while loop == True:
 		#set the frame-rate
 		clock.tick(user.fps)
@@ -306,29 +393,35 @@ if __name__ == "__main__":
 			if event.type == pygame.QUIT:
 				loop = False
 			#check mouse button events
-			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1] and b.get_current_state() == Widget.HOVER:
-				b.set_current_state(Widget.ACTIVE)
-				b.blit_on(window)
-				pygame.display.update()
-			if event.type == pygame.MOUSEBUTTONUP and b.get_current_state() == Widget.ACTIVE:
-				b.run_function()
-				b.set_current_state(Widget.HOVER)
-				b.blit_on(window)
-				pygame.display.update()
+			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
+				for w in widgets:
+					if w.get_current_state() == Widget.HOVER:
+						w.set_current_state(Widget.ACTIVE)
+						w.blit_on(window)
+						pygame.display.update()
+			if event.type == pygame.MOUSEBUTTONUP:
+				for w in widgets:
+					if w.get_current_state() == Widget.ACTIVE:
+						if type(w) == Button:
+							w.run_function()
+						w.set_current_state(Widget.HOVER)
+						w.blit_on(window)
+						pygame.display.update()
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
 		if mouse_move != (0, 0):
-			#check whether the button is being hovered over (and this has not been set)
-			if b.get_rect().collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() != Widget.HOVER and b.get_current_state() != Widget.ACTIVE):
-				b.set_current_state(Widget.HOVER)
-				b.blit_on(window)
-				pygame.display.update()
-			#check whether the button is not being hovered over (and this has not been set)
-			elif not b.get_rect().collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() == Widget.HOVER or b.get_current_state() == Widget.ACTIVE):
-				b.set_current_state(Widget.IDLE)
-				b.blit_on(window)
-				pygame.display.update()
+			for w in widgets:
+				#check whether the widget is being hovered over (and the widget is set to idle)
+				if w.get_rect().collidepoint(pygame.mouse.get_pos()) and w.get_current_state() == Widget.IDLE:
+					w.set_current_state(Widget.HOVER)
+					w.blit_on(window)
+					pygame.display.update()
+				#check whether the widget is not being hovered over (and this has not been set)
+				elif not w.get_rect().collidepoint(pygame.mouse.get_pos()) and (w.get_current_state() == Widget.HOVER or w.get_current_state() == Widget.ACTIVE):
+					w.set_current_state(Widget.IDLE)
+					w.blit_on(window)
+					pygame.display.update()
 	
 	#quit the program
 	full_quit()

@@ -148,65 +148,6 @@ class Button(Widget):
 			self.function()
 		return
 
-# Container for graphical objects #
-class Style(pygame.Surface):
-	"""
-	Container for graphical objects
-	"""
-	
-	def rect(self, fill, edge_width=0, edge=(0, 0, 0)):
-		"""
-		Draws a rectangular shape with the given fill and edge on a pygame.Surface object
-		
-		fill should contain a triplet with RGB color values
-		edge_width should be a zero or positive integer defining the size of the edge
-		edge should contain a triplet with RGB color values
-		"""
-		#draw a rectangle for the edge
-		if edge_width > 0:
-			pygame.draw.rect(self, edge, self.get_rect())
-		#calculate the pygame.Rect object for the fill
-		fill_rect = self.get_rect().move(edge_width, edge_width)
-		fill_rect.width -= 2 * edge_width
-		fill_rect.height -= 2 * edge_width
-		#fill the rectangle
-		pygame.draw.rect(self, fill, fill_rect)
-		return
-	
-	def circle(self, fill, edge_width=0, edge=(0, 0, 0)):
-		"""
-		Draws a circular shape with the given fill and edge on a pygame.Surface object
-		
-		fill should contain a triplet with RGB color values
-		edge_width should be a zero or positive integer defining the size of the edge
-		edge should contain a triplet with RGB color values
-		"""
-		#draw a circle for the edge
-		if edge_width > 0:
-			pygame.draw.circle(self, edge, self.get_rect().center, self.width // 2)
-		#fill the circle
-		pygame.draw.circle(self, fill, self.get_rect().center, (self.width - edge_width) // 2)
-		return
-	
-	def ellipse(self, fill, edge_width=0, edge=(0, 0, 0)):
-		"""
-		Draws a ellipse shape with the given fill and edge on a pygame.Surface object
-		
-		fill should contain a triplet with RGB color values
-		edge_width should be a zero or positive integer defining the size of the edge
-		edge should contain a triplet with RGB color values
-		"""
-		#draw an ellipse for the edge
-		if edge_width > 0:
-			pygame.draw.ellipse(self, edge, self.get_rect())
-		#calculate the pygame.Rect object for the fill
-		fill_rect = self.get_rect().move(edge_width, edge_width)
-		fill_rect.width -= 2 * edge_width
-		fill_rect.height -= 2 * edge_width
-		#fill the rectangle
-		pygame.draw.ellipse(self, fill, fill_rect)
-		return
-
 
 
 ### Functions ###
@@ -282,3 +223,68 @@ def renderimage(surface, image, location=[0, 0], relpos="topleft"):
 	#place the image on the surface
 	surface.blit(img, imgRect)
 	return
+
+def rectangle(fill, size, edge_width=0, edge=(0, 0, 0)):
+	"""
+	Draws a rectangular shape with the given fill and edge on a pygame.Surface object
+	
+	fill should contain a triplet with RGB color values
+	size should contain a tuple with the width and height of the rectangle
+	edge_width should be a zero or positive integer defining the size of the edge
+	edge should contain a triplet with RGB color values
+	"""
+	#initialize a pygame.Surface object for the rectangle
+	surf = pygame.Surface(size)
+	#draw a rectangle for the edge
+	if edge_width > 0:
+		pygame.draw.rect(surf, edge, surf.get_rect())
+	#calculate the pygame.Rect object for the fill
+	fill_rect = surf.get_rect().move(edge_width, edge_width)
+	fill_rect.width -= 2 * edge_width
+	fill_rect.height -= 2 * edge_width
+	#fill the rectangle
+	pygame.draw.rect(surf, fill, fill_rect)
+	#return the pygame.Surface object
+	return surf
+
+def circle(fill, radius, edge_width=0, edge=(0, 0, 0)):
+	"""
+	Draws a circular shape with the given fill and edge on a pygame.Surface object
+	
+	fill should contain a triplet with RGB color values
+	radius should contain a positive integer defining the radius of the circle
+	edge_width should be a zero or positive integer defining the size of the edge
+	edge should contain a triplet with RGB color values
+	"""
+	#initialize a pygame.Surface object for the circle
+	surf = pygame.Surface([2 * radius] * 2)
+	#draw a circle for the edge
+	if edge_width > 0:
+		pygame.draw.circle(surf, edge, [radius] * 2, radius)
+	#fill the circle
+	pygame.draw.circle(surf, fill, [radius] * 2, radius - edge_width)
+	#return the pygame.Surface object
+	return
+
+def ellipse(fill, size, edge_width=0, edge=(0, 0, 0)):
+	"""
+	Draws a ellipse shape with the given fill and edge on a pygame.Surface object
+	
+	fill should contain a triplet with RGB color values
+	size should contain a tuple with the width and height of the ellipse
+	edge_width should be a zero or positive integer defining the size of the edge
+	edge should contain a triplet with RGB color values
+	"""
+	#initialize a pygame.Surface object for the ellipse
+	surf = pygame.Surface(size)
+	#draw an ellipse for the edge
+	if edge_width > 0:
+		pygame.draw.ellipse(surf, edge, surf.get_rect())
+	#calculate the pygame.Rect object for the fill
+	fill_rect = surf.get_rect().move(edge_width, edge_width)
+	fill_rect.width -= 2 * edge_width
+	fill_rect.height -= 2 * edge_width
+	#fill the rectangle
+	pygame.draw.ellipse(surf, fill, fill_rect)
+	#return the pygame.Surface object
+	return surf

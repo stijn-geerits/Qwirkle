@@ -2,8 +2,6 @@
 
 # import classes #
 import inspect, pygame, sys
-#initialize pygame (necessary for fonts)
-#pygame.init()
 
 
 
@@ -110,14 +108,10 @@ if __name__ == "__main__":
 	button_size = [int(user.winsize[0] * .24), int(user.winsize[1] * .08)]
 	button_edge_size = int(min(user.winsize) * .004)
 	#create button templates
-	button_unavailable = gui.Style(button_size)
-	button_unavailable.rect((102, 102, 102), button_edge_size, (61, 61, 61))
-	button_idle = gui.Style(button_size)
-	button_idle.rect((34, 85, 170), button_edge_size, (0, 44, 121))
-	button_hover = gui.Style(button_size)
-	button_hover.rect((146, 178, 255), button_edge_size, (34, 85, 170))
-	button_active = gui.Style(button_size)
-	button_active.rect((0, 44, 121), button_edge_size, (34, 85, 170))
+	button_unavailable = gui.rectangle((102, 102, 102), button_size, button_edge_size, (61, 61, 61))
+	button_idle = gui.rectangle((34, 85, 170), button_size, button_edge_size, (0, 44, 121))
+	button_hover = gui.rectangle((146, 178, 255), button_size, button_edge_size, (34, 85, 170))
+	button_active = gui.rectangle((0, 44, 121), button_size, button_edge_size, (34, 85, 170))
 	
 	# create the menu buttons #
 	#new game button

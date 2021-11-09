@@ -8,10 +8,14 @@ class Player:
         self.name = new_name
 
     def add_to_hand(self, tile, index): #new
-        self.hand = self.hand.insert(index, tile)
+        hand = self.hand
+        hand.insert(index, tile)
+        self.hand = hand
 
-    def take_from_hand(self, index): #new
-        self.hand = self.hand.pop(index)
+    def take_from_hand(self, tile): #new
+        hand = self.hand
+        hand.remove(tile)
+        self.hand = hand
 
     def get_index_hand(self, tile): #new
         index = self.hand.index(tile)
@@ -29,6 +33,7 @@ class Player:
 
 # test
 if __name__ == "__main__":
+
     H1 = [11, 12, 13, 14, 15, 16]
     H2 = [21, 22, 23, 24, 25, 26]
     H3 = [31, 32, 33, 34, 35, 36]
@@ -37,10 +42,10 @@ if __name__ == "__main__":
     speler2 = Player(2, "Laël")
     speler3 = Player(3, "Stan")
 
-    for i in range(1,7):
-        speler1.add_to_hand(i, H1[i])
-        speler2.add_to_hand(i, H2[i])
-        speler3.add_to_hand(i, H3[i])
+    for i in range(0,6):
+        speler1.add_to_hand(H1[i], i)
+        speler2.add_to_hand(H2[i], i)
+        speler3.add_to_hand(H3[i], i)
 
     print("Hand van speler 1: "+str(speler1.get_hand()))
     print("Hand van speler 2: " + str(speler2.get_hand()))
@@ -57,6 +62,8 @@ if __name__ == "__main__":
 
     print("Hand van speler 2 voor wijziging: "+str(speler2.get_hand()))
     ind = speler2.get_index_hand(23)
-    speler2.take_from_hand(ind)
+    print(ind)
+    speler2.take_from_hand(steen_leggen)
+    print(str(speler2.get_hand()))
     speler2.add_to_hand(43, ind)
     print("Hand van speler 2 na wijziging: "+str(speler2.get_hand()))

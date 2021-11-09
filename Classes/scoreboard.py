@@ -1,22 +1,24 @@
-class Scorebord:
-    def __init__(self, spelers):
-        self.spelers = spelers
-        self.score = [0] * len(self.spelers)
+class Scoreboard:
+    def __init__(self, players):
+        self.players = players
+        self.score = [0] * len(self.players)
 
-    def change_score(self, speler, value):
-        index = self.spelers.index(speler)
+    def change_score(self, player, value):
+        index = self.players.index(player)
         current_score = self.score[index]
         new_score = current_score + value
         self.score[index] = new_score
 
-    def get_score(self):
-        return self.score
+    def get_score(self, player):
+        index = self.players.index(player)
+        current_score = self.score[index]
+        return current_score
 
 
 # test
 if __name__ == "__main__":
-    deelnemers = ["Stijn", "Laël", "Stan"]
-    bord = Scorebord(deelnemers)
+    deelnemers = ["Stijn", "Laël", "Stan"] # mergen met klasse speler
+    bord = Scoreboard(deelnemers)
     print("Begin score: " + str(bord.get_score()))
 
     # ronde1

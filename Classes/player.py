@@ -56,7 +56,7 @@ if __name__ == "__main__":
     steen_krijgen = 43
 
     print("Hand van speler 2 voor wijziging: "+str(speler2.get_hand()))
-    ind = speler2.get_index_hand(23)
+    ind = speler2.get_index_hand(steen_leggen)
     speler2.take_from_hand(ind)
-    speler2.add_to_hand(43, ind)
+    speler2.add_to_hand(steen_krijgen, ind)
     print("Hand van speler 2 na wijziging: "+str(speler2.get_hand()))

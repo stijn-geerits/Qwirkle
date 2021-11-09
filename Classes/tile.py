@@ -10,18 +10,33 @@ class Tile:
         self.position = position
 
     def get_id(self):
+        """
+        Get function for Tile id
+        """
         return self.id
 
     def get_color(self):
+        """
+        Get function for Tile color
+        """
         return self.color
 
     def get_shape(self):
+        """
+        Get function for Tile shape
+        """
         return self.shape
 
     def get_position(self):
+        """
+        Get function for Tile position
+        """
         return self.position
 
     def set_position(self, position):
+        """
+        Set function for Tile position
+        """
         self.position = position
 
 

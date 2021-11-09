@@ -1,4 +1,5 @@
 qwirkle = "Qwirkle"
 new_game = "Nieuw Spel"
+settings = "Instellingen"
 exit = "Stoppen"
-copyright = "©999 Games, alle rechten voorbehouden"
+copyright = "Qwirkle is copyright van 999 Games, alle rechten voorbehouden"

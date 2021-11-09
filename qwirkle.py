@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
-#import classes
-import inspect, pygame, time
-#initialize pygame (necessary for fonts)
-pygame.init()
+# import classes #
+import inspect, pygame, sys
 
 
 
@@ -13,6 +11,10 @@ CLASSESDIR = "Classes/"
 CONFIGDIR = ""
 GRAPHICSDIR = "Graphics/"
 LANGUAGEDIR = "Lang/"
+#insert the CLASSESDIR into the search list for importing scripts
+sys.path.insert(1, CLASSESDIR)
+#import the custom classes
+import gui
 
 
 
@@ -46,143 +48,6 @@ class user:
 class lang:
 	exec(open(LANGUAGEDIR + user.lang + ".lang", 'r').read())
 
-# General class for graphical widgets #
-class Widget(pygame.Surface):
-	"""
-	General class for widgets in the pygame environment
-	"""
-	#possible state values
-	UNAVAILABLE = 0
-	IDLE = 1
-	HOVER = 2
-	ACTIVE = 3
-	#other class variables
-	current_state = 1
-	states = [pygame.Surface([0, 0])] * 4
-	position = [0, 0]
-	
-	def get_current_state(self):
-		"""
-		Returns the current state of the widget
-		"""
-		return self.current_state
-	
-	def set_current_state(self, state):
-		"""
-		Update the current state of the widget
-		"""
-		self.current_state = state
-		self.update()
-		return
-	
-	def get_states(self):
-		"""
-		Returns all possible states of the widget
-		"""
-		return self.states
-	
-	def define_states(self, unavailable, idle, hover, active):
-		"""
-		Define the presentation of the widget for all four states
-		
-		All variables should contain pygame.Surface objects
-		Any state defined prior will be overridden
-		"""
-		self.states = [unavailable, idle, hover, active]
-		self.update()
-		return
-	
-	def get_rect(self):
-		"""
-		Get the pygame.Rect object for the widget
-		"""
-		return self.states[self.current_state].get_rect().move(self.position)
-	
-	def place(self, location, relpos="topleft"):
-		"""
-		Set the location at which to blit the widget
-		"""
-		rect = set_relpos(self.get_rect(), location, relpos)
-		self.position = rect.topleft
-		return
-	
-	def update(self):
-		"""
-		Updates the appearance of the widget
-		"""
-		self.blit(self.states[self.current_state], pygame.Rect(0, 0, self.get_width(), self.get_height()))
-		return
-	
-	def blit_on(self, surface):
-		"""
-		Blit the widget on the surface
-		"""
-		surface.blit(self, self.get_rect())
-		return
-
-# Class for graphical button widgets #
-class Button(Widget):
-	"""
-	Class for button widgets in the pygame environment
-	"""
-	#class variables
-	label = "Button"
-	function = None
-	
-	def set_label(self, label, color=(32, 32, 32), pad=4):
-		"""
-		Set the label to place on the button
-		
-		label should contain a string without line breaks
-		color should contain a triplet with RGB color values
-		pad should contain a positive integer defining the amount of padding
-			between the edge of the button and the label text
-		"""
-		self.label = label
-		#render the label on each state
-		for state in self.states:
-			#get the pygame.Rect object for the state
-			state_rect = state.get_rect()
-			#don't try rendering the label on a state that is too small
-			if state_rect.width > pad and state_rect.height > pad:
-				#render the font for the label
-				font = pygame.font.SysFont(None, state_rect.height - pad)
-				#render the label text
-				text = font.render(label, True, color)
-				#get the pygame.Rect object for the label
-				rect = text.get_rect()
-				if rect.width > state_rect.width - pad:
-					#resize the label to fit within the button
-					ratio = rect.width // (state_rect.width - pad)
-					font = pygame.font.SysFont(None, ratio)
-					text = font.render(label, True, color)
-					rect = text.get_rect()
-				#set the center of the label to the center of the button
-				rect.center = state_rect.center
-				#render the label on the state
-				state.blit(text, rect)
-		self.update()
-		return
-	
-	def set_function(self, function):
-		"""
-		Set the function for the button
-		"""
-		self.function = function
-		return
-	
-	def run_function(self):
-		"""
-		Run the function bound to the button
-		"""
-		#verify that the button is active before running the function
-		if self.current_state != self.ACTIVE:
-			print("[Qwirkle]Button.activate:\x1b[91m Cannot run the function of a button that is not active.\x1b[97m")
-		#prevent running the function prior to its definition
-		elif self.function != None:
-			self.function()
-		return
-
 
 
 ### Functions ###
@@ -193,78 +58,29 @@ def full_quit():
 	pygame.quit()
 	exit()
 
-def set_relpos(rect, location, relpos):
+def button_builder(rect, states, function, label, labelcolor=None, labelpadding=None):
 	"""
-	Set the location of the pygame.Rect object using the relpos value
+	Returns a fully set up button object
 	"""
-	if relpos == "bottomleft":
-		rect.bottomleft = location
-	elif relpos == "bottomright":
-		rect.bottomright = location
-	elif relpos == "center":
-		rect.center = location
-	elif relpos == "centerx":
-		rect.centerx = location
-	elif relpos == "centery":
-		rect.centery = location
-	elif relpos == "midbottom":
-		rect.midbottom = location
-	elif relpos == "midleft":
-		rect.midleft = location
-	elif relpos == "midright":
-		rect.midright = location
-	elif relpos == "midtop":
-		rect.midtop = location
-	elif relpos == "topleft":
-		rect.topleft = location
-	elif relpos == "topright":
-		rect.topright = location
+	#define the button object with the correct dimensions
+	button = gui.Button(rect.size)
+	#move the button in place
+	button.place(rect.topleft)
+	#define the button's states (seperate list into individual arguments using '*')
+	button.define_states(*states)
+	#set the button's function
+	button.set_function(function)
+	#set the label for the button
+	if labelcolor == None and labelpadding == None:
+		button.set_label(label)
+	elif labelcolor == None:
+		button.set_label(label, pad=labelpadding)
+	elif labelpadding == None:
+		button.set_label(label, labelcolor)
 	else:
-		#invalid relpos value given, go with standard setting
-		print("[Qwirkle]set_relpos:\x1b[91m Invalid relpos value '%s' received, defaulting to 'topleft'.\x1b[97m" % relpos)
-		rect.topleft = location
-	return rect
-
-def renderimage(surface, image, location=[0, 0], relpos="topleft"):
-	"""
-	Load and display an image on the given surface at the given location
-	"""
-	#load the image
-	img = pygame.image.load(image)
-	#place the image in the correct location based on the relpos value
-	imgRect = set_relpos(img.get_rect(), location, relpos)
-	#place the image on the surface
-	surface.blit(img, imgRect)
-	return
-
-def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="topleft", color=(32, 32, 32)):
-	"""
-	Display the given text on the surface, with the given font and size, at the given location
-	"""
-	#render the font for the text
-	if font == None:
-		font = pygame.font.SysFont(None, size)
-	else:
-		font = pygame.font.Font(font, size)
-	#split up the text into multiple strings when it contains a '\n'
-	text = text.split("\n")
-	#get the amount of lines of text
-	if type(text) == list:
-		lines = len(text)
-	else:
-		lines = 1
-	
-	#render the text and put it in place
-	textpos = []
-	for line in range(0, lines):
-		text[line] = font.render(text[line], True, color)
-		#update the position according to the relpos variable
-		textpos.append(set_relpos(text[line].get_rect(), [location[0], location[1]+int(1.25*size*line)], relpos))
-	
-	#place the text on the surface
-	for line in range(0, lines):
-		surface.blit(text[line], textpos[line])
-	return
+		button.set_label(label, labelcolor, labelpadding)
+	#return the button object
+	return button
 
 
 
@@ -273,6 +89,8 @@ if __name__ == "__main__":
 	#set variables
 	clock = pygame.time.Clock()
 	loop = True
+	update = []
+	widgets = []
 	
 	# window setup #
 	window = pygame.display.set_mode(user.winsize)
@@ -281,22 +99,40 @@ if __name__ == "__main__":
 	#change window background
 	window.fill((200, 200, 200))
 	#show qwirkle title graphic
-	renderimage(window, GRAPHICSDIR + "qwirkle.png", [int(user.winsize[0]*.5), int(user.winsize[1]*.05)], "midtop")
+	gui.renderimage(window, GRAPHICSDIR + "qwirkle.png", [int(user.winsize[0]*.5), int(user.winsize[1]*.05)], "midtop")
 	#show the copyright notice
-	rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
+	gui.rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
 	
-	#create a test button
-	b = Button([64, 24])
-	b.define_states(pygame.image.load(GRAPHICSDIR+"button_unavailable.png"), pygame.image.load(GRAPHICSDIR+"button_idle.png"), pygame.image.load(GRAPHICSDIR+"button_hover.png"), pygame.image.load(GRAPHICSDIR+"button_active.png"))
-	b.set_label(lang.exit)
-	b.set_function(full_quit)
-	b.place([int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
-	b.blit_on(window)
+	# widgets setup #
+	#define button dimensions
+	button_size = [int(user.winsize[0] * .24), int(user.winsize[1] * .08)]
+	button_edge_size = int(min(user.winsize) * .004)
+	#create button templates
+	button_unavailable = gui.rectangle((102, 102, 102), button_size, button_edge_size, (61, 61, 61))
+	button_idle = gui.rectangle((34, 85, 170), button_size, button_edge_size, (0, 44, 121))
+	button_hover = gui.rectangle((146, 178, 255), button_size, button_edge_size, (34, 85, 170))
+	button_active = gui.rectangle((0, 44, 121), button_size, button_edge_size, (34, 85, 170))
 	
-	#update the display
-	pygame.display.update()
+	# create the menu buttons #
+	#new game button
+	bRect = gui.set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.4)], "center")
+	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.new_game)
+	b.set_current_state(gui.Widget.UNAVAILABLE)
+	widgets.append(b)
+	#settings button
+	bRect = gui.set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
+	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.settings)
+	b.set_current_state(gui.Widget.UNAVAILABLE)
+	widgets.append(b)
+	#exit button
+	bRect = gui.set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.6)], "center")
+	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], full_quit, lang.exit)
+	widgets.append(b)
 	
-	### main loop ###
+	#add the widgets to the update list
+	update.extend(widgets)
+	
+	# main loop #
 	while loop == True:
 		#set the frame-rate
 		clock.tick(user.fps)
@@ -306,29 +142,38 @@ if __name__ == "__main__":
 			if event.type == pygame.QUIT:
 				loop = False
 			#check mouse button events
-			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1] and b.get_current_state() == Widget.HOVER:
-				b.set_current_state(Widget.ACTIVE)
-				b.blit_on(window)
-				pygame.display.update()
-			if event.type == pygame.MOUSEBUTTONUP and b.get_current_state() == Widget.ACTIVE:
-				b.run_function()
-				b.set_current_state(Widget.HOVER)
-				b.blit_on(window)
-				pygame.display.update()
+			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
+				for w in widgets:
+					if w.get_current_state() == gui.Widget.HOVER:
+						w.set_current_state(gui.Widget.ACTIVE)
+						update.append(w)
+			if event.type == pygame.MOUSEBUTTONUP:
+				for w in widgets:
+					if w.get_current_state() == gui.Widget.ACTIVE:
+						if type(w) == gui.Button:
+							w.run_function()
+						w.set_current_state(gui.Widget.HOVER)
+						update.append(w)
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
 		if mouse_move != (0, 0):
-			#check whether the button is being hovered over (and this has not been set)
-			if b.get_rect().collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() != Widget.HOVER and b.get_current_state() != Widget.ACTIVE):
-				b.set_current_state(Widget.HOVER)
-				b.blit_on(window)
-				pygame.display.update()
-			#check whether the button is not being hovered over (and this has not been set)
-			elif not b.get_rect().collidepoint(pygame.mouse.get_pos()) and (b.get_current_state() == Widget.HOVER or b.get_current_state() == Widget.ACTIVE):
-				b.set_current_state(Widget.IDLE)
-				b.blit_on(window)
-				pygame.display.update()
+			for w in widgets:
+				#check whether the widget is being hovered over (and the widget is set to idle)
+				if w.get_rect().collidepoint(pygame.mouse.get_pos()) and w.get_current_state() == gui.Widget.IDLE:
+					w.set_current_state(gui.Widget.HOVER)
+					update.append(w)
+				#check whether the widget is not being hovered over (and this has not been set)
+				elif not w.get_rect().collidepoint(pygame.mouse.get_pos()) and (w.get_current_state() == gui.Widget.HOVER or w.get_current_state() == gui.Widget.ACTIVE):
+					w.set_current_state(gui.Widget.IDLE)
+					update.append(w)
+		
+		#update the display
+		for u in update:
+			u.blit_on(window)
+		if len(update) > 0:
+			update = []
+			pygame.display.update()
 	
 	#quit the program
 	full_quit()

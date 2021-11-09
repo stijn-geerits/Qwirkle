@@ -1,4 +1,5 @@
 qwirkle = "Qwirkle"
 new_game = "New Game"
+settings = "Settings"
 exit = "Quit"
-copyright = "©MindWare games, all rights reserved"
+copyright = "Qwirkle is copyright of MindWare games, all rights reserved"

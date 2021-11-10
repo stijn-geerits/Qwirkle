@@ -1,40 +1,57 @@
 class Scoreboard:
-    def __init__(self, players):
-        self.players = players
-        self.score = [0] * len(self.players)
+    def __init__(self, player):
+        self.player = player
+        self.score = 0
 
-    def change_score(self, player, value):
-        index = self.players.index(player)
-        current_score = self.score[index]
+    def change_score(self, value):
+        """
+        Add given VALUE to player's score
+        """
+        current_score = self.score
         new_score = current_score + value
-        self.score[index] = new_score
+        self.score = new_score
 
-    def get_score(self, player):
-        index = self.players.index(player)
-        current_score = self.score[index]
-        return current_score
+    def get_score(self):
+        """
+        Get function for player's score
+        """
+        return self.score
 
 
 # test
 if __name__ == "__main__":
-    deelnemers = ["Stijn", "Laël", "Stan"] # mergen met klasse speler
-    bord = Scoreboard(deelnemers)
-    print("Begin score: " + str(bord.get_score()))
+    import player
+    speler1 = player.Player(1, "Stijn")
+    speler2 = player.Player(2, "Laël")
+    speler3 = player.Player(3, "Stan")
+
+    bord1 = Scoreboard(speler1)
+    bord2 = Scoreboard(speler2)
+    bord3 = Scoreboard(speler3)
+    print("Begin score van " + speler1.get_name() + " : " + str(bord1.get_score()))
+    print("Begin score van " + speler2.get_name() + " : " + str(bord2.get_score()))
+    print("Begin score van " + speler3.get_name() + " : " + str(bord3.get_score()))
 
     # ronde1
-    bord.change_score("Stijn", 100)
-    bord.change_score("Laël", 200)
-    bord.change_score("Stan", 150)
-    print("Score na ronde 1: " + str(bord.get_score()))
+    bord1.change_score(100)
+    bord2.change_score(200)
+    bord3.change_score(150)
+    print("Score van " + speler1.get_name() + " na ronde 1: " + str(bord1.get_score()))
+    print("Score van " + speler2.get_name() + " na ronde 1: " + str(bord2.get_score()))
+    print("Score van " + speler3.get_name() + " na ronde 1: " + str(bord3.get_score()))
 
     # ronde2
-    bord.change_score("Stijn", 135)
-    bord.change_score("Laël", 115)
-    bord.change_score("Stan", 125)
-    print("Score na ronde 2: " + str(bord.get_score()))
+    bord1.change_score(135)
+    bord2.change_score(115)
+    bord3.change_score(125)
+    print("Score van " + speler1.get_name() + " na ronde 2: " + str(bord1.get_score()))
+    print("Score van " + speler2.get_name() + " na ronde 2: " + str(bord2.get_score()))
+    print("Score van " + speler3.get_name() + " na ronde 2: " + str(bord3.get_score()))
 
     # ronde3
-    bord.change_score("Stijn", 145)
-    bord.change_score("Laël", 105)
-    bord.change_score("Stan", 225)
-    print("Score na ronde 3: " + str(bord.get_score()))
+    bord1.change_score(145)
+    bord2.change_score(105)
+    bord3.change_score(225)
+    print("Score van " + speler1.get_name() + " na ronde 3: " + str(bord1.get_score()))
+    print("Score van " + speler2.get_name() + " na ronde 3: " + str(bord2.get_score()))
+    print("Score van " + speler3.get_name() + " na ronde 3: " + str(bord3.get_score()))

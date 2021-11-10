@@ -5,29 +5,50 @@ class Player:
         self.hand = []
 
     def change_name(self, new_name): #new
+        """
+        Change player's name by given NEW_NAME
+        """
         self.name = new_name
 
     def add_to_hand(self, tile, index): #new
+        """
+        Add given TILE to given INDEX in player's hand
+        """
         hand = self.hand
         hand.insert(index, tile)
         self.hand = hand
 
     def take_from_hand(self, tile): #new
+        """
+        Delete given TILE from player's hand
+        """
         hand = self.hand
         hand.remove(tile)
         self.hand = hand
 
     def get_index_hand(self, tile): #new
+        """
+        Get index from given TILE in player's hand
+        """
         index = self.hand.index(tile)
         return index
 
     def get_hand(self):
+        """
+        Get function for player's hand
+        """
         return self.hand
 
     def get_id(self):
+        """
+        Get function for player's id
+        """
         return self.id
 
     def get_name(self):
+        """
+        Get function for player's name
+        """
         return self.name
 
 

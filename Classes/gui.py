@@ -145,7 +145,7 @@ class Button(Widget):
 			print("[Qwirkle]Button.activate:\x1b[91m Cannot run the function of a button that is not active.\x1b[97m")
 		#prevent running the function prior to its definition
 		elif self.function != None:
-			self.function()
+			return self.function()
 		return
 
 
@@ -224,7 +224,7 @@ def renderimage(surface, image, location=[0, 0], relpos="topleft"):
 	surface.blit(img, imgRect)
 	return
 
-def rectangle(fill, size, edge_width=0, edge=(0, 0, 0)):
+def rectangle(size, fill, edge_width=0, edge=(0, 0, 0)):
 	"""
 	Draws a rectangular shape with the given fill and edge on a pygame.Surface object
 	
@@ -247,7 +247,7 @@ def rectangle(fill, size, edge_width=0, edge=(0, 0, 0)):
 	#return the pygame.Surface object
 	return surf
 
-def circle(fill, radius, edge_width=0, edge=(0, 0, 0)):
+def circle(radius, fill, edge_width=0, edge=(0, 0, 0)):
 	"""
 	Draws a circular shape with the given fill and edge on a pygame.Surface object
 	
@@ -266,7 +266,7 @@ def circle(fill, radius, edge_width=0, edge=(0, 0, 0)):
 	#return the pygame.Surface object
 	return
 
-def ellipse(fill, size, edge_width=0, edge=(0, 0, 0)):
+def ellipse(size, fill, edge_width=0, edge=(0, 0, 0)):
 	"""
 	Draws a ellipse shape with the given fill and edge on a pygame.Surface object
 	

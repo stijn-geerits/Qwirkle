@@ -1,13 +1,13 @@
-from operator import abs
-from math import atan2, degrees, pi
+import math
+# TODO: method to check two lines to see if they are equivalent, keep in mind false equivalencies (min of x and y)
 
 
 class Line:
     def __init__(self, start_position, end_position):
         self.start_position = start_position
         self.end_position = end_position
-        self.length = 0
-        self.angle = 0
+        self.length = self.get_length()
+        self.angle = self.get_angle()
 
     def get_start_position(self):
         return self.start_position
@@ -19,8 +19,7 @@ class Line:
         """
         Calculate the length of the line and return the result
         """
-        distance_vector = (self.start_position[0] - self.end_position[0], self.start_position[1] - self.end_position[1])
-        self.length = sum(tuple(map(abs, distance_vector))) + 1
+        self.length = math.dist(self.start_position, self.end_position) + 1  # + 1 to account for starting tile
 
         return self.length
 
@@ -35,15 +34,16 @@ class Line:
         dx = self.end_position[0] - self.start_position[0]
         dy = self.end_position[1] - self.start_position[1]
 
-        angle_radian = atan2(dy, dx)  # Might have to reverse dy to account for flipped axes in pygame
-        self.angle = degrees(angle_radian % 2*pi)  # Convert to degrees
+        angle_radian = math.atan2(-dy, dx)  # Reverse dy to account for flipped axes in pygame
+        angle_radian %= 2*math.pi
+        self.angle = math.degrees(angle_radian)  # Convert to degrees
 
         return self.angle
 
 
 # Test
 if __name__ == '__main__':
-    line = Line((1, 6), (1, 2))
+    line = Line((1, 2), (1, 6))
     line_length = line.get_length()
     print("The length of the line is: " + str(line_length))
     line_angle = line.get_angle()

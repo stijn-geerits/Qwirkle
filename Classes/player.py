@@ -10,7 +10,7 @@ class Player:
         """
         self.name = new_name
 
-    def add_to_hand(self, tile, index): #new
+    def add_to_hand(self, tile, index=0): #new
         """
         Add given TILE to given INDEX in player's hand
         """
@@ -86,5 +86,5 @@ if __name__ == "__main__":
     print(ind)
     speler2.take_from_hand(steen_leggen)
     print(str(speler2.get_hand()))
-    speler2.add_to_hand(43, ind)
+    speler2.add_to_hand(43,ind)
     print("Hand van speler 2 na wijziging: "+str(speler2.get_hand()))

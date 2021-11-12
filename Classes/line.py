@@ -40,6 +40,10 @@ class Line:
         return self.angle
 
     def is_equal(self, other_line):
+        """
+        Checks if this line object is equal to another by comparing the start and end position of
+        this line and the other. Returns True if lines are equal.
+        """
         other_line_sp = other_line.get_start_position()
         other_line_ep = other_line.get_end_position()
 

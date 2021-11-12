@@ -1,3 +1,6 @@
+import player
+
+
 class Scoreboard:
     def __init__(self, players):
         self.scoreboard = {}
@@ -24,9 +27,9 @@ class Scoreboard:
         """
         return self.scoreboard
 
+
 # test
 if __name__ == "__main__":
-    import player
     speler1 = player.Player(1, "Stijn")
     speler2 = player.Player(2, "Laël")
     speler3 = player.Player(3, "Stan")

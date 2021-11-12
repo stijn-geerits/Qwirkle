@@ -48,6 +48,118 @@ class user:
 class lang:
 	exec(open(LANGUAGEDIR + user.lang + ".lang", 'r').read())
 
+# Container for all menu data #
+class Menu:
+	"""
+	Manager for all menus for Qwirkle
+	"""
+	#possible menu values
+	EMPTY = 0
+	MAIN = 1
+	
+	def __init__(self, window_size):
+		self.size = window_size
+		self.menu = self.MAIN
+		return
+	
+	def get_menu(self):
+		"""
+		Returns the currently selected menu
+		"""
+		return self.menu
+	
+	def select_menu(self, menu):
+		"""
+		Select another menu to display
+		"""
+		self.menu = menu
+		return menu
+	
+	def get_surface(self):
+		"""
+		Returns the pygame.Surface object containing the graphics for the current menu
+		"""
+		if self.menu == self.EMPTY:
+			surf = self.__get_menu_empty()
+		elif self.menu == self.MAIN:
+			surf = self.__get_menu_main()
+		else:
+			print("[qwirkle.py]Menu.get_surface:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
+			surf = self.__get_menu_empty()
+		
+		#return the pygame.Surface object
+		return surf
+	
+	def __get_menu_empty(self):
+		#initialize the surface
+		surf = pygame.Surface(self.size)
+		#fill the surface with black
+		surf.fill((0, 0, 0))
+		
+		#return the pygame.Surface object
+		return surf
+	
+	def __get_menu_main(self):
+		#initialize the surface
+		surf = pygame.Surface(self.size)
+		
+		#set the background color for the menu
+		surf.fill((200, 200, 200))
+		#place the qwirkle title graphic
+		gui.renderimage(surf, GRAPHICSDIR + "qwirkle.png", [int(self.size[0]*.5), int(self.size[1]*.05)], "midtop")
+		#place the copyright notice
+		gui.rendertext(surf, lang.copyright, int(self.size[1]*.03), None, [int(self.size[0]*.5), int(self.size[1]*.97)], "midbottom")
+		
+		#return the pygame.Surface object
+		return surf
+	
+	def get_widgets(self):
+		"""
+		Returns the Widget objects for the current menu
+		"""
+		if self.menu == self.EMPTY:
+			widgets = []
+		elif self.menu == self.MAIN:
+			widgets = self.__get_widgets_main()
+		else:
+			print("[qwirkle.py]Menu.get_widgets:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
+			widgets = []
+		
+		return widgets
+	
+	def __get_widgets_main(self):
+		#initialize a list of widgets
+		widgets = []
+		
+		# button templates #
+		#button dimensions
+		btn_size = [int(self.size[0] * .24), int(self.size[1] * .08)]
+		btn_edge_size = int(min(self.size) * .004)
+		#templates
+		btn_unavailable = gui.rectangle(btn_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
+		btn_idle = gui.rectangle(btn_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
+		btn_hover = gui.rectangle(btn_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
+		btn_active = gui.rectangle(btn_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
+		
+		# button objects #
+		#new game button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+btn_size), [int(self.size[0]*.5), int(self.size[1]*.4)], "center")
+		btn = button_builder(btnRect, [btn_unavailable.copy(), btn_idle.copy(), btn_hover.copy(), btn_active.copy()], None, lang.new_game)
+		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		widgets.append(btn)
+		#settings button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+btn_size), [int(self.size[0]*.5), int(self.size[1]*.5)], "center")
+		btn = button_builder(btnRect, [btn_unavailable.copy(), btn_idle.copy(), btn_hover.copy(), btn_active.copy()], None, lang.settings)
+		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		widgets.append(btn)
+		#exit button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
+		btn = button_builder(btnRect, [btn_unavailable.copy(), btn_idle.copy(), btn_hover.copy(), btn_active.copy()], full_quit, lang.exit)
+		widgets.append(btn)
+		
+		#return the Widget objects
+		return widgets
+
 
 
 ### Functions ###
@@ -89,6 +201,7 @@ if __name__ == "__main__":
 	#set variables
 	clock = pygame.time.Clock()
 	loop = True
+	surface = pygame.Surface([0, 0])
 	update = []
 	widgets = []
 	
@@ -96,40 +209,13 @@ if __name__ == "__main__":
 	window = pygame.display.set_mode(user.winsize)
 	pygame.display.set_caption(lang.qwirkle)
 	
-	#change window background
-	window.fill((200, 200, 200))
-	#show qwirkle title graphic
-	gui.renderimage(window, GRAPHICSDIR + "qwirkle.png", [int(user.winsize[0]*.5), int(user.winsize[1]*.05)], "midtop")
-	#show the copyright notice
-	gui.rendertext(window, lang.copyright, int(user.winsize[1]*.03), None, [int(user.winsize[0]*.5), int(user.winsize[1]*.97)], "midbottom")
+	# menu setup #
+	menus = Menu(user.winsize)
+	surface = menus.get_surface()
+	widgets = menus.get_widgets()
 	
-	# widgets setup #
-	#define button dimensions
-	button_size = [int(user.winsize[0] * .24), int(user.winsize[1] * .08)]
-	button_edge_size = int(min(user.winsize) * .004)
-	#create button templates
-	button_unavailable = gui.rectangle(button_size, (102, 102, 102), button_edge_size, (61, 61, 61))
-	button_idle = gui.rectangle(button_size, (34, 85, 170), button_edge_size, (0, 44, 121))
-	button_hover = gui.rectangle(button_size, (146, 178, 255), button_edge_size, (34, 85, 170))
-	button_active = gui.rectangle(button_size, (0, 44, 121), button_edge_size, (34, 85, 170))
-	
-	# create the menu buttons #
-	#new game button
-	bRect = gui.set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.4)], "center")
-	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.new_game)
-	b.set_current_state(gui.Widget.UNAVAILABLE)
-	widgets.append(b)
-	#settings button
-	bRect = gui.set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.5)], "center")
-	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], None, lang.settings)
-	b.set_current_state(gui.Widget.UNAVAILABLE)
-	widgets.append(b)
-	#exit button
-	bRect = gui.set_relpos(pygame.Rect([0, 0]+button_size), [int(user.winsize[0]*.5), int(user.winsize[1]*.6)], "center")
-	b = button_builder(bRect, [button_unavailable.copy(), button_idle.copy(), button_hover.copy(), button_active.copy()], full_quit, lang.exit)
-	widgets.append(b)
-	
-	#add the widgets to the update list
+	#add the surface and widgets to the update list
+	update.append(surface)
 	update.extend(widgets)
 	
 	# main loop #
@@ -170,7 +256,10 @@ if __name__ == "__main__":
 		
 		#update the display
 		for u in update:
-			u.blit_on(window)
+			if type(u) == pygame.Surface:
+				window.blit(u, u.get_rect())
+			elif type(u) == gui.Button:
+				u.blit_on(window)
 		if len(update) > 0:
 			update = []
 			pygame.display.update()

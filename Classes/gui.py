@@ -142,7 +142,7 @@ class Button(Widget):
 		"""
 		#verify that the button is active before running the function
 		if self.current_state != self.ACTIVE:
-			print("[Qwirkle]Button.activate:\x1b[91m Cannot run the function of a button that is not active.\x1b[97m")
+			print("[gui.py]Button.activate:\x1b[91m Cannot run the function of a button that is not active.\x1b[97m")
 		#prevent running the function prior to its definition
 		elif self.function != None:
 			return self.function()
@@ -179,7 +179,7 @@ def set_relpos(rect, location, relpos):
 		rect.topright = location
 	else:
 		#invalid relpos value given, go with standard setting
-		print("[Qwirkle]set_relpos:\x1b[91m Invalid relpos value '%s' received, defaulting to 'topleft'.\x1b[97m" % relpos)
+		print("[gui.py]set_relpos:\x1b[91m Invalid relpos value '%s' received, defaulting to 'topleft'.\x1b[97m" % relpos)
 		rect.topleft = location
 	return rect
 

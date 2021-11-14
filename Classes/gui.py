@@ -9,7 +9,7 @@ pygame.init()
 
 ### Classes ###
 # General class for graphical widgets #
-class Widget(pygame.Surface):
+class Widget():
 	"""
 	General class for widgets in the pygame environment
 	"""
@@ -34,7 +34,6 @@ class Widget(pygame.Surface):
 		Update the current state of the widget
 		"""
 		self.current_state = state
-		self.update()
 		return
 	
 	def get_states(self):
@@ -51,7 +50,6 @@ class Widget(pygame.Surface):
 		Any state defined prior will be overridden
 		"""
 		self.states = [unavailable, idle, hover, active]
-		self.update()
 		return
 	
 	def get_rect(self):
@@ -69,19 +67,11 @@ class Widget(pygame.Surface):
 		self.position = rect.topleft
 		return
 	
-	def update(self):
-		"""
-		Updates the appearance of the widget
-		"""
-		self.fill((0, 0, 0))
-		self.blit(self.states[self.current_state], pygame.Rect(0, 0, self.get_width(), self.get_height()))
-		return
-	
 	def blit_on(self, surface):
 		"""
 		Blit the widget on the surface
 		"""
-		surface.blit(self, self.get_rect())
+		surface.blit(self.states[self.current_state], self.get_rect())
 		return
 
 # Class for graphical button widgets #
@@ -125,7 +115,6 @@ class Button(Widget):
 				rect.center = state_rect.center
 				#render the label on the state
 				state.blit(text, rect)
-		self.update()
 		return
 	
 	def set_function(self, function):

@@ -175,7 +175,7 @@ def button_builder(rect, states, function, label, labelcolor=None, labelpadding=
 	Returns a fully set up button object
 	"""
 	#define the button object with the correct dimensions
-	button = gui.Button(rect.size)
+	button = gui.Button()
 	#move the button in place
 	button.place(rect.topleft)
 	#define the button's states (seperate list into individual arguments using '*')

@@ -56,10 +56,22 @@ class Menu:
 	#possible menu values
 	EMPTY = 0
 	MAIN = 1
+	NEW_GAME = 2
 	
 	def __init__(self, window_size):
 		self.size = window_size
 		self.menu = self.MAIN
+		
+		# button templates #
+		#button dimensions
+		self.btn_size = [int(self.size[0] * .24), int(self.size[1] * .08)]
+		btn_edge_size = int(min(self.size) * .004)
+		#templates
+		btn_unavailable = gui.rectangle(self.btn_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
+		btn_idle = gui.rectangle(self.btn_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
+		btn_hover = gui.rectangle(self.btn_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
+		btn_active = gui.rectangle(self.btn_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
+		self.button_templates = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		return
 	
 	def get_menu(self):
@@ -83,6 +95,8 @@ class Menu:
 			surf = self.__get_menu_empty()
 		elif self.menu == self.MAIN:
 			surf = self.__get_menu_main()
+		elif self.menu == self.NEW_GAME:
+			surf = self.__get_menu_new_game()
 		else:
 			print("[qwirkle.py]Menu.get_surface:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
 			surf = self.__get_menu_empty()
@@ -113,6 +127,18 @@ class Menu:
 		#return the pygame.Surface object
 		return surf
 	
+	def __get_menu_new_game(self):
+		#initialize the surface
+		surf = pygame.Surface(self.size)
+		
+		#set the background for the menu
+		surf.fill((200, 200, 200))
+		#place the menu title
+		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.05)], "midtop")
+		
+		#return the pygame.Surface object
+		return surf
+	
 	def get_widgets(self):
 		"""
 		Returns the Widget objects for the current menu
@@ -121,6 +147,8 @@ class Menu:
 			widgets = []
 		elif self.menu == self.MAIN:
 			widgets = self.__get_widgets_main()
+		elif self.menu == self.NEW_GAME:
+			widgets = self.__get_widgets_new_game()
 		else:
 			print("[qwirkle.py]Menu.get_widgets:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
 			widgets = []
@@ -131,30 +159,31 @@ class Menu:
 		#initialize a list of widgets
 		widgets = []
 		
-		# button templates #
-		#button dimensions
-		btn_size = [int(self.size[0] * .24), int(self.size[1] * .08)]
-		btn_edge_size = int(min(self.size) * .004)
-		#templates
-		btn_unavailable = gui.rectangle(btn_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
-		btn_idle = gui.rectangle(btn_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
-		btn_hover = gui.rectangle(btn_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
-		btn_active = gui.rectangle(btn_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
-		
 		# button objects #
 		#new game button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+btn_size), [int(self.size[0]*.5), int(self.size[1]*.4)], "center")
-		btn = button_builder(btnRect, [btn_unavailable.copy(), btn_idle.copy(), btn_hover.copy(), btn_active.copy()], None, lang.new_game)
-		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.4)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], lambda:self.select_menu(self.NEW_GAME), lang.new_game)
 		widgets.append(btn)
 		#settings button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+btn_size), [int(self.size[0]*.5), int(self.size[1]*.5)], "center")
-		btn = button_builder(btnRect, [btn_unavailable.copy(), btn_idle.copy(), btn_hover.copy(), btn_active.copy()], None, lang.settings)
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.5)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], None, lang.settings)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#exit button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
-		btn = button_builder(btnRect, [btn_unavailable.copy(), btn_idle.copy(), btn_hover.copy(), btn_active.copy()], full_quit, lang.exit)
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], full_quit, lang.exit)
+		widgets.append(btn)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_new_game(self):
+		#initialize a list of widgets
+		widgets = []
+		
+		# button objects #
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.9)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], lambda:self.select_menu(self.MAIN), lang.back)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -201,6 +230,7 @@ if __name__ == "__main__":
 	#set variables
 	clock = pygame.time.Clock()
 	loop = True
+	rtrn = None
 	surface = pygame.Surface([0, 0])
 	update = []
 	widgets = []
@@ -208,9 +238,6 @@ if __name__ == "__main__":
 	# window setup #
 	window = pygame.display.set_mode(user.winsize)
 	pygame.display.set_caption(lang.qwirkle)
-	#add a seperate layer for widgets
-	widget_layer = pygame.Surface(user.winsize)
-	widget_layer.set_colorkey((0, 0, 0))
 	
 	# menu setup #
 	menus = Menu(user.winsize)
@@ -220,7 +247,6 @@ if __name__ == "__main__":
 	#add the surfaces and widgets to the update list
 	update.append(surface)
 	update.extend(widgets)
-	update.append(widget_layer)
 	
 	# main loop #
 	while loop == True:
@@ -234,16 +260,27 @@ if __name__ == "__main__":
 			#check mouse button events
 			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
 				for w in widgets:
+					#activate a widget
 					if w.get_current_state() == gui.Widget.HOVER:
 						w.set_current_state(gui.Widget.ACTIVE)
 						update.append(w)
 			if event.type == pygame.MOUSEBUTTONUP:
 				for w in widgets:
+					#deactivate a widget
 					if w.get_current_state() == gui.Widget.ACTIVE:
+						#run button function
 						if type(w) == gui.Button:
-							w.run_function()
-						w.set_current_state(gui.Widget.HOVER)
-						update.append(w)
+							rtrn = w.run_function()
+						#a menu was selected
+						if rtrn != None:
+							update = []
+							surface = menus.get_surface()
+							widgets = menus.get_widgets()
+							update.append(surface)
+							update.extend(widgets)
+						else:
+							w.set_current_state(gui.Widget.HOVER)
+							update.append(w)
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
@@ -265,11 +302,8 @@ if __name__ == "__main__":
 				window.blit(u, u.get_rect())
 			#update a button
 			elif type(u) == gui.Button:
-				pygame.draw.rect(widget_layer, (0, 0, 0), u.get_rect())
-				u.blit_on(widget_layer)
-				#add the widget layer to the end of the update list
-				if update[-1] != widget_layer:
-					update.append(widget_layer)
+				window.blit(surface.subsurface(u.get_rect()), u.get_rect())
+				u.blit_on(window)
 		if len(update) > 0:
 			update = []
 			pygame.display.update()

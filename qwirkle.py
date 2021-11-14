@@ -208,15 +208,19 @@ if __name__ == "__main__":
 	# window setup #
 	window = pygame.display.set_mode(user.winsize)
 	pygame.display.set_caption(lang.qwirkle)
+	#add a seperate layer for widgets
+	widget_layer = pygame.Surface(user.winsize)
+	widget_layer.set_colorkey((0, 0, 0))
 	
 	# menu setup #
 	menus = Menu(user.winsize)
 	surface = menus.get_surface()
 	widgets = menus.get_widgets()
 	
-	#add the surface and widgets to the update list
+	#add the surfaces and widgets to the update list
 	update.append(surface)
 	update.extend(widgets)
+	update.append(widget_layer)
 	
 	# main loop #
 	while loop == True:
@@ -256,10 +260,16 @@ if __name__ == "__main__":
 		
 		#update the display
 		for u in update:
+			#update a surface
 			if type(u) == pygame.Surface:
 				window.blit(u, u.get_rect())
+			#update a button
 			elif type(u) == gui.Button:
-				u.blit_on(window)
+				pygame.draw.rect(widget_layer, (0, 0, 0), u.get_rect())
+				u.blit_on(widget_layer)
+				#add the widget layer to the end of the update list
+				if update[-1] != widget_layer:
+					update.append(widget_layer)
 		if len(update) > 0:
 			update = []
 			pygame.display.update()

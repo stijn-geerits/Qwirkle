@@ -73,7 +73,6 @@ class Widget(pygame.Surface):
 		"""
 		Updates the appearance of the widget
 		"""
-		self.set_colorkey((0, 0, 0))
 		self.fill((0, 0, 0))
 		self.blit(self.states[self.current_state], pygame.Rect(0, 0, self.get_width(), self.get_height()))
 		return

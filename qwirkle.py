@@ -72,6 +72,17 @@ class Menu:
 		btn_hover = gui.rectangle(self.btn_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
 		btn_active = gui.rectangle(self.btn_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
 		self.button_templates = [btn_unavailable, btn_idle, btn_hover, btn_active]
+		
+		# input templates #
+		#input dimensions
+		self.input_size = [int(self.size[0] * .32), int(self.size[1] * .08)]
+		input_edge_size = int(min(self.size) * .004)
+		#templates
+		input_unavailable = gui.rectangle(self.input_size, (128, 128, 128), input_edge_size, (32, 32, 32))
+		input_idle = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (32, 32, 32))
+		input_hover = gui.rectangle(self.input_size, (255, 255, 255), input_edge_size, (32, 32, 32))
+		input_active = gui.rectangle(self.input_size, (192, 192, 192), input_edge_size, (224, 224, 224))
+		self.input_templates = [input_unavailable, input_idle, input_hover, input_active]
 		return
 	
 	def get_menu(self):
@@ -186,6 +197,11 @@ class Menu:
 		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], lambda:self.select_menu(self.MAIN), lang.back)
 		widgets.append(btn)
 		
+		# input objects #
+		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.5), int(self.size[1]*.2)], "center")
+		inpt = input_builder(inptRect, [t.copy() for t in self.input_templates])
+		widgets.append(inpt)
+		
 		#return the Widget objects
 		return widgets
 
@@ -203,7 +219,7 @@ def button_builder(rect, states, function, label, labelcolor=None, labelpadding=
 	"""
 	Returns a fully set up button object
 	"""
-	#define the button object with the correct dimensions
+	#define the button object
 	button = gui.Button()
 	#move the button in place
 	button.place(rect.topleft)
@@ -222,6 +238,26 @@ def button_builder(rect, states, function, label, labelcolor=None, labelpadding=
 		button.set_label(label, labelcolor, labelpadding)
 	#return the button object
 	return button
+
+def input_builder(rect, states, default=None, textpadding=None):
+	"""
+	Returns a fully set up input object
+	"""
+	#define the input object
+	if default == None and textpadding == None:
+		inpt = gui.Input()
+	elif default == None:
+		inpt = gui.Input(text_padding=textpadding)
+	elif textpadding == None:
+		inpt = gui.Input(default)
+	else:
+		inpt = gui.Input(default, textpadding)
+	#move the input in place
+	inpt.place(rect.topleft)
+	#define the input's states (seperate list into individual arguments using '*')
+	inpt.define_states(*states)
+	#return the input object
+	return inpt
 
 
 
@@ -273,6 +309,7 @@ if __name__ == "__main__":
 							rtrn = w.run_function()
 						#a menu was selected
 						if rtrn != None:
+							rtrn = None
 							update = []
 							surface = menus.get_surface()
 							widgets = menus.get_widgets()
@@ -301,7 +338,7 @@ if __name__ == "__main__":
 			if type(u) == pygame.Surface:
 				window.blit(u, u.get_rect())
 			#update a button
-			elif type(u) == gui.Button:
+			elif type(u) == gui.Button or type(u) == gui.Input:
 				window.blit(surface.subsurface(u.get_rect()), u.get_rect())
 				u.blit_on(window)
 		if len(update) > 0:

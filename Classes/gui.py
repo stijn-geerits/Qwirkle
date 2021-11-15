@@ -139,6 +139,86 @@ class Button(Widget):
 			return self.function()
 		return
 
+# Class for graphical input widgets #
+class Input(Widget):
+	"""
+	Class for input widgets in the pygame environment
+	"""
+	
+	def __init__(self, default_value="", text_padding=4):
+		#call the parent function
+		Widget.__init__(self)
+		self.value = default_value
+		self.padding = text_padding
+		self.text_layers = [pygame.Surface([0, 0])] * 4
+		for l in self.text_layers:
+			l.set_colorkey((0, 0, 0))
+		return
+	
+	def define_states(self, unavailable, idle, hover, active):
+		"""
+		Define the presentation of the widget for all four states
+		
+		All variables should contain pygame.Surface objects
+		Any state defined prior will be overridden
+		"""
+		#call the parent function
+		Widget.define_states(self, unavailable, idle, hover, active)
+		#adjust the text layers to the new sizes
+		for s in range(len(self.states)):
+			self.text_layers[s] = pygame.Surface(self.states[s].get_size())
+			self.text_layers[s].set_colorkey((0, 0, 0))
+		#render the value on the new text layers
+		self.__render_value()
+		return
+	
+	def __render_value(self):
+		#render the value on each text layer
+		for s in self.text_layers:
+			rendertext(s, self.value, s.get_height() - self.padding)
+		return
+	
+	def get_value(self):
+		"""
+		Returns the inputted value
+		"""
+		return self.value
+	
+	def type(self, keys):
+		"""
+		Type text to the input based on the pressed keys
+		"""
+		#only input if the input is selected
+		if self.current_state == Widget.ACTIVE:
+			#end of input
+			if keys.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
+				Widget.set_current_state(self, Widget.HOVER)
+			#remove last character
+			elif keys.key in [pygame.K_BACKSPACE, pygame.K_DELETE]:
+				if len(self.value) > 0:
+					self.value = self.value[:-1]
+			#ignore the following key presses
+			elif keys.key in [pygame.K_ESCAPE, pygame.K_HOME, pygame.K_END, pygame.K_INSERT, pygame.K_TAB]:
+				inputted += ""
+			elif keys.key in range(pygame.K_F1, pygame.K_F12 + 1):
+				inputted += ""
+			#add the typed character to the txt
+			else:
+				self.value += keys.unicode
+		#render the new value on each text layer
+		self.__render_value()
+		return
+	
+	def blit_on(self, surface):
+		"""
+		Blit the widget on the surface
+		"""
+		#call the parent function
+		Widget.blit_on(self, surface)
+		#render the value
+		surface.blit(self.text_layers[self.current_state], self.get_rect())
+		return
+
 
 
 ### Functions ###

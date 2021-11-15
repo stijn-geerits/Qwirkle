@@ -10,28 +10,34 @@ class Player:
         """
         self.name = new_name
 
-    def add_to_hand(self, tile, index=0):
+    def add_to_hand(self, tiles, indexes):#adjust
         """
         Add given TILE to given INDEX in player's hand
         """
         hand = self.hand
-        hand.insert(index, tile)
+        for tile in tiles:
+            for index in indexes:
+                hand.insert(index, tile)
         self.hand = hand
 
-    def take_from_hand(self, tile):
+    def take_from_hand(self, tiles):#adjust
         """
         Delete given TILE from player's hand
         """
         hand = self.hand
-        hand.remove(tile)
+        for tile in tiles:
+            hand.remove(tile)
         self.hand = hand
 
-    def get_index_hand(self, tile):
+    def get_index_hand(self, tiles):#adjust
         """
         Get index from given TILE in player's hand
         """
-        index = self.hand.index(tile)
-        return index
+        indexes = []
+        for tile in tiles:
+            index = self.hand.index(tile)
+            indexes.insert(index)
+        return indexes
 
     def get_hand(self):
         """

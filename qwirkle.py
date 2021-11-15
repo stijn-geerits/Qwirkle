@@ -308,22 +308,23 @@ if __name__ == "__main__":
 						w.set_current_state(gui.Widget.ACTIVE)
 						update.append(w)
 			if event.type == pygame.MOUSEBUTTONUP:
-				#deactivate a widget
-				if selected.get_current_state() == gui.Widget.ACTIVE:
-					#run button function
-					if type(selected) == gui.Button:
-						rtrn = selected.run_function()
-					#a menu was selected
-					if rtrn != None:
-						rtrn = None
-						update = []
-						surface = menus.get_surface()
-						widgets = menus.get_widgets()
-						update.append(surface)
-						update.extend(widgets)
-					else:
-						selected.set_current_state(gui.Widget.HOVER)
-						update.append(selected)
+				if type(selected) in [gui.Widget, gui.Button, gui.Input]:
+					#deactivate a widget
+					if selected.get_current_state() == gui.Widget.ACTIVE:
+						#run button function
+						if type(selected) == gui.Button:
+							rtrn = selected.run_function()
+						#a menu was selected
+						if rtrn != None:
+							rtrn = None
+							update = []
+							surface = menus.get_surface()
+							widgets = menus.get_widgets()
+							update.append(surface)
+							update.extend(widgets)
+						else:
+							selected.set_current_state(gui.Widget.HOVER)
+							update.append(selected)
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()

@@ -167,7 +167,7 @@ class Input(Widget):
 			#end of input
 			if keys.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
 				Widget.set_current_state(self, Widget.HOVER)
-			#remove last character
+			#remove the last character from the value
 			elif keys.key in [pygame.K_BACKSPACE, pygame.K_DELETE]:
 				if len(self.value) > 0:
 					self.value = self.value[:-1]
@@ -176,9 +176,15 @@ class Input(Widget):
 				inputted += ""
 			elif keys.key in range(pygame.K_F1, pygame.K_F12 + 1):
 				inputted += ""
-			#add the typed character to the txt
+			#add the typed character to the value
 			else:
 				self.value += keys.unicode
+				#check whether the text still fits within the input box
+				font = pygame.font.SysFont(None, self.states[self.current_state].get_height() - self.padding)
+				txtRect = font.render(self.value, True, (0, 0, 0)).get_rect()
+				#remove the last character
+				if txtRect.width > (self.states[self.current_state].get_width() - 2 * self.padding):
+					self.value = self.value[:-1]
 		return
 	
 	def blit_on(self, surface):

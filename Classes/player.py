@@ -4,13 +4,13 @@ class Player:
         self.name = name
         self.hand = []
 
-    def change_name(self, new_name): #new
+    def change_name(self, new_name):
         """
         Change player's name by given NEW_NAME
         """
         self.name = new_name
 
-    def add_to_hand(self, tile, index=0): #new
+    def add_to_hand(self, tile, index=0):
         """
         Add given TILE to given INDEX in player's hand
         """
@@ -18,7 +18,7 @@ class Player:
         hand.insert(index, tile)
         self.hand = hand
 
-    def take_from_hand(self, tile): #new
+    def take_from_hand(self, tile):
         """
         Delete given TILE from player's hand
         """
@@ -26,7 +26,7 @@ class Player:
         hand.remove(tile)
         self.hand = hand
 
-    def get_index_hand(self, tile): #new
+    def get_index_hand(self, tile):
         """
         Get index from given TILE in player's hand
         """

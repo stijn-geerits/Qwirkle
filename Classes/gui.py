@@ -150,32 +150,6 @@ class Input(Widget):
 		Widget.__init__(self)
 		self.value = default_value
 		self.padding = text_padding
-		self.text_layers = [pygame.Surface([0, 0])] * 4
-		for l in self.text_layers:
-			l.set_colorkey((0, 0, 0))
-		return
-	
-	def define_states(self, unavailable, idle, hover, active):
-		"""
-		Define the presentation of the widget for all four states
-		
-		All variables should contain pygame.Surface objects
-		Any state defined prior will be overridden
-		"""
-		#call the parent function
-		Widget.define_states(self, unavailable, idle, hover, active)
-		#adjust the text layers to the new sizes
-		for s in range(len(self.states)):
-			self.text_layers[s] = pygame.Surface(self.states[s].get_size())
-			self.text_layers[s].set_colorkey((0, 0, 0))
-		#render the value on the new text layers
-		self.__render_value()
-		return
-	
-	def __render_value(self):
-		#render the value on each text layer
-		for s in self.text_layers:
-			rendertext(s, self.value, s.get_height() - self.padding)
 		return
 	
 	def get_value(self):
@@ -189,7 +163,7 @@ class Input(Widget):
 		Type text to the input based on the pressed keys
 		"""
 		#only input if the input is selected
-		if self.current_state == Widget.ACTIVE:
+		if self.current_state == Widget.HOVER:
 			#end of input
 			if keys.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
 				Widget.set_current_state(self, Widget.HOVER)
@@ -205,8 +179,6 @@ class Input(Widget):
 			#add the typed character to the txt
 			else:
 				self.value += keys.unicode
-		#render the new value on each text layer
-		self.__render_value()
 		return
 	
 	def blit_on(self, surface):
@@ -215,8 +187,10 @@ class Input(Widget):
 		"""
 		#call the parent function
 		Widget.blit_on(self, surface)
-		#render the value
-		surface.blit(self.text_layers[self.current_state], self.get_rect())
+		#calculate the font size for the text
+		fontsize = self.states[self.current_state].get_height() - self.padding
+		#render the value (move the rect object by the padding amount and only sent the topleft coordinate)
+		rendertext(surface, self.value, fontsize, location=self.get_rect().move([self.padding]*2).topleft)
 		return
 
 

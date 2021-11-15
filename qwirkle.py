@@ -75,7 +75,7 @@ class Menu:
 		
 		# input templates #
 		#input dimensions
-		self.input_size = [int(self.size[0] * .32), int(self.size[1] * .08)]
+		self.input_size = [int(self.size[0] * .48), int(self.size[1] * .08)]
 		input_edge_size = int(min(self.size) * .004)
 		#templates
 		input_unavailable = gui.rectangle(self.input_size, (128, 128, 128), input_edge_size, (32, 32, 32))
@@ -199,7 +199,10 @@ class Menu:
 		
 		# input objects #
 		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.5), int(self.size[1]*.2)], "center")
-		inpt = input_builder(inptRect, [t.copy() for t in self.input_templates])
+		inpt = input_builder(inptRect, [t.copy() for t in self.input_templates], lang.default_player %(1))
+		widgets.append(inpt)
+		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.5), int(self.size[1]*.3)], "center")
+		inpt = input_builder(inptRect, [t.copy() for t in self.input_templates], lang.default_player %(2))
 		widgets.append(inpt)
 		
 		#return the Widget objects

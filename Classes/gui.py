@@ -18,10 +18,11 @@ class Widget():
 	IDLE = 1
 	HOVER = 2
 	ACTIVE = 3
-	#other class variables
-	current_state = 1
-	states = [pygame.Surface([0, 0])] * 4
-	position = [0, 0]
+	
+	def __init__(self):
+		self.current_state = self.IDLE
+		self.states = [pygame.Surface([0, 0])] * 4
+		self.position = [0, 0]
 	
 	def get_current_state(self):
 		"""
@@ -79,9 +80,11 @@ class Button(Widget):
 	"""
 	Class for button widgets in the pygame environment
 	"""
-	#class variables
-	label = "Button"
-	function = None
+	
+	def __init__(self):
+		Widget.__init__(self)
+		self.label = "Button"
+		self.function = None
 	
 	def set_label(self, label, color=(32, 32, 32), pad=4):
 		"""

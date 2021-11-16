@@ -10,14 +10,18 @@ class Player:
         """
         self.name = new_name
 
-    def add_to_hand(self, tiles, indexes):#adjust
+    def add_to_hand(self, tiles, indexes=0):#adjust
         """
         Add given TILE to given INDEX in player's hand
         """
         hand = self.hand
-        for tile in tiles:
-            for index in indexes:
-                hand.insert(index, tile)
+        if type(tiles) == list:
+            if indexes == 0:
+                indexes = [0, 1, 2, 3, 4, 5]
+            for i in range(len(tiles)):
+                hand.insert(indexes[i], tiles[i])
+        else:
+            hand.insert(indexes, tiles)
         self.hand = hand
 
     def take_from_hand(self, tiles):#adjust
@@ -25,8 +29,11 @@ class Player:
         Delete given TILE from player's hand
         """
         hand = self.hand
-        for tile in tiles:
-            hand.remove(tile)
+        if type(tiles) == list:
+            for tile in tiles:
+                hand.remove(tile)
+        else:
+            hand.remove(tiles)
         self.hand = hand
 
     def get_index_hand(self, tiles):#adjust
@@ -34,9 +41,12 @@ class Player:
         Get index from given TILE in player's hand
         """
         indexes = []
-        for tile in tiles:
-            index = self.hand.index(tile)
-            indexes.insert(index)
+        if type(tiles) == list:
+            for tile in tiles:
+                index = self.hand.index(tile)
+                indexes.append(index)
+        else:
+            indexes = self.hand.index(tiles)
         return indexes
 
     def get_hand(self):
@@ -69,10 +79,9 @@ if __name__ == "__main__":
     speler2 = Player(2, "Laël")
     speler3 = Player(3, "Stan")
 
-    for i in range(0,6):
-        speler1.add_to_hand(H1[i], i)
-        speler2.add_to_hand(H2[i], i)
-        speler3.add_to_hand(H3[i], i)
+    speler1.add_to_hand(H1)
+    speler2.add_to_hand(H2)
+    speler3.add_to_hand(H3)
 
     print("Hand van speler 1: "+str(speler1.get_hand()))
     print("Hand van speler 2: " + str(speler2.get_hand()))
@@ -92,5 +101,5 @@ if __name__ == "__main__":
     print(ind)
     speler2.take_from_hand(steen_leggen)
     print(str(speler2.get_hand()))
-    speler2.add_to_hand(43,ind)
+    speler2.add_to_hand(43, ind)
     print("Hand van speler 2 na wijziging: "+str(speler2.get_hand()))

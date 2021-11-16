@@ -163,7 +163,7 @@ class Input(Widget):
 		Type text to the input based on the pressed keys
 		"""
 		#only input if the input is selected
-		if self.current_state == Widget.HOVER:
+		if self.current_state == Widget.ACTIVE:
 			#end of input
 			if keys.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
 				Widget.set_current_state(self, Widget.HOVER)
@@ -196,7 +196,7 @@ class Input(Widget):
 		#calculate the font size for the text
 		fontsize = self.states[self.current_state].get_height() - self.padding
 		#render the value (move the rect object by the padding amount and only sent the topleft coordinate)
-		rendertext(surface, self.value, fontsize, location=self.get_rect().move([self.padding]*2).topleft)
+		rendertext(surface, self.value, fontsize, location=self.get_rect().move(self.padding, 0).midleft, relpos="midleft")
 		return
 
 

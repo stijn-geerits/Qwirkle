@@ -80,8 +80,8 @@ class Menu:
 		#templates
 		input_unavailable = gui.rectangle(self.input_size, (128, 128, 128), input_edge_size, (32, 32, 32))
 		input_idle = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (32, 32, 32))
-		input_hover = gui.rectangle(self.input_size, (255, 255, 255), input_edge_size, (32, 32, 32))
-		input_active = gui.rectangle(self.input_size, (192, 192, 192), input_edge_size, (224, 224, 224))
+		input_hover = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (64, 64, 64))
+		input_active = gui.rectangle(self.input_size, (255, 255, 255), input_edge_size, (128, 128, 128))
 		self.input_templates = [input_unavailable, input_idle, input_hover, input_active]
 		return
 	
@@ -313,7 +313,7 @@ if __name__ == "__main__":
 			if event.type == pygame.MOUSEBUTTONUP:
 				if type(selected) in [gui.Widget, gui.Button, gui.Input]:
 					#deactivate a widget
-					if selected.get_current_state() == gui.Widget.ACTIVE:
+					if selected.get_current_state() == gui.Widget.ACTIVE and type(selected) != gui.Input:
 						#run button function
 						if type(selected) == gui.Button:
 							rtrn = selected.run_function()

@@ -1,0 +1,20 @@
+Make lines with the same color or shape in a strategic way and score as many points as possible
+
+At the start of the game, every player gets 6 tiles
+Every tile has a color and a shape
+
+You can take one of 2 actions on your turn
+Adding tiles:
+Add one or more tiles with the same color or shape to the game board
+The added tiles all have to be in one line, but they don't have to touch
+After adding tiles you get new tiles from the bag, until you have 6 tiles in your hand again
+Trading tiles:
+Trade tiles from your hand with tiles from the bag
+
+Scoring points:
+You gain points for every tile in the line you create (including the tiles that were already there)
+If you complete a line of 6 tiles, you score a Qwirkle. This gets you 6 bonus points
+
+The game ends when a player has used up all their tiles or when nobody can add or trade tiles anymore
+If you're the first to use up all your tiles, you get 6 bonus points
+The player with the highest score wins

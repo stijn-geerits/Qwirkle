@@ -1,35 +1,40 @@
 from tile import Tile
-from bag import Bag
 
 
+# Deze functie controleert niet of de posities van de start- en eindblokjes correct zijn,
+# enkel of de kleuren en vormen kloppen.
 def validate_line(tiles):
-    if tiles[0].get_color() == tiles[1].get_color():
-        color = tiles[0].get_color()
+    """
+    Checks if a line is valid by checking their colors and shapes.
+    Returns True if line is valid, False if line is invalid.
+    """
+    # Get lists of all colors and shapes in the line
+    tile_colors = [tile.get_color() for tile in tiles]
+    tile_shapes = [tile.get_shape() for tile in tiles]
 
-    elif tiles[0].get_shape() == tiles[1].get_shape():
-         shape = tiles[0].get_shape()
-
+    # If all colors are the same, all shapes must be unique and vice versa
+    # Check if every color is unique and shape different
+    if len(set(tile_colors)) == 1 and len(set(tile_shapes)) == len(tile_shapes):  # Based on unique elements property of set
+        return True  # Line is valid
+    # Check if every color is different and shape is unique
+    elif len(set(tile_colors)) == len(tile_colors) and len(set(tile_shapes)) == 1:
+        return True
     else:
-        is_line_valid = True
-        return is_line_valid
-
-    for tile in tiles[1:]:
-        if tile.get_color() != color and tile.get_shape() != shape:
-            is_line_valid = False
-            return is_line_valid
-
-        is_line_valid = True
-        return is_line_valid
+        return False
 
 
+# Test
 def main():
-    bag = Bag()
-    tiles = bag.take_tiles(4)
+    tiles = []
+    for i, shape in enumerate(['clover', 'square', 'diamond', 'star']):
+        tiles.append(Tile(i, 'blue', shape, 0))
     is_line_valid = validate_line(tiles)
-    tiles_list = []
-    for tile in tiles:
-        tiles_list.append((tile.get_color(), tile.get_shape()))
-    print(tiles_list)
+    print(is_line_valid)
+
+    tiles2 = []
+    for i, shape in enumerate(['clover', 'square', 'square', 'star']):
+        tiles2.append(Tile(i, 'blue', shape, 0))
+    is_line_valid = validate_line(tiles2)
     print(is_line_valid)
 
 

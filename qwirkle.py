@@ -65,23 +65,31 @@ class Menu:
 		#button dimensions
 		self.btn_size = [int(self.size[0] * .24), int(self.size[1] * .08)]
 		btn_edge_size = int(min(self.size) * .004)
-		#templates
+		#button template
 		btn_unavailable = gui.rectangle(self.btn_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
 		btn_idle = gui.rectangle(self.btn_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
 		btn_hover = gui.rectangle(self.btn_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
 		btn_active = gui.rectangle(self.btn_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
-		self.button_templates = [btn_unavailable, btn_idle, btn_hover, btn_active]
+		self.button_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
+		#small button dimensions
+		self.btn_small_size = [self.btn_size[1]] * 2
+		#small button template
+		btn_unavailable = gui.rectangle(self.btn_small_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
+		btn_idle = gui.rectangle(self.btn_small_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
+		btn_hover = gui.rectangle(self.btn_small_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
+		btn_active = gui.rectangle(self.btn_small_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
+		self.button_small_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		
 		# input templates #
 		#input dimensions
 		self.input_size = [int(self.size[0] * .48), int(self.size[1] * .08)]
 		input_edge_size = int(min(self.size) * .004)
-		#templates
+		#input template
 		input_unavailable = gui.rectangle(self.input_size, (128, 128, 128), input_edge_size, (32, 32, 32))
 		input_idle = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (32, 32, 32))
 		input_hover = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (64, 64, 64))
 		input_active = gui.rectangle(self.input_size, (255, 255, 255), input_edge_size, (128, 128, 128))
-		self.input_templates = [input_unavailable, input_idle, input_hover, input_active]
+		self.input_template = [input_unavailable, input_idle, input_hover, input_active]
 		
 		#initialize the main menu
 		self.select_menu(self.MAIN)
@@ -153,7 +161,7 @@ class Menu:
 		#set the background for the menu
 		surf.fill((200, 200, 200))
 		#place the menu title
-		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.05)], "midtop")
+		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop")
 		
 		#return the pygame.Surface object
 		return surf
@@ -171,16 +179,16 @@ class Menu:
 		# button objects #
 		#new game button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.4)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], lambda:self.select_menu(self.NEW_GAME), lang.new_game)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.NEW_GAME), lang.new_game)
 		widgets.append(btn)
 		#settings button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.5)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], None, lang.settings)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], None, lang.settings)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#exit button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], full_quit, lang.exit)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], full_quit, lang.exit)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -191,20 +199,53 @@ class Menu:
 		widgets = []
 		
 		# button objects #
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.9)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_templates], lambda:self.select_menu(self.MAIN), lang.back)
+		#add player button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75), int(self.size[1]*.15)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], self.__add_input, lang.add)
+		widgets.append(btn)
+		#remove player button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75), int(self.size[1]*.25)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], None, lang.subtract)
+		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		widgets.append(btn)
+		#back button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back)
 		widgets.append(btn)
 		
 		# input objects #
-		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.5), int(self.size[1]*.2)], "center")
-		inpt = input_builder(inptRect, [t.copy() for t in self.input_templates], lang.default_player %(1))
+		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.45), int(self.size[1]*.15)], "center")
+		inpt = input_builder(inptRect, [t.copy() for t in self.input_template], lang.default_player %(1))
 		widgets.append(inpt)
-		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.5), int(self.size[1]*.3)], "center")
-		inpt = input_builder(inptRect, [t.copy() for t in self.input_templates], lang.default_player %(2))
+		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.45), int(self.size[1]*.25)], "center")
+		inpt = input_builder(inptRect, [t.copy() for t in self.input_template], lang.default_player %(2))
 		widgets.append(inpt)
 		
 		#return the Widget objects
 		return widgets
+	
+	def __add_input(self):
+		#only run if the current menu is the new game menu
+		if self.menu != self.NEW_GAME:
+			return
+		
+		#get the current amount of inputs
+		widget_types = [type(w) for w in self.widgets]
+		inpt_cnt = widget_types.count(gui.Input)
+		#add an input
+		inpt_cnt += 1
+		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.45), int(self.size[1]*(inpt_cnt*.1+.05))], "center")
+		inpt = input_builder(inptRect, [t.copy() for t in self.input_template], lang.default_player %(inpt_cnt))
+		self.widgets.append(inpt)
+		#disable the button that adds widgets when the 8'th input is added
+		if inpt_cnt == 8:
+			for w in self.widgets:
+				if type(w) == gui.Button:
+					if w.get_label() == lang.add:
+						w.set_current_state(gui.Widget.UNAVAILABLE)
+						break
+		#return the current input count
+		return inpt_cnt
 
 
 
@@ -350,6 +391,7 @@ if __name__ == "__main__":
 				window.blit(u, u.get_rect())
 			#update a button
 			elif type(u) == gui.Button or type(u) == gui.Input:
+				#print(surface, u.get_rect(), sep="\t")
 				window.blit(surface.subsurface(u.get_rect()), u.get_rect())
 				u.blit_on(window)
 		if len(update) > 0:

@@ -86,6 +86,12 @@ class Button(Widget):
 		self.label = "Button"
 		self.function = None
 	
+	def get_label(self):
+		"""
+		Returns the label of the button
+		"""
+		return self.label
+	
 	def set_label(self, label, color=(32, 32, 32), pad=4):
 		"""
 		Set the label to place on the button
@@ -157,6 +163,15 @@ class Input(Widget):
 		Returns the inputted value
 		"""
 		return self.value
+	
+	def set_value(self, value):
+		"""
+		Set the current value of the input
+		
+		value should contain a single line string
+		"""
+		self.value = value
+		return
 	
 	def type(self, keys):
 		"""

@@ -56,6 +56,10 @@ class Bag:
             tiles.append(tile)
 
         self.__update_current_amount()
+
+        if len(tiles) == 1:
+            tiles = tiles[0]
+
         return tiles
 
     def trade_tiles(self, old_tiles):
@@ -63,10 +67,15 @@ class Bag:
         Takes a list of Tile objects. An amount equal to the amount of old tiles is taken from the tiles list.
         The old tiles are added back to the bag. \n
         """
-        new_tiles = self.take_tiles(len(old_tiles))
+        # Different behaviour if old_tiles is single tile or list
+        if type(old_tiles) == list:  # new_tiles will be list
+            new_tiles = self.take_tiles(len(old_tiles))
 
-        for old_tile in old_tiles:
-            self.__add_tile(old_tile)
+            for old_tile in old_tiles:
+                self.__add_tile(old_tile)
+        else:  # new_tiles will be single tile
+            new_tiles = self.take_tiles(1)
+            self.__add_tile(old_tiles)
 
         self.__update_current_amount()
         return new_tiles

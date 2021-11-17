@@ -60,7 +60,6 @@ class Menu:
 	
 	def __init__(self, window_size):
 		self.size = window_size
-		self.menu = self.MAIN
 		
 		# button templates #
 		#button dimensions
@@ -83,6 +82,9 @@ class Menu:
 		input_hover = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (64, 64, 64))
 		input_active = gui.rectangle(self.input_size, (255, 255, 255), input_edge_size, (128, 128, 128))
 		self.input_templates = [input_unavailable, input_idle, input_hover, input_active]
+		
+		#initialize the main menu
+		self.select_menu(self.MAIN)
 		return
 	
 	def get_menu(self):
@@ -95,25 +97,31 @@ class Menu:
 		"""
 		Select another menu to display
 		"""
+		#save the menu value
 		self.menu = menu
+		#set the surface and widgets for the current menu
+		if menu == self.EMPTY:
+			self.surface = self.__get_menu_empty()
+			self.widgets = []
+		elif menu == self.MAIN:
+			self.surface = self.__get_menu_main()
+			self.widgets = self.__get_widgets_main()
+		elif menu == self.NEW_GAME:
+			self.surface = self.__get_menu_new_game()
+			self.widgets = self.__get_widgets_new_game()
+		else:
+			print("[qwirkle.py]Menu.get_surface:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
+			self.menu = self.EMPTY
+			self.surface = self.__get_menu_empty()
+			self.widgets = []
+		#return the selected menu
 		return menu
 	
 	def get_surface(self):
 		"""
 		Returns the pygame.Surface object containing the graphics for the current menu
 		"""
-		if self.menu == self.EMPTY:
-			surf = self.__get_menu_empty()
-		elif self.menu == self.MAIN:
-			surf = self.__get_menu_main()
-		elif self.menu == self.NEW_GAME:
-			surf = self.__get_menu_new_game()
-		else:
-			print("[qwirkle.py]Menu.get_surface:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
-			surf = self.__get_menu_empty()
-		
-		#return the pygame.Surface object
-		return surf
+		return self.surface
 	
 	def __get_menu_empty(self):
 		#initialize the surface
@@ -154,17 +162,7 @@ class Menu:
 		"""
 		Returns the Widget objects for the current menu
 		"""
-		if self.menu == self.EMPTY:
-			widgets = []
-		elif self.menu == self.MAIN:
-			widgets = self.__get_widgets_main()
-		elif self.menu == self.NEW_GAME:
-			widgets = self.__get_widgets_new_game()
-		else:
-			print("[qwirkle.py]Menu.get_widgets:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
-			widgets = []
-		
-		return widgets
+		return self.widgets
 	
 	def __get_widgets_main(self):
 		#initialize a list of widgets

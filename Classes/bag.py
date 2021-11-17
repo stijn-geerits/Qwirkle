@@ -68,7 +68,7 @@ class Bag:
         The old tiles are added back to the bag. \n
         """
         # Different behaviour if old_tiles is single tile or list
-        if type(old_tiles) == list:  # new_tiles will be list
+        if isinstance(old_tiles, list):  # new_tiles will be list
             new_tiles = self.take_tiles(len(old_tiles))
 
             for old_tile in old_tiles:

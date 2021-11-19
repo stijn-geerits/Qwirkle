@@ -205,7 +205,7 @@ class Menu:
 		widgets.append(btn)
 		#remove player button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75), int(self.size[1]*.25)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], None, lang.subtract)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], self.__remove_input, lang.subtract)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#back button
@@ -237,12 +237,47 @@ class Menu:
 		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.45), int(self.size[1]*(inpt_cnt*.1+.05))], "center")
 		inpt = input_builder(inptRect, [t.copy() for t in self.input_template], lang.default_player %(inpt_cnt))
 		self.widgets.append(inpt)
-		#disable the button that adds widgets when the 8'th input is added
+		#disable the button that adds inputs when the 8'th input is added
 		if inpt_cnt == 8:
 			for w in self.widgets:
 				if type(w) == gui.Button:
 					if w.get_label() == lang.add:
 						w.set_current_state(gui.Widget.UNAVAILABLE)
+						break
+		#enable the button that removes inputs when the input count surpasses 2
+		if inpt_cnt == 3:
+			for w in self.widgets:
+				if type(w) == gui.Button:
+					if w.get_label() == lang.subtract:
+						w.set_current_state(gui.Widget.IDLE)
+						break
+		#return the current input count
+		return inpt_cnt
+	
+	def __remove_input(self):
+		#only run if the current menu is the new game menu
+		if self.menu != self.NEW_GAME:
+			return
+		
+		#get the current amount of inputs
+		widget_types = [type(w) for w in self.widgets]
+		inpt_cnt = widget_types.count(gui.Input)
+		#remove an input
+		inpt_cnt -= 1
+		self.widgets.pop()
+		#disable the button that removes inputs when only 2 inputs remain
+		if inpt_cnt == 2:
+			for w in self.widgets:
+				if type(w) == gui.Button:
+					if w.get_label() == lang.subtract:
+						w.set_current_state(gui.Widget.UNAVAILABLE)
+						break
+		#enable the button that adds inputs when the input count drops below 8
+		elif inpt_cnt == 7:
+			for w in self.widgets:
+				if type(w) == gui.Button:
+					if w.get_label() == lang.add:
+						w.set_current_state(gui.Widget.IDLE)
 						break
 		#return the current input count
 		return inpt_cnt

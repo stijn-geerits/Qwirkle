@@ -3,6 +3,7 @@ import scoreboard
 import bag
 import tile
 import random
+import line
 
 
 class Game:
@@ -15,11 +16,15 @@ class Game:
         self.player_on_hand = players[magic_hand]
         self.last_move = None
 
-    def get_field(self):
+    def get_field(self,position=None):
         """
         Get function for field
         """
-        return self.field
+        if position is None:
+            return self.field
+        else:
+            (x, y) = position
+            return self.field[y][x]
 
     def get_player_on_hand(self):
         """
@@ -48,11 +53,17 @@ class Game:
         new_tile = self.bag.trade_tiles(tiles)
         self.player_on_hand.add_to_hand(new_tile)
         for i in range(len(tiles)):
-            position = positions[i]
-            x = position[0]
-            y = position[1]
+            (x, y) = positions[i]
             tile = tiles[i]
             self.field[y][x] = tile.get_id()
+            tile.set_position((x, y))
+
+    def build_line(self, tiles):
+        for tile in tiles:
+            (x, y) = tile.get_position()
+
+
+    #def controle(self)
 
     def switch_tiles(self, tiles):
         """
@@ -61,14 +72,6 @@ class Game:
         self.player_on_hand.take_from_hand(tiles)
         new_tiles = self.bag.trade_tiles(tiles)
         self.player_on_hand.add_to_hand(new_tiles)
-
-    def confirm(self):
-        move = False
-
-        if move:
-            return True
-        else:
-            return False
 
     def cancel(self):
         """
@@ -96,6 +99,8 @@ if __name__ == "__main__":
     game.play_tiles(tiles, positions)
     print(speler1.get_hand())
 
+    print(game.get_field((8, 9)))
+
     # wijzigen speler aan de beurt
     """
     huidige_speler = game.get_player_on_hand()
@@ -103,6 +108,8 @@ if __name__ == "__main__":
     print(huidige_speler.get_name())
     print(nieuwe_speler.get_name())
     """
+    """
     # weergeven van speelveld
     for i in game.get_field():
         print(*i)
+    """

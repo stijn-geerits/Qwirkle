@@ -58,13 +58,37 @@ class Game:
             self.field[y][x] = tile.get_id()
             tile.set_position((x, y))
 
-    def build_line(self, tiles):
+    def __build_line(self, tiles):
+        lines = []
         for tile in tiles:
-            (x, y) = tile.get_position()
+            xline = []
+            yline = []
+            (x, y) = tile.get_position(tile)
+            t = x
+            while t != 0:
+                tile = self.get_field((t, y))
+                xline.append(tile)
+                t = t + 1
+            t = x -1
+            while t != 0:
+                tile = self.get_field((t, y))
+                xline.append(tile)
+                t = t - 1
+            s = y
+            while s != 0:
+                tile = self.get_field((x, s))
+                yline.append(tile)
+                s = s + 1
+            s = y-1
+            while s != 0:
+                tile = self.get_field((x, s))
+                yline.append(tile)
+                s = s - 1
+            lines.append(xline)
+            lines.append(yline)
+        return lines
 
-    # Deze functie controleert niet of de posities van de start- en eindblokjes correct zijn,
-    # enkel of de kleuren en vormen kloppen.
-    def validate_line(self, tiles):
+    def __validate_line(self, tiles):
         """
         Checks if a line is valid by checking their colors and shapes.
         Returns True if line is valid, False if line is invalid.

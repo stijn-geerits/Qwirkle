@@ -324,13 +324,14 @@ def circle(radius, fill, edge_width=0, edge=(0, 0, 0)):
 	"""
 	#initialize a pygame.Surface object for the circle
 	surf = pygame.Surface([2 * radius] * 2)
+	surf.set_colorkey((0, 0, 0))
 	#draw a circle for the edge
 	if edge_width > 0:
 		pygame.draw.circle(surf, edge, [radius] * 2, radius)
 	#fill the circle
 	pygame.draw.circle(surf, fill, [radius] * 2, radius - edge_width)
 	#return the pygame.Surface object
-	return
+	return surf
 
 def ellipse(size, fill, edge_width=0, edge=(0, 0, 0)):
 	"""
@@ -343,6 +344,7 @@ def ellipse(size, fill, edge_width=0, edge=(0, 0, 0)):
 	"""
 	#initialize a pygame.Surface object for the ellipse
 	surf = pygame.Surface(size)
+	surf.set_colorkey((0, 0, 0))
 	#draw an ellipse for the edge
 	if edge_width > 0:
 		pygame.draw.ellipse(surf, edge, surf.get_rect())

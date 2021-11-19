@@ -57,6 +57,7 @@ class Menu:
 	EMPTY = 0
 	MAIN = 1
 	NEW_GAME = 2
+	GAME = 3
 	
 	def __init__(self, window_size):
 		self.size = window_size
@@ -117,6 +118,9 @@ class Menu:
 		elif menu == self.NEW_GAME:
 			self.surface = self.__get_menu_new_game()
 			self.widgets = self.__get_widgets_new_game()
+		elif menu == self.GAME:
+			self.surface = self.__get_menu_game()
+			self.widgets = self.__get_widgets_game()
 		else:
 			print("[qwirkle.py]Menu.get_surface:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
 			self.menu = self.EMPTY
@@ -166,6 +170,16 @@ class Menu:
 		#return the pygame.Surface object
 		return surf
 	
+	def __get_menu_game(self):
+		#initialize the surface
+		surf = pygame.Surface(self.size)
+		
+		#set the background for the menu
+		surf.fill((200, 200, 200))
+		
+		#return the pygame.Surface object
+		return surf
+	
 	def get_widgets(self):
 		"""
 		Returns the Widget objects for the current menu
@@ -209,8 +223,12 @@ class Menu:
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#back button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.3), int(self.size[1]*.95)], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back)
+		widgets.append(btn)
+		#start button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.7), int(self.size[1]*.95)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.GAME), lang.start_game)
 		widgets.append(btn)
 		
 		# input objects #
@@ -220,6 +238,13 @@ class Menu:
 		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.45), int(self.size[1]*.25)], "center")
 		inpt = input_builder(inptRect, [t.copy() for t in self.input_template], lang.default_player %(2))
 		widgets.append(inpt)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_game(self):
+		#initialize the list of widgets
+		widgets = []
 		
 		#return the Widget objects
 		return widgets
@@ -391,9 +416,10 @@ if __name__ == "__main__":
 						#run button function
 						if type(selected) == gui.Button:
 							rtrn = selected.run_function()
+						else:
+							rtrn = None
 						#a menu was selected
 						if rtrn != None:
-							rtrn = None
 							update = []
 							surface = menus.get_surface()
 							widgets = menus.get_widgets()

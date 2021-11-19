@@ -44,6 +44,12 @@ class Line:
         Checks if this line object is equal to another by comparing the start and end position of
         this line and the other. Returns True if lines are equal.
         """
+        # If one line is vertical and the other horizontal, they can't be equal
+        angle_difference = abs(self.angle - other_line.get_angle())
+        if angle_difference % 180 != 0:
+            return False
+
+        # Check if lines constitute the same positions
         other_line_sp = other_line.get_start_position()
         other_line_ep = other_line.get_end_position()
 

@@ -399,9 +399,12 @@ if __name__ == "__main__":
 							widgets = menus.get_widgets()
 							update.append(surface)
 							update.extend(widgets)
-						else:
+						#update the widget state (if it still exists)
+						if selected in widgets and selected.get_current_state() != gui.Widget.UNAVAILABLE:
 							selected.set_current_state(gui.Widget.HOVER)
-							update.append(selected)
+							#add the widget to the update list, if it isn't there already
+							if not selected in update:
+								update.append(selected)
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
@@ -426,7 +429,6 @@ if __name__ == "__main__":
 				window.blit(u, u.get_rect())
 			#update a button
 			elif type(u) == gui.Button or type(u) == gui.Input:
-				#print(surface, u.get_rect(), sep="\t")
 				window.blit(surface.subsurface(u.get_rect()), u.get_rect())
 				u.blit_on(window)
 		if len(update) > 0:

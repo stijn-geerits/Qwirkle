@@ -111,7 +111,13 @@ class Game:
         else:
             return False
 
-    #def controle(self)
+    def controle(lines):
+        for line in lines:
+            if validate_line(line) is False:
+                print("Move not valid")
+                return False
+
+        return True
 
     def switch_tiles(self, tiles):
         """

@@ -59,34 +59,34 @@ class Game:
             tile.set_position((x, y))
 
     def __build_line(self, tiles):
-        lines = []
+        xylines = []
         for tile in tiles:
             xline = []
             yline = []
             (x, y) = tile.get_position(tile)
             t = x
-            while t != 0:
+            while self.get_field(t,y) != 0:
                 tile = self.get_field((t, y))
                 xline.append(tile)
                 t = t + 1
             t = x -1
-            while t != 0:
+            while self.get_field(t,y) != 0:
                 tile = self.get_field((t, y))
-                xline.append(tile)
+                xline.insert(tile,0)
                 t = t - 1
             s = y
-            while s != 0:
+            while self.get_field(x,s) != 0:
                 tile = self.get_field((x, s))
                 yline.append(tile)
                 s = s + 1
             s = y-1
-            while s != 0:
+            while self.get_field(x,s) != 0:
                 tile = self.get_field((x, s))
-                yline.append(tile)
+                yline.insert(tile,0)
                 s = s - 1
-            lines.append(xline)
-            lines.append(yline)
-        return lines
+            xylines.append(xline)
+            xylines.append(yline)
+        return xylines
 
     def __validate_line(self, tiles):
         """
@@ -111,12 +111,22 @@ class Game:
         else:
             return False
 
-    def __controle(self, lines):
-        for line in lines:
-            if validate_line(line) is False:
+    def __controle(self, xylines):
+        for xyline in xylines:
+            if self.__validate_line(xyline) is False:
                 print("Move not valid")
                 return False
         return True
+
+    def __create_line(self, xylines):
+        lines = []
+        for xyline in xylines:
+            start_tile = xyline[0]
+            end_tile = xyline[-1]
+            start_cord = end_tile.get_position()
+            end_cord = start_tile.get_position()
+            lines.append((start_cord, end_cord))
+        return lines
 
     def switch_tiles(self, tiles):
         """

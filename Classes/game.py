@@ -58,13 +58,37 @@ class Game:
             self.field[y][x] = tile.get_id()
             tile.set_position((x, y))
 
-    def build_line(self, tiles):
+    def __build_line(self, tiles):
+        xylines = []
         for tile in tiles:
-            (x, y) = tile.get_position()
+            xline = []
+            yline = []
+            (x, y) = tile.get_position(tile)
+            t = x
+            while self.get_field(t,y) != 0:
+                tile = self.get_field((t, y))
+                xline.append(tile)
+                t = t + 1
+            t = x -1
+            while self.get_field(t,y) != 0:
+                tile = self.get_field((t, y))
+                xline.insert(tile,0)
+                t = t - 1
+            s = y
+            while self.get_field(x,s) != 0:
+                tile = self.get_field((x, s))
+                yline.append(tile)
+                s = s + 1
+            s = y-1
+            while self.get_field(x,s) != 0:
+                tile = self.get_field((x, s))
+                yline.insert(tile,0)
+                s = s - 1
+            xylines.append(xline)
+            xylines.append(yline)
+        return xylines
 
-    # Deze functie controleert niet of de posities van de start- en eindblokjes correct zijn,
-    # enkel of de kleuren en vormen kloppen.
-    def validate_line(self, tiles):
+    def __validate_line(self, tiles):
         """
         Checks if a line is valid by checking their colors and shapes.
         Returns True if line is valid, False if line is invalid.
@@ -87,7 +111,22 @@ class Game:
         else:
             return False
 
-    #def controle(self)
+    def __controle(self, xylines):
+        for xyline in xylines:
+            if self.__validate_line(xyline) is False:
+                print("Move not valid")
+                return False
+        return True
+
+    def __create_line(self, xylines):
+        lines = []
+        for xyline in xylines:
+            start_tile = xyline[0]
+            end_tile = xyline[-1]
+            start_cord = end_tile.get_position()
+            end_cord = start_tile.get_position()
+            lines.append((start_cord, end_cord))
+        return lines
 
     def switch_tiles(self, tiles):
         """

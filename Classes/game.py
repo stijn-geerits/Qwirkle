@@ -3,6 +3,7 @@ import scoreboard
 import bag
 import tile
 import random
+import line
 
 
 class Game:
@@ -15,11 +16,15 @@ class Game:
         self.player_on_hand = players[magic_hand]
         self.last_move = None
 
-    def get_field(self):
+    def get_field(self,position=None):
         """
         Get function for field
         """
-        return self.field
+        if position is None:
+            return self.field
+        else:
+            (x, y) = position
+            return self.field[y][x]
 
     def get_player_on_hand(self):
         """
@@ -48,11 +53,41 @@ class Game:
         new_tile = self.bag.trade_tiles(tiles)
         self.player_on_hand.add_to_hand(new_tile)
         for i in range(len(tiles)):
-            position = positions[i]
-            x = position[0]
-            y = position[1]
+            (x, y) = positions[i]
             tile = tiles[i]
             self.field[y][x] = tile.get_id()
+            tile.set_position((x, y))
+
+    def build_line(self, tiles):
+        for tile in tiles:
+            (x, y) = tile.get_position()
+
+    # Deze functie controleert niet of de posities van de start- en eindblokjes correct zijn,
+    # enkel of de kleuren en vormen kloppen.
+    def validate_line(self, tiles):
+        """
+        Checks if a line is valid by checking their colors and shapes.
+        Returns True if line is valid, False if line is invalid.
+        """
+        # Check if line is longer than 6 tiles
+        if len(tiles) < 6:
+            return False  # Line is invalid
+        # Get lists of all colors and shapes in the line
+        tile_colors = [tile.get_color() for tile in tiles]
+        tile_shapes = [tile.get_shape() for tile in tiles]
+
+        # If all colors are the same, all shapes must be unique and vice versa
+        # Check if every color is unique and shape different
+        if len(set(tile_colors)) == 1 and len(set(tile_shapes)) == len(
+                tile_shapes):  # Based on unique elements property of set
+            return True  # Line is valid
+        # Check if every color is different and shape is unique
+        elif len(set(tile_colors)) == len(tile_colors) and len(set(tile_shapes)) == 1:
+            return True
+        else:
+            return False
+
+    #def controle(self)
 
     def switch_tiles(self, tiles):
         """
@@ -61,14 +96,6 @@ class Game:
         self.player_on_hand.take_from_hand(tiles)
         new_tiles = self.bag.trade_tiles(tiles)
         self.player_on_hand.add_to_hand(new_tiles)
-
-    def confirm(self):
-        move = False
-
-        if move:
-            return True
-        else:
-            return False
 
     def cancel(self):
         """
@@ -96,6 +123,8 @@ if __name__ == "__main__":
     game.play_tiles(tiles, positions)
     print(speler1.get_hand())
 
+    print(game.get_field((8, 9)))
+
     # wijzigen speler aan de beurt
     """
     huidige_speler = game.get_player_on_hand()
@@ -103,6 +132,8 @@ if __name__ == "__main__":
     print(huidige_speler.get_name())
     print(nieuwe_speler.get_name())
     """
+    """
     # weergeven van speelveld
     for i in game.get_field():
         print(*i)
+    """

@@ -271,7 +271,7 @@ def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="tople
 	for line in range(0, lines):
 		text[line] = font.render(text[line], True, color)
 		#update the position according to the relpos variable
-		textpos.append(set_relpos(text[line].get_rect(), [location[0], location[1]+int(1.25*size*line)], relpos))
+		textpos.append(set_relpos(text[line].get_rect(), [location[0], location[1]+int(size*line)], relpos))
 	
 	#place the text on the surface
 	for line in range(0, lines):

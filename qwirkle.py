@@ -56,8 +56,9 @@ class Menu:
 	#possible menu values
 	EMPTY = 0
 	MAIN = 1
-	NEW_GAME = 2
-	GAME = 3
+	RULES = 2
+	NEW_GAME = 3
+	GAME = 4
 	
 	def __init__(self, window_size):
 		self.size = window_size
@@ -115,6 +116,9 @@ class Menu:
 		elif menu == self.MAIN:
 			self.surface = self.__get_menu_main()
 			self.widgets = self.__get_widgets_main()
+		elif menu == self.RULES:
+			self.surface = self.__get_menu_rules()
+			self.widgets = self.__get_widgets_rules()
 		elif menu == self.NEW_GAME:
 			self.surface = self.__get_menu_new_game()
 			self.widgets = self.__get_widgets_new_game()
@@ -158,6 +162,20 @@ class Menu:
 		#return the pygame.Surface object
 		return surf
 	
+	def __get_menu_rules(self):
+		#initialize the surface
+		surf = pygame.Surface(self.size)
+		
+		#set the background for the menu
+		surf.fill((200, 200, 200))
+		#place the menu title
+		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop")
+		#place the rules text
+		gui.rendertext(surf, lang.rules_text, int(self.size[1]*.04), None, [int(self.size[0]*.02), int(self.size[1]*.11)])
+		
+		#return the pygame.Surface object
+		return surf
+	
 	def __get_menu_new_game(self):
 		#initialize the surface
 		surf = pygame.Surface(self.size)
@@ -195,14 +213,31 @@ class Menu:
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.4)], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.NEW_GAME), lang.new_game)
 		widgets.append(btn)
-		#settings button
+		#rules button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.5)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.RULES), lang.rules)
+		widgets.append(btn)
+		#settings button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_template], None, lang.settings)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#exit button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.7)], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_template], full_quit, lang.exit)
+		widgets.append(btn)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_rules(self):
+		#initialize a list of widgets
+		widgets = []
+		
+		# button objects #
+		#back button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back)
 		widgets.append(btn)
 		
 		#return the Widget objects

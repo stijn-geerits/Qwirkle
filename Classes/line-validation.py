@@ -8,6 +8,9 @@ def validate_line(tiles):
     Checks if a line is valid by checking their colors and shapes.
     Returns True if line is valid, False if line is invalid.
     """
+    # Check if line is longer than 6 tiles
+    if len(tiles) < 6:
+        return False  # Line is invalid
     # Get lists of all colors and shapes in the line
     tile_colors = [tile.get_color() for tile in tiles]
     tile_shapes = [tile.get_shape() for tile in tiles]

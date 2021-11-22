@@ -15,7 +15,7 @@ class Game:
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]
         self.last_move = None
-        for player in players: #new
+        for player in players:  # new
             player.add_to_hand(self.bag.take_tiles(6))
 
     def get_field(self, position=None):
@@ -80,7 +80,7 @@ class Game:
             t = x -1
             while self.get_field((t, y)) != 0:
                 tile = self.get_field((t, y))
-                xline.insert(tile,0)
+                xline.insert(tile, 0)
                 t = t - 1
             s = y
             while self.get_field((x, s)) != 0:
@@ -90,7 +90,7 @@ class Game:
             s = y-1
             while self.get_field((x, s)) != 0:
                 tile = self.get_field((x, s))
-                yline.insert(tile,0)
+                yline.insert(tile, 0)
                 s = s - 1
             xylines.append(xline)
             xylines.append(yline)
@@ -101,11 +101,9 @@ class Game:
         Checks if a line is valid by checking their colors and shapes.
         Returns True if line is valid, False if line is invalid.
         """
-        # Check if line is longer than 6 tiles
-        if len(tiles) < 6:
+        if len(tiles) < 6:  # Check if line is longer than 6 tiles
             return False  # Line is invalid
-        # Get lists of all colors and shapes in the line
-        tile_colors = [tile.get_color() for tile in tiles]
+        tile_colors = [tile.get_color() for tile in tiles]  # Get lists of all colors and shapes in the line
         tile_shapes = [tile.get_shape() for tile in tiles]
         # If all colors are the same, all shapes must be unique and vice versa
         # Check if every color is unique and shape different
@@ -161,27 +159,52 @@ if __name__ == "__main__":
     speler3 = player.Player(3, "Stan")
     game = Game([speler1, speler2, speler3])
 
-    print(player.get_name(game.player_on_hand))
+    while True:
+        tiles = []
+        for tile in player.Player.get_hand(game.player_on_hand):
+            tiles.append(tile.get_id())
+        print(player.Player.get_name(game.player_on_hand)+" jij bent aan de beurt."+"\n"+"Dit is jouw hand: "+str(tiles)
+              + "\n"+"Maak een keuze:"+"\n"+"1: Aanleggen"+"\n"+"2: Ruilen")
 
+        correct = False
+        while not correct:
+            keuze = int(input())
+            if keuze == 1:
+                correct = True
+                print("Je koos voor aanleggen.")
+                print("Geef de id's van de blokjes en hun locaties die je wil plaatsen."+"\n"+"bv: 15;(3,5);25;(6,9)")
+                invoer = str(input())
+                invoer = invoer.split(";")
+                blokjes = invoer[::2]
+                locaties = invoer[1::2]
+                # game.play_tiles(blokjes, locaties)
+                # Moet een tile object worden, mssn een lijst maken met alle tiles in om blokje te kunnen opvragen
 
-    """
-    # blokjes leggen op speelveld
-    game.player_on_hand = game.players[0]
-    print(speler1.get_hand())
-    positions = [(5, 3), (8, 9)]
-    game.play_tiles(tiles, positions)
-    print(speler1.get_hand())
-    print(game.get_field((8, 9)))
-    """
-    """
-    # wijzigen speler aan de beurt
-    huidige_speler = game.get_player_on_hand()
-    nieuwe_speler = game.next_player()
-    print(huidige_speler.get_name())
-    print(nieuwe_speler.get_name())
-    """
-    """
-    # weergeven van speelveld
-    for i in game.get_field():
-        print(*i)
-    """
+            elif keuze == 2:
+                correct = True
+                print("Je koos voor ruilen.")
+
+            else:
+                print("Foute invoer.")
+
+        """
+        # blokjes leggen op speelveld
+        game.player_on_hand = game.players[0]
+        print(speler1.get_hand())
+        positions = [(5, 3), (8, 9)]
+        game.play_tiles(tiles, positions)
+        print(speler1.get_hand())
+        print(game.get_field((8, 9)))
+        """
+        """
+        # wijzigen speler aan de beurt
+        huidige_speler = game.get_player_on_hand()
+        nieuwe_speler = game.next_player()
+        print(huidige_speler.get_name())
+        print(nieuwe_speler.get_name())
+        """
+        """
+        # weergeven van speelveld
+        for i in game.get_field():
+            print(*i)
+        """

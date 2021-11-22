@@ -15,8 +15,10 @@ class Game:
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]
         self.last_move = None
+        for player in players: #new
+            player.add_to_hand(self.bag.take_tiles(6))
 
-    def get_field(self,position=None):
+    def get_field(self, position=None):
         """
         Get function for field
         """
@@ -48,6 +50,7 @@ class Game:
         """
         Take tiles from current players hand, trade them with bag and insert new in hand
         Every tile will be placed on corresponding position on field
+        This function has 4 child functions: build_line, validate line, controle, create_line
         """
         self.player_on_hand.take_from_hand(tiles)
         new_tile = self.bag.trade_tiles(tiles)
@@ -59,28 +62,33 @@ class Game:
             tile.set_position((x, y))
 
     def __build_line(self, tiles):
+        """
+        Build a line for every tile that will be placed on the field
+        xline creates a horizontal line trough every tile
+        yline creates a vertical line through every tile
+        """
         xylines = []
         for tile in tiles:
             xline = []
             yline = []
             (x, y) = tile.get_position(tile)
             t = x
-            while self.get_field(t,y) != 0:
+            while self.get_field((t, y)) != 0:
                 tile = self.get_field((t, y))
                 xline.append(tile)
                 t = t + 1
             t = x -1
-            while self.get_field(t,y) != 0:
+            while self.get_field((t, y)) != 0:
                 tile = self.get_field((t, y))
                 xline.insert(tile,0)
                 t = t - 1
             s = y
-            while self.get_field(x,s) != 0:
+            while self.get_field((x, s)) != 0:
                 tile = self.get_field((x, s))
                 yline.append(tile)
                 s = s + 1
             s = y-1
-            while self.get_field(x,s) != 0:
+            while self.get_field((x, s)) != 0:
                 tile = self.get_field((x, s))
                 yline.insert(tile,0)
                 s = s - 1
@@ -99,7 +107,6 @@ class Game:
         # Get lists of all colors and shapes in the line
         tile_colors = [tile.get_color() for tile in tiles]
         tile_shapes = [tile.get_shape() for tile in tiles]
-
         # If all colors are the same, all shapes must be unique and vice versa
         # Check if every color is unique and shape different
         if len(set(tile_colors)) == 1 and len(set(tile_shapes)) == len(
@@ -112,6 +119,9 @@ class Game:
             return False
 
     def __controle(self, xylines):
+        """
+        Checks if move is valid, uses above function
+        """
         for xyline in xylines:
             if self.__validate_line(xyline) is False:
                 print("Move not valid")
@@ -119,14 +129,16 @@ class Game:
         return True
 
     def __create_line(self, xylines):
-        lines = []
+        """
+        If move is valid the line will be created by giving the start and end coordinates to the class Tile
+        """
         for xyline in xylines:
             start_tile = xyline[0]
             end_tile = xyline[-1]
             start_cord = end_tile.get_position()
             end_cord = start_tile.get_position()
-            lines.append((start_cord, end_cord))
-        return lines
+            li = line.Line(start_cord, end_cord)
+        return li
 
     def switch_tiles(self, tiles):
         """
@@ -147,25 +159,22 @@ if __name__ == "__main__":
     speler1 = player.Player(1, "Stijn")
     speler2 = player.Player(2, "Laël")
     speler3 = player.Player(3, "Stan")
+    game = Game([speler1, speler2, speler3])
 
-    tile1 = tile.Tile(3, 'bleu', 'star', (0, 0))
-    tile2 = tile.Tile(8, 'yellow', 'circle', (0, 0))
-    tiles = [tile1, tile2]
-    speler1.add_to_hand(tiles)
+    print(player.get_name(game.player_on_hand))
 
-    spelers = [speler1, speler2, speler3]
-    game = Game(spelers)
 
+    """
+    # blokjes leggen op speelveld
     game.player_on_hand = game.players[0]
     print(speler1.get_hand())
     positions = [(5, 3), (8, 9)]
     game.play_tiles(tiles, positions)
     print(speler1.get_hand())
-
     print(game.get_field((8, 9)))
-
-    # wijzigen speler aan de beurt
     """
+    """
+    # wijzigen speler aan de beurt
     huidige_speler = game.get_player_on_hand()
     nieuwe_speler = game.next_player()
     print(huidige_speler.get_name())

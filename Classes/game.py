@@ -176,9 +176,18 @@ if __name__ == "__main__":
                 invoer = str(input())
                 invoer = invoer.split(";")
                 blokjes = invoer[::2]
+                hand = player.Player.get_hand(game.player_on_hand)
+                blokken = []
+                print(blokjes)
+                print(tiles)
+                for blokje in blokjes:
+                    if blokje in tiles:
+                        index = tiles.index(blokje)
+                        blokken.append(hand[index])
                 locaties = invoer[1::2]
-                # game.play_tiles(blokjes, locaties)
-                # Moet een tile object worden, mssn een lijst maken met alle tiles in om blokje te kunnen opvragen
+                print(blokken)
+                print(locaties)
+                game.play_tiles(blokken, locaties)
 
             elif keuze == 2:
                 correct = True

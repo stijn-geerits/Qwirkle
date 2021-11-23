@@ -195,6 +195,12 @@ class Menu:
 		#set the background for the menu
 		surf.fill((200, 200, 200))
 		
+		#load the tileset for the tiles
+		tileset = Tileset(GRAPHICSDIR + "tiles.png", 32)
+		#<test> draw the tileset
+		for tile in range(1, 37):
+			tileset.draw_tile(surf, tile, [(tile - 1) % 6, (tile - 1) // 6], offset=[50, 50])
+		
 		#return the pygame.Surface object
 		return surf
 	
@@ -341,6 +347,60 @@ class Menu:
 						break
 		#return the current input count
 		return inpt_cnt
+
+# Container for tilesets #
+class Tileset:
+	"""
+	Store and manage tilesets
+	"""
+	def __init__(self, image, tilesize):
+		#Load the tileset image file
+		self.tileset = pygame.image.load(image)
+		#Set the tile size
+		self.tilesize = tilesize
+		
+		#Calculate the amount of tiles total and in each direction
+		self.tileheight = self.tileset.get_height() // self.tilesize
+		self.tilewidth = self.tileset.get_width() // self.tilesize
+		self.tilecount = self.tileheight * self.tilewidth
+		return
+	
+	def get_tile(self, tile):
+		"""
+		Returns a surface containing the requested tile from the tileset.
+		
+		Returns a 0x0 surface if tile is outside the range of possible tiles.
+		"""
+		if tile > 0 and tile < self.tilecount:
+			#Create a new surface the size of a tile
+			tileSurf = pygame.Surface([self.tilesize] * 2)
+			#Draw the tile to the new surface
+			tileSurf.blit(self.tileset, [0, 0], pygame.Rect((tile % self.tilewidth) * self.tilesize, (tile // self.tilewidth) * self.tilesize, self.tilesize, self.tilesize))
+			#Return the surface containing the tile
+			return tileSurf
+		else:
+			#Given tile does not exist within the tileset
+			return pygame.Surface([0, 0])
+	
+	def draw_tile(self, surface, tile, pos, tilecoords=True, offset=[0, 0]):
+		"""
+		Draw a tile from the tileset on a surface
+		
+		Returns -1 if the tile could not be drawn, returns tile otherwise.
+		If tilecoords is set to False, x and y will be interpreted as absolute
+		coordinates. Otherwise, x and y are considered positions in a tile grid.
+		"""
+		if tile < 0 or tile >= self.tilecount:
+			#Tile does not exist
+			return -1
+		elif tilecoords:
+			#Interpret x and y as tile coordinates
+			surface.blit(self.get_tile(tile), [pos[0] * self.tilesize + offset[0], pos[1] * self.tilesize + offset[1]])
+		else:
+			#Interpret x and y as absolute coordinates
+			surface.blit(self.get_tile(tile), [pos[0] + offset[0], pos[1] + offset[1]])
+		#Return the index of the tile that was drawn to the screen
+		return tile
 
 
 

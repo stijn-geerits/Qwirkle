@@ -23,6 +23,7 @@ class Widget():
 		self.current_state = self.IDLE
 		self.states = [pygame.Surface([0, 0])] * 4
 		self.position = [0, 0]
+		return
 	
 	def get_current_state(self):
 		"""
@@ -85,6 +86,7 @@ class Button(Widget):
 		Widget.__init__(self)
 		self.label = "Button"
 		self.function = None
+		return
 	
 	def get_label(self):
 		"""

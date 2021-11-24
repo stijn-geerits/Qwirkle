@@ -127,9 +127,7 @@ class Menu:
 			self.widgets = self.__get_widgets_game()
 		else:
 			print("[qwirkle.py]Menu.get_background:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
-			self.menu = self.EMPTY
-			self.background = self.__get_menu_empty()
-			self.widgets = []
+			menu = self.select_menu(self.EMPTY)
 		#return the selected menu
 		return menu
 	
@@ -372,12 +370,8 @@ class Tileset:
 		Returns a 0x0 surface if tile is outside the range of possible tiles.
 		"""
 		if tile > 0 and tile < self.tilecount:
-			#Create a new surface the size of a tile
-			tileSurf = pygame.Surface([self.tilesize] * 2)
-			#Draw the tile to the new surface
-			tileSurf.blit(self.tileset, [0, 0], pygame.Rect((tile % self.tilewidth) * self.tilesize, (tile // self.tilewidth) * self.tilesize, self.tilesize, self.tilesize))
-			#Return the surface containing the tile
-			return tileSurf
+			#Return a surface containing the given tile
+			return self.tileset.subsurface([(tile % self.tilewidth) * self.tilesize, (tile // self.tilewidth) * self.tilesize, self.tilesize, self.tilesize])
 		else:
 			#Given tile does not exist within the tileset
 			return pygame.Surface([0, 0])

@@ -132,4 +132,3 @@ dmypy.json
 
 #GIMP graphics
 *.xcf
-/testgame.py

@@ -9,6 +9,9 @@ class Tile:
         self.shape = shape
         self.position = position
 
+    def __eq__(self, other):
+        return self.id == other.id
+
     def get_id(self):
         """
         Get function for Tile id

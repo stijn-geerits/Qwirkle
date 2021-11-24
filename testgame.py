@@ -17,7 +17,7 @@ def main():
         print(row)
 
     mygame.player_on_hand = mygame.players[0]
-    print(f"{speler1.get_name()} is aan de beurt")
+    print(f"{mygame.get_player_on_hand().get_name()} is aan de beurt")
 
     tiles = mybag.take_tiles(6)
     speler1.add_to_hand(tiles)
@@ -38,7 +38,7 @@ def main():
 def make_tiles_printable(tiles):
     printable_tiles = []
     for tile in tiles:
-        printable_tiles.append((tile.get_color(), tile.get_shape()))
+        printable_tiles.append((tile.get_id(), tile.get_color(), tile.get_shape()))
     return printable_tiles
 
 
@@ -46,9 +46,9 @@ def handle_player_input(speler):
     tile_index_str = ''
     tiles = []
     while tile_index_str != 'x':
-        tile_index_str = input("Geef positie (0-5) van tile in (of x): ")
+        tile_index_str = input("Geef ID van tile: ")
         if tile_index_str.isdigit():
-            tiles.append(speler.take_from_hand_alt(int(tile_index_str)))
+            tiles.append(speler.take_from_hand(int(tile_index_str)))
 
     position_str_y = ''
     position_str_x = ''

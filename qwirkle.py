@@ -111,33 +111,33 @@ class Menu:
 		self.menu = menu
 		#set the surface and widgets for the current menu
 		if menu == self.EMPTY:
-			self.surface = self.__get_menu_empty()
+			self.background = self.__get_menu_empty()
 			self.widgets = []
 		elif menu == self.MAIN:
-			self.surface = self.__get_menu_main()
+			self.background = self.__get_menu_main()
 			self.widgets = self.__get_widgets_main()
 		elif menu == self.RULES:
-			self.surface = self.__get_menu_rules()
+			self.background = self.__get_menu_rules()
 			self.widgets = self.__get_widgets_rules()
 		elif menu == self.NEW_GAME:
-			self.surface = self.__get_menu_new_game()
+			self.background = self.__get_menu_new_game()
 			self.widgets = self.__get_widgets_new_game()
 		elif menu == self.GAME:
-			self.surface = self.__get_menu_game()
+			self.background = self.__get_menu_game()
 			self.widgets = self.__get_widgets_game()
 		else:
-			print("[qwirkle.py]Menu.get_surface:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
+			print("[qwirkle.py]Menu.get_background:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
 			self.menu = self.EMPTY
-			self.surface = self.__get_menu_empty()
+			self.background = self.__get_menu_empty()
 			self.widgets = []
 		#return the selected menu
 		return menu
 	
-	def get_surface(self):
+	def get_background(self):
 		"""
 		Returns the pygame.Surface object containing the graphics for the current menu
 		"""
-		return self.surface
+		return self.background
 	
 	def __get_menu_empty(self):
 		#initialize the surface
@@ -461,13 +461,15 @@ def input_builder(rect, states, default=None, textpadding=None):
 ### Main program ###
 if __name__ == "__main__":
 	#set variables
+	ALPHA = (0, 0, 0)
+	background = pygame.Surface(user.winsize)
 	clock = pygame.time.Clock()
 	loop = True
 	rtrn = None
 	selected = None
-	surface = pygame.Surface([0, 0])
 	update = []
 	widgets = []
+	widgets_lyr = pygame.Surface(user.winsize)
 	
 	# window setup #
 	window = pygame.display.set_mode(user.winsize)
@@ -475,11 +477,11 @@ if __name__ == "__main__":
 	
 	# menu setup #
 	menus = Menu(user.winsize)
-	surface = menus.get_surface()
+	background = menus.get_background()
 	widgets = menus.get_widgets()
+	widgets_lyr.set_colorkey(ALPHA)
 	
-	#add the surfaces and widgets to the update list
-	update.append(surface)
+	#add the widgets to the update list
 	update.extend(widgets)
 	
 	# main loop #
@@ -516,9 +518,10 @@ if __name__ == "__main__":
 						#a menu was selected
 						if rtrn != None:
 							update = []
-							surface = menus.get_surface()
+							background = menus.get_background()
 							widgets = menus.get_widgets()
-							update.append(surface)
+							widgets_lyr.fill(ALPHA)
+							update.append(background)
 							update.extend(widgets)
 						#update the widget state (if it still exists)
 						if selected in widgets and selected.get_current_state() != gui.Widget.UNAVAILABLE:
@@ -545,15 +548,13 @@ if __name__ == "__main__":
 		
 		#update the display
 		for u in update:
-			#update a surface
-			if type(u) == pygame.Surface:
-				window.blit(u, u.get_rect())
-			#update a button
-			elif type(u) == gui.Button or type(u) == gui.Input:
-				window.blit(surface.subsurface(u.get_rect()), u.get_rect())
-				u.blit_on(window)
+			#update a button or input
+			if type(u) == gui.Button or type(u) == gui.Input:
+				u.blit_on(widgets_lyr)
 		if len(update) > 0:
 			update = []
+			window.blit(background, [0, 0])
+			window.blit(widgets_lyr, [0, 0])
 			pygame.display.update()
 	
 	#quit the program

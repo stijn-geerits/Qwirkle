@@ -467,9 +467,10 @@ if __name__ == "__main__":
 	loop = True
 	rtrn = None
 	selected = None
+	sprites_layer = pygame.Surface(user.winsize)
 	update = []
 	widgets = []
-	widgets_lyr = pygame.Surface(user.winsize)
+	widgets_layer = pygame.Surface(user.winsize)
 	
 	# window setup #
 	window = pygame.display.set_mode(user.winsize)
@@ -479,10 +480,15 @@ if __name__ == "__main__":
 	menus = Menu(user.winsize)
 	background = menus.get_background()
 	widgets = menus.get_widgets()
-	widgets_lyr.set_colorkey(ALPHA)
+	widgets_layer.fill(ALPHA)
+	widgets_layer.set_colorkey(ALPHA)
+	sprites_layer.fill(ALPHA)
+	sprites_layer.set_colorkey(ALPHA)
 	
-	#add the widgets to the update list
+	#add the surfaces and widgets to the update list
+	update.append(background)
 	update.extend(widgets)
+	update.extend([widgets_layer, sprites_layer])
 	
 	# main loop #
 	while loop == True:
@@ -517,12 +523,18 @@ if __name__ == "__main__":
 							rtrn = None
 						#a menu was selected
 						if rtrn != None:
+							#clear the update list of old updates
 							update = []
+							#get the new menu data
 							background = menus.get_background()
 							widgets = menus.get_widgets()
-							widgets_lyr.fill(ALPHA)
+							#clear the widgets and sprites layer
+							widgets_layer.fill(ALPHA)
+							sprites_layer.fill(ALPHA)
+							#add the surfaces and widgets to the update list
 							update.append(background)
 							update.extend(widgets)
+							update.extend([widgets_layer, sprites_layer])
 						#update the widget state (if it still exists)
 						if selected in widgets and selected.get_current_state() != gui.Widget.UNAVAILABLE:
 							selected.set_current_state(gui.Widget.HOVER)
@@ -550,11 +562,12 @@ if __name__ == "__main__":
 		for u in update:
 			#update a button or input
 			if type(u) == gui.Button or type(u) == gui.Input:
-				u.blit_on(widgets_lyr)
+				u.blit_on(widgets_layer)
 		if len(update) > 0:
 			update = []
 			window.blit(background, [0, 0])
-			window.blit(widgets_lyr, [0, 0])
+			window.blit(widgets_layer, [0, 0])
+			window.blit(sprites_layer, [0, 0])
 			pygame.display.update()
 	
 	#quit the program

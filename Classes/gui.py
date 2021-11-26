@@ -358,3 +358,30 @@ def ellipse(size, fill, edge_width=0, edge=(0, 0, 0)):
 	pygame.draw.ellipse(surf, fill, fill_rect)
 	#return the pygame.Surface object
 	return surf
+
+def grid(row_heights, column_widths, edge=(0, 0, 0), fill=(255, 255, 255)):
+	"""
+	Draws a grid with rows and columns with the given dimensions on a pygame.Surface object
+	
+	row_heights should contain a list of integers defining the height of each row in px
+	column_widths should contain a list of integers defining the width of each column in px
+	edge should contain a triplet with RGB color values
+	fill should contain a triplet with RGB color values
+	"""
+	#initialize a pygame.Surface object
+	surf = pygame.Surface([sum(column_widths), sum(row_heights)])
+	#draw the bounding box
+	box = rectangle(surf.get_size(), fill, 1, edge)
+	surf.blit(box, box.get_rect())
+	#draw the row seperators
+	offset = 0
+	for h in row_heights:
+		offset += h
+		pygame.draw.aaline(surf, edge, [0, offset], [surf.get_width(), offset])
+	#draw the column seperators
+	offset = 0
+	for w in column_widths:
+		offset += w
+		pygame.draw.aaline(surf, edge, [offset, 0], [offset, surf.get_height()])
+	#return the pygame.Surface object
+	return surf

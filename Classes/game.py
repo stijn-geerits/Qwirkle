@@ -80,7 +80,7 @@ class Game:
             t = x -1
             while self.get_field((t, y)) != 0:
                 tile = self.get_field((t, y))
-                xline.insert(tile, 0)
+                xline.insert(0, tile)
                 t = t - 1
             s = y
             while self.get_field((x, s)) != 0:
@@ -90,7 +90,7 @@ class Game:
             s = y-1
             while self.get_field((x, s)) != 0:
                 tile = self.get_field((x, s))
-                yline.insert(tile, 0)
+                yline.insert(0, tile)
                 s = s - 1
             xylines.append(xline)
             xylines.append(yline)
@@ -101,7 +101,7 @@ class Game:
         Checks if a line is valid by checking their colors and shapes.
         Returns True if line is valid, False if line is invalid.
         """
-        if len(tiles) < 6:  # Check if line is longer than 6 tiles
+        if len(tiles) > 6:  # Check if line is longer than 6 tiles
             return False  # Line is invalid
         tile_colors = [tile.get_color() for tile in tiles]  # Get lists of all colors and shapes in the line
         tile_shapes = [tile.get_shape() for tile in tiles]

@@ -9,6 +9,8 @@ def main():
     speler3 = Player(3, "Stan")
     mygame = Game([speler1, speler2, speler3])
 
+    tile_dict = generate_tile_dict()
+
     board = mygame.get_field()
     for row in board:
         print(row)
@@ -33,6 +35,7 @@ def main():
     print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
 
     mygame.play_tiles(play_tiles, play_positions)
+    '''
     xylines = mygame.build_line(play_tiles)
 
     # Remove single tile lines
@@ -49,9 +52,27 @@ def main():
                 line_list.remove(line2)
 
     print(f"De unieke lijnen zijn: {line_list}")
+    '''
+    p_board = make_board_printable(tile_dict, board)
+    for row in p_board:
+        for el in row:
+            print(el, end=' ')
+        print()
 
-    for row in board:
-        print(row)
+
+def generate_tile_dict():
+    tile_dict = {}
+    tile_id = 0
+    colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
+    shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
+
+    for color in colors:
+        for shape in shapes:
+            for i in range(3):
+                tile_dict[tile_id + i] = (color, shape)
+            tile_id += 3
+
+    return tile_dict
 
 
 def make_tiles_printable(tiles):
@@ -59,6 +80,36 @@ def make_tiles_printable(tiles):
     for tile in tiles:
         printable_tiles.append((tile.get_id(), tile.get_color(), tile.get_shape()))
     return printable_tiles
+
+
+def make_board_printable(tile_dict, board):
+    # Color codes
+    # 1: Red, 2: Green, 3: Yellow, 4: Blue, 5: Purple, 6: Cyan -> Orange
+    colors = {"red": '\x1b[91m', "orange": '\x1b[96m',
+              "yellow": '\x1b[93m', "green": '\x1b[92m',
+              "blue": '\x1b[94m', "purple": '\x1b[95m'}
+
+    shapes = {"circle": chr(0x25cf), "x": "X",
+              "diamond": chr(0x25c6), "square": chr(0x25aa),
+              "star": chr(0x2738), "clover": chr(0x2663)}
+
+    printable_board = []
+    for row in board:
+        printable_row = []
+        for el in row:
+            if el != 0:
+                tile = tile_dict[el]
+                color = tile[0]
+                shape = tile[1]
+                tile_str = colors[color] + shapes[shape] + "\x1b[97m"
+                printable_row.append(tile_str)
+
+            else:
+                printable_row.append(0)
+
+        printable_board.append(printable_row)
+
+    return printable_board
 
 
 def handle_player_input():

@@ -101,7 +101,7 @@ class Game:
         Checks if a line is valid by checking their colors and shapes.
         Returns True if line is valid, False if line is invalid.
         """
-        if len(tiles) < 6:  # Check if line is longer than 6 tiles
+        if len(tiles) > 6:  # Check if line is longer than 6 tiles
             return False  # Line is invalid
         tile_colors = [tile.get_color() for tile in tiles]  # Get lists of all colors and shapes in the line
         tile_shapes = [tile.get_shape() for tile in tiles]

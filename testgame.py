@@ -1,13 +1,9 @@
 from game import Game
 from player import Player
-from bag import Bag
-from tile import Tile
 
 
 def main():
     # Init the game
-    mybag = Bag()
-
     speler1 = Player(1, "Stijn")
     speler2 = Player(2, "Laël")
     speler3 = Player(3, "Stan")
@@ -37,6 +33,22 @@ def main():
     print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
 
     mygame.play_tiles(play_tiles, play_positions)
+    xylines = mygame.build_line(play_tiles)
+
+    # Remove single tile lines
+    for xyline in xylines:
+        if len(xyline) == 1:
+            xylines.remove(xyline)
+    print(f"De xy lijnen zijn: {xylines}")
+
+    line_list = mygame.create_line(xylines)
+
+    for i, line in enumerate(line_list):
+        for line2 in line_list[i::]:
+            if line.is_equal(line2):
+                line_list.remove(line2)
+
+    print(f"De unieke lijnen zijn: {line_list}")
 
     for row in board:
         print(row)

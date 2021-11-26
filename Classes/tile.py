@@ -3,8 +3,8 @@
 
 
 class Tile:
-    def __init__(self, id, color, shape, position):
-        self.id = id
+    def __init__(self, tile_id, color, shape, position):
+        self.id = tile_id
         self.color = color
         self.shape = shape
         self.position = position

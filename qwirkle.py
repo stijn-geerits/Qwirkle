@@ -69,7 +69,7 @@ class Menu:
 		btn_edge_size = int(min(self.size) * .004)
 		#button template
 		btn_unavailable = gui.rectangle(self.btn_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
-		btn_idle = gui.rectangle(self.btn_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
+		btn_idle = gui.rectangle(self.btn_size, (0, 85, 170), btn_edge_size, (0, 44, 121))
 		btn_hover = gui.rectangle(self.btn_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
 		btn_active = gui.rectangle(self.btn_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
 		self.button_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
@@ -81,6 +81,14 @@ class Menu:
 		btn_hover = gui.rectangle(self.btn_small_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
 		btn_active = gui.rectangle(self.btn_small_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
 		self.button_small_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
+		#game button dimensions
+		self.btn_game_size = [120, 40]
+		#game button template
+		btn_unavailable = gui.rectangle(self.btn_game_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
+		btn_idle = gui.rectangle(self.btn_game_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
+		btn_hover = gui.rectangle(self.btn_game_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
+		btn_active = gui.rectangle(self.btn_game_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
+		self.button_game_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		
 		# input templates #
 		#input dimensions
@@ -193,11 +201,22 @@ class Menu:
 		#set the background for the menu
 		surf.fill((200, 200, 200))
 		
+		#draw a line as section between playing field and user interactibles
+		pygame.draw.aaline(surf, (32, 32, 32), [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
+		#render the amount of tile in bag
+		gui.rendertext(surf, lang.tiles_in_bag %(108), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
+		#draw a grid for the bag
+		grid = gui.grid([34]*2, [34]*3, (32, 32, 32), (200, 200, 200))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)]+list(grid.get_size()))
+		#draw a grid for the hand
+		grid = gui.grid([34], [34]*6, (32, 32, 32), (200, 200, 200))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*2), self.size[1]-48]+list(grid.get_size()))
+		
 		#load the tileset for the tiles
 		tileset = Tileset(GRAPHICSDIR + "tiles.png", 32)
 		#<test> draw the tileset
-		for tile in range(1, 37):
-			tileset.draw_tile(surf, tile, [(tile - 1) % 6, (tile - 1) // 6], offset=[50, 50])
+		for tile in range(225):
+			tileset.draw_tile(surf, tile%36 + 1, [tile % 15, tile // 15], offset=[20, 20])
 		
 		#return the pygame.Surface object
 		return surf
@@ -284,6 +303,23 @@ class Menu:
 	def __get_widgets_game(self):
 		#initialize the list of widgets
 		widgets = []
+		
+		# button objects #
+		#cancel button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*.6), self.size[1]-78], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.cancel)
+		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		widgets.append(btn)
+		#play button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.7), self.size[1]-78], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play)
+		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		widgets.append(btn)
+		#trade/skip button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.trade)
+		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		widgets.append(btn)
 		
 		#return the Widget objects
 		return widgets

@@ -80,7 +80,7 @@ class Game:
             t = x -1
             while self.get_field((t, y)) != 0:
                 tile = self.get_field((t, y))
-                xline.insert(tile, 0)
+                xline.insert(0, tile)
                 t = t - 1
             s = y
             while self.get_field((x, s)) != 0:
@@ -90,7 +90,7 @@ class Game:
             s = y-1
             while self.get_field((x, s)) != 0:
                 tile = self.get_field((x, s))
-                yline.insert(tile, 0)
+                yline.insert(0, tile)
                 s = s - 1
             xylines.append(xline)
             xylines.append(yline)

@@ -1,0 +1,30 @@
+#button
+button_idle_fill = rgb(82, 189, 236)
+button_idle_edge = rgb(0, 0, 0)
+button_unavailable_fill = rgb(220, 231, 240)
+button_unavailable_edge = rgb(0, 0, 0)
+button_hover_fill =
+button_hover_edge =
+button_active_fill =
+button_active_edge =
+
+#background
+background_color = rgb(204, 204, 204)
+
+#input
+input_idle_fill =
+input_idle_edge =
+input_unavailable_fill =
+input_unavailable_edge =
+input_hover_fill =
+input_hover_edge =
+input_active_fill =
+input_active_edge =
+
+#grid
+grid_fill = rgb(200, 200, 200)
+grid_edge = rgb(204, 204, 204)
+
+#scorebord
+scorebord = rgb(220, 231, 240)
+player_on_hand = rgb(217, 234, 211)

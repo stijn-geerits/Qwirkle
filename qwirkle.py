@@ -200,8 +200,17 @@ class Menu:
 		
 		#set the background for the menu
 		surf.fill((200, 200, 200))
+		
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, (32, 32, 32), [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
+		#render the amount of tile in bag
+		gui.rendertext(surf, lang.tiles_in_bag %(108), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
+		#draw a grid for the bag
+		grid = gui.grid([34]*2, [34]*3, (32, 32, 32), (200, 200, 200))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)]+list(grid.get_size()))
+		#draw a grid for the hand
+		grid = gui.grid([34], [34]*6, (32, 32, 32), (200, 200, 200))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*2), self.size[1]-48]+list(grid.get_size()))
 		
 		#load the tileset for the tiles
 		tileset = Tileset(GRAPHICSDIR + "tiles.png", 32)
@@ -297,18 +306,18 @@ class Menu:
 		
 		# button objects #
 		#cancel button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*.6), self.size[1]-96], "center")
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*.6), self.size[1]-78], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.cancel)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#play button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.7), self.size[1]-96], "center")
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.7), self.size[1]-78], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#trade/skip button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), self.size[1]-96-int(self.btn_game_size[1]*1.2)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play)
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.trade)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		

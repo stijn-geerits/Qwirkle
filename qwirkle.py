@@ -15,7 +15,7 @@ THEMESDIR = "Themes/"
 #insert the CLASSESDIR into the search list for importing scripts
 sys.path.insert(1, CLASSESDIR)
 #import the custom classes
-import gui
+import gui; from game import Game; from player import Player
 
 
 
@@ -108,6 +108,8 @@ class Menu:
 		
 		#initialize the main menu
 		self.select_menu(self.MAIN)
+		#initialize a variable for the game object
+		self.game = None
 		return
 	
 	def get_menu(self):
@@ -124,18 +126,23 @@ class Menu:
 		self.menu = menu
 		#set the surface and widgets for the current menu
 		if menu == self.EMPTY:
+			self.data = []
 			self.background = self.__get_menu_empty()
 			self.widgets = []
 		elif menu == self.MAIN:
+			self.data = []
 			self.background = self.__get_menu_main()
 			self.widgets = self.__get_widgets_main()
 		elif menu == self.RULES:
+			self.data = []
 			self.background = self.__get_menu_rules()
 			self.widgets = self.__get_widgets_rules()
 		elif menu == self.NEW_GAME:
+			self.data = []
 			self.background = self.__get_menu_new_game()
 			self.widgets = self.__get_widgets_new_game()
 		elif menu == self.GAME:
+			self.data = self.__get_data_game()
 			self.background = self.__get_menu_game()
 			self.widgets = self.__get_widgets_game()
 		else:
@@ -143,6 +150,30 @@ class Menu:
 			menu = self.select_menu(self.EMPTY)
 		#return the selected menu
 		return menu
+	
+	def get_data(self):
+		"""
+		Returns the auxiliary data for the current menu
+		"""
+		return self.data
+	
+	def __get_data_game(self):
+		# player objects #
+		#initialize a list for the players
+		players = []
+		#create the player objects
+		for w in self.widgets:
+			if type(w) == gui.Input:
+				players.append(Player(len(players), w.get_value()))
+		# game object #
+		#initialize the game variable
+		self.game = Game(players)
+		# tile objects #
+		#get the tiles for the player on hand
+		data = self.game.get_player_on_hand().get_hand()
+		
+		#return the data list
+		return data
 	
 	def get_background(self):
 		"""
@@ -209,7 +240,7 @@ class Menu:
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
 		#render the amount of tile in bag
-		gui.rendertext(surf, lang.tiles_in_bag %(108), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
+		gui.rendertext(surf, lang.tiles_in_bag %(self.game.bag.get_current_amount()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
 		#draw a grid for the bag
 		grid = gui.grid([34]*2, [34]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)]+list(grid.get_size()))
@@ -318,7 +349,7 @@ class Menu:
 		#play button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.7), self.size[1]-78], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play)
-		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		#btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#trade/skip button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")

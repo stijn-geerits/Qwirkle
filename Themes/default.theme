@@ -1,30 +1,31 @@
+#background
+alpha = (0, 0, 0)
+background = (200, 200, 200)
+
 #button
 button_idle_fill = (82, 189, 236)
 button_idle_edge = (0, 0, 0)
 button_unavailable_fill = (220, 231, 240)
 button_unavailable_edge = (0, 0, 0)
-button_hover_fill =
-button_hover_edge =
-button_active_fill =
-button_active_edge =
-
-#background
-background = (204, 204, 204)
+button_hover_fill = (146, 178, 255)
+button_hover_edge = (34, 85, 170)
+button_active_fill = (0, 44, 121)
+button_active_edge = (34, 85, 170)
 
 #input
-input_idle_fill =
-input_idle_edge =
-input_unavailable_fill =
-input_unavailable_edge =
-input_hover_fill =
-input_hover_edge =
-input_active_fill =
-input_active_edge =
+input_unavailable_fill = (128, 128, 128)
+input_unavailable_edge = (32, 32, 32)
+input_idle_fill = (224, 224, 224)
+input_idle_edge = (32, 32, 32)
+input_hover_fill = (224, 224, 224)
+input_hover_edge = (64, 64, 64)
+input_active_fill = (255, 255, 255)
+input_active_edge = (128, 128, 128)
 
 #grid
-grid_fill = (200, 200, 200)
+grid_fill = background
 grid_edge = (204, 204, 204)
 
-#scorebord
-scorebord = (220, 231, 240)
+#scoreboard
+scoreboard = (220, 231, 240)
 player_on_hand = (217, 234, 211)

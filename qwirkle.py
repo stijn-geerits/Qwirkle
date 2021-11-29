@@ -11,6 +11,7 @@ CLASSESDIR = "Classes/"
 CONFIGDIR = ""
 GRAPHICSDIR = "Graphics/"
 LANGUAGEDIR = "Lang/"
+THEMESDIR = "Themes/"
 #insert the CLASSESDIR into the search list for importing scripts
 sys.path.insert(1, CLASSESDIR)
 #import the custom classes
@@ -48,6 +49,10 @@ class user:
 class lang:
 	exec(open(LANGUAGEDIR + user.lang + ".lang", 'r').read())
 
+# Container for storing color theme data #
+class color:
+	exec(open(THEMESDIR + user.theme + ".theme", 'r').read())
+
 # Container for all menu data #
 class Menu:
 	"""
@@ -68,26 +73,26 @@ class Menu:
 		self.btn_size = [int(self.size[0] * .24), int(self.size[1] * .08)]
 		btn_edge_size = int(min(self.size) * .004)
 		#button template
-		btn_unavailable = gui.rectangle(self.btn_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
-		btn_idle = gui.rectangle(self.btn_size, (0, 85, 170), btn_edge_size, (0, 44, 121))
-		btn_hover = gui.rectangle(self.btn_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
-		btn_active = gui.rectangle(self.btn_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
+		btn_unavailable = gui.rectangle(self.btn_size, color.button_unavailable_fill, btn_edge_size, color.button_unavailable_edge)
+		btn_idle = gui.rectangle(self.btn_size, color.button_idle_fill, btn_edge_size, color.button_idle_edge)
+		btn_hover = gui.rectangle(self.btn_size, color.button_hover_fill, btn_edge_size, color.button_hover_edge)
+		btn_active = gui.rectangle(self.btn_size, color.button_active_fill, btn_edge_size, color.button_active_edge)
 		self.button_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		#small button dimensions
 		self.btn_small_size = [self.btn_size[1]] * 2
 		#small button template
-		btn_unavailable = gui.rectangle(self.btn_small_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
-		btn_idle = gui.rectangle(self.btn_small_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
-		btn_hover = gui.rectangle(self.btn_small_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
-		btn_active = gui.rectangle(self.btn_small_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
+		btn_unavailable = gui.rectangle(self.btn_small_size, color.button_unavailable_fill, btn_edge_size, color.button_unavailable_edge)
+		btn_idle = gui.rectangle(self.btn_small_size, color.button_idle_fill, btn_edge_size, color.button_idle_edge)
+		btn_hover = gui.rectangle(self.btn_small_size, color.button_hover_fill, btn_edge_size, color.button_hover_edge)
+		btn_active = gui.rectangle(self.btn_small_size, color.button_active_fill, btn_edge_size, color.button_active_edge)
 		self.button_small_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		#game button dimensions
 		self.btn_game_size = [120, 40]
 		#game button template
-		btn_unavailable = gui.rectangle(self.btn_game_size, (102, 102, 102), btn_edge_size, (61, 61, 61))
-		btn_idle = gui.rectangle(self.btn_game_size, (34, 85, 170), btn_edge_size, (0, 44, 121))
-		btn_hover = gui.rectangle(self.btn_game_size, (146, 178, 255), btn_edge_size, (34, 85, 170))
-		btn_active = gui.rectangle(self.btn_game_size, (0, 44, 121), btn_edge_size, (34, 85, 170))
+		btn_unavailable = gui.rectangle(self.btn_game_size, color.button_unavailable_fill, btn_edge_size, color.button_unavailable_edge)
+		btn_idle = gui.rectangle(self.btn_game_size, color.button_idle_fill, btn_edge_size, color.button_idle_edge)
+		btn_hover = gui.rectangle(self.btn_game_size, color.button_hover_fill, btn_edge_size, color.button_hover_edge)
+		btn_active = gui.rectangle(self.btn_game_size, color.button_active_fill, btn_edge_size, color.button_active_edge)
 		self.button_game_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		
 		# input templates #
@@ -95,10 +100,10 @@ class Menu:
 		self.input_size = [int(self.size[0] * .48), int(self.size[1] * .08)]
 		input_edge_size = int(min(self.size) * .004)
 		#input template
-		input_unavailable = gui.rectangle(self.input_size, (128, 128, 128), input_edge_size, (32, 32, 32))
-		input_idle = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (32, 32, 32))
-		input_hover = gui.rectangle(self.input_size, (224, 224, 224), input_edge_size, (64, 64, 64))
-		input_active = gui.rectangle(self.input_size, (255, 255, 255), input_edge_size, (128, 128, 128))
+		input_unavailable = gui.rectangle(self.input_size, color.input_unavailable_fill, input_edge_size, color.input_unavailable_edge)
+		input_idle = gui.rectangle(self.input_size, color.input_idle_fill, input_edge_size, color.input_idle_edge)
+		input_hover = gui.rectangle(self.input_size, color.input_hover_fill, input_edge_size, color.input_hover_edge)
+		input_active = gui.rectangle(self.input_size, color.input_active_fill, input_edge_size, color.input_active_edge)
 		self.input_template = [input_unavailable, input_idle, input_hover, input_active]
 		
 		#initialize the main menu
@@ -149,7 +154,7 @@ class Menu:
 		#initialize the surface
 		surf = pygame.Surface(self.size)
 		#fill the surface with black
-		surf.fill((0, 0, 0))
+		surf.fill(color.alpha)
 		
 		#return the pygame.Surface object
 		return surf
@@ -159,7 +164,7 @@ class Menu:
 		surf = pygame.Surface(self.size)
 		
 		#set the background color for the menu
-		surf.fill((200, 200, 200))
+		surf.fill(color.background)
 		#place the qwirkle title graphic
 		gui.renderimage(surf, GRAPHICSDIR + "qwirkle.png", [int(self.size[0]*.5), int(self.size[1]*.05)], "midtop")
 		#place the copyright notice
@@ -173,7 +178,7 @@ class Menu:
 		surf = pygame.Surface(self.size)
 		
 		#set the background for the menu
-		surf.fill((200, 200, 200))
+		surf.fill(color.background)
 		#place the menu title
 		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop")
 		#place the rules text
@@ -187,7 +192,7 @@ class Menu:
 		surf = pygame.Surface(self.size)
 		
 		#set the background for the menu
-		surf.fill((200, 200, 200))
+		surf.fill(color.background)
 		#place the menu title
 		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop")
 		
@@ -199,17 +204,17 @@ class Menu:
 		surf = pygame.Surface(self.size)
 		
 		#set the background for the menu
-		surf.fill((200, 200, 200))
+		surf.fill(color.background)
 		
 		#draw a line as section between playing field and user interactibles
-		pygame.draw.aaline(surf, (32, 32, 32), [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
+		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
 		#render the amount of tile in bag
 		gui.rendertext(surf, lang.tiles_in_bag %(108), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
 		#draw a grid for the bag
-		grid = gui.grid([34]*2, [34]*3, (32, 32, 32), (200, 200, 200))
+		grid = gui.grid([34]*2, [34]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)]+list(grid.get_size()))
 		#draw a grid for the hand
-		grid = gui.grid([34], [34]*6, (32, 32, 32), (200, 200, 200))
+		grid = gui.grid([34], [34]*6, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*2), self.size[1]-48]+list(grid.get_size()))
 		
 		#load the tileset for the tiles
@@ -491,7 +496,6 @@ def input_builder(rect, states, default=None, textpadding=None):
 ### Main program ###
 if __name__ == "__main__":
 	#set variables
-	ALPHA = (0, 0, 0)
 	background = pygame.Surface(user.winsize)
 	clock = pygame.time.Clock()
 	loop = True
@@ -510,10 +514,10 @@ if __name__ == "__main__":
 	menus = Menu(user.winsize)
 	background = menus.get_background()
 	widgets = menus.get_widgets()
-	widgets_layer.fill(ALPHA)
-	widgets_layer.set_colorkey(ALPHA)
-	sprites_layer.fill(ALPHA)
-	sprites_layer.set_colorkey(ALPHA)
+	widgets_layer.fill(color.alpha)
+	widgets_layer.set_colorkey(color.alpha)
+	sprites_layer.fill(color.alpha)
+	sprites_layer.set_colorkey(color.alpha)
 	
 	#add the surfaces and widgets to the update list
 	update.append(background)
@@ -559,8 +563,8 @@ if __name__ == "__main__":
 							background = menus.get_background()
 							widgets = menus.get_widgets()
 							#clear the widgets and sprites layer
-							widgets_layer.fill(ALPHA)
-							sprites_layer.fill(ALPHA)
+							widgets_layer.fill(color.alpha)
+							sprites_layer.fill(color.alpha)
 							#add the surfaces and widgets to the update list
 							update.append(background)
 							update.extend(widgets)

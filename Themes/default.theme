@@ -9,7 +9,7 @@ button_active_fill =
 button_active_edge =
 
 #background
-background_color = (204, 204, 204)
+background = (204, 204, 204)
 
 #input
 input_idle_fill =

@@ -233,9 +233,6 @@ class Menu:
 		overlay.set_alpha(204)
 		#draw the overlay
 		surf.blit(overlay, [0, 0])
-		#draw an area to cover up the tiles of the player
-		#left = self.size[0]-int(self.btn_game_size[0]*2.3)
-		#test = pygame.draw.rect(surf, color.background, [left, self.size[1]-96, self.size[0]-left, 96])
 		#render the text announcing the next player
 		gui.rendertext(surf, lang.player_on_hand %(self.game.get_player_on_hand().get_name()), int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "center", color.background)
 		
@@ -255,16 +252,15 @@ class Menu:
 		gui.rendertext(surf, lang.tiles_in_bag %(self.game.bag.get_current_amount()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
 		#draw a grid for the bag
 		grid = gui.grid([34]*2, [34]*3, color.grid_edge, color.grid_fill)
-		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)]+list(grid.get_size()))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
 		#draw a grid for the hand
 		grid = gui.grid([34], [34]*6, color.grid_edge, color.grid_fill)
-		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*2), self.size[1]-48]+list(grid.get_size()))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*2), self.size[1]-48])
 		
-		#load the tileset for the tiles
-		tileset = Tileset(GRAPHICSDIR + "tiles.png", 32)
-		#<test> draw the tileset
-		for tile in range(225):
-			tileset.draw_tile(surf, tile%36 + 1, [tile % 15, tile // 15], offset=[20, 20])
+		#draw a grid for the playing field
+		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//34, (self.size[1]-32)//34]
+		grid = gui.grid([34]*field_size[1], [34]*field_size[0], color.grid_edge, color.grid_fill)
+		surf.blit(grid, gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center"))
 		
 		#return the pygame.Surface object
 		return surf

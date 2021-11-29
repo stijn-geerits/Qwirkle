@@ -63,7 +63,8 @@ class Menu:
 	MAIN = 1
 	RULES = 2
 	NEW_GAME = 3
-	GAME = 4
+	WAIT_PLAYER = 4
+	GAME = 5
 	
 	def __init__(self, window_size):
 		self.size = window_size
@@ -108,7 +109,8 @@ class Menu:
 		
 		#initialize the main menu
 		self.select_menu(self.MAIN)
-		#initialize a variable for the game object
+		#initialize a variable for the data and game object
+		self.data = []
 		self.game = None
 		return
 	
@@ -126,23 +128,22 @@ class Menu:
 		self.menu = menu
 		#set the surface and widgets for the current menu
 		if menu == self.EMPTY:
-			self.data = []
 			self.background = self.__get_menu_empty()
 			self.widgets = []
 		elif menu == self.MAIN:
-			self.data = []
 			self.background = self.__get_menu_main()
 			self.widgets = self.__get_widgets_main()
 		elif menu == self.RULES:
-			self.data = []
 			self.background = self.__get_menu_rules()
 			self.widgets = self.__get_widgets_rules()
 		elif menu == self.NEW_GAME:
-			self.data = []
 			self.background = self.__get_menu_new_game()
 			self.widgets = self.__get_widgets_new_game()
+		elif menu == self.WAIT_PLAYER:
+			self.background = self.__get_menu_wait_player()
+			self.widgets = []
+			#self.widgets = self.__get_widgets_wait_player()
 		elif menu == self.GAME:
-			self.data = self.__get_data_game()
 			self.background = self.__get_menu_game()
 			self.widgets = self.__get_widgets_game()
 		else:
@@ -156,24 +157,6 @@ class Menu:
 		Returns the auxiliary data for the current menu
 		"""
 		return self.data
-	
-	def __get_data_game(self):
-		# player objects #
-		#initialize a list for the players
-		players = []
-		#create the player objects
-		for w in self.widgets:
-			if type(w) == gui.Input:
-				players.append(Player(len(players), w.get_value()))
-		# game object #
-		#initialize the game variable
-		self.game = Game(players)
-		# tile objects #
-		#get the tiles for the player on hand
-		data = self.game.get_player_on_hand().get_hand()
-		
-		#return the data list
-		return data
 	
 	def get_background(self):
 		"""
@@ -226,6 +209,28 @@ class Menu:
 		surf.fill(color.background)
 		#place the menu title
 		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop")
+		
+		#return the pygame.Surface object
+		return surf
+	
+	def __get_menu_wait_player(self):
+		#get the surface for the game menu
+		surf = self.__get_menu_game()
+		#draw the game menu widgets on the surface
+		widgets = self.__get_widgets_game()
+		for w in widgets:
+			w.blit_on(surf)
+		
+		#create a semi transparent black overlay
+		overlay = pygame.Surface(surf.get_size())
+		overlay.set_alpha(204)
+		#draw the overlay
+		surf.blit(overlay, [0, 0])
+		#draw an area to cover up the tiles of the player
+		left = self.size[0]-int(self.btn_game_size[0]*2.3)
+		test = pygame.draw.rect(surf, color.background, [left, self.size[1]-96, self.size[0]-left, 96])
+		#render the text announcing the next player
+		gui.rendertext(surf, lang.player_on_hand %(self.game.get_player_on_hand().get_name()), int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "center", color.background)
 		
 		#return the pygame.Surface object
 		return surf
@@ -322,7 +327,7 @@ class Menu:
 		widgets.append(btn)
 		#start button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.7), int(self.size[1]*.95)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.GAME), lang.start_game)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], self.__init_game, lang.start_game)
 		widgets.append(btn)
 		
 		# input objects #
@@ -349,7 +354,7 @@ class Menu:
 		#play button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.7), self.size[1]-78], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play)
-		#btn.set_current_state(gui.Widget.UNAVAILABLE)
+		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#trade/skip button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")
@@ -417,6 +422,26 @@ class Menu:
 						break
 		#return the current input count
 		return inpt_cnt
+	
+	def __init_game(self):
+		# player objects #
+		#initialize a list for the players
+		players = []
+		#create the player objects
+		for w in self.widgets:
+			if type(w) == gui.Input:
+				players.append(Player(len(players), w.get_value()))
+		
+		# game object #
+		#initialize the game variable
+		self.game = Game(players)
+		
+		# tile objects #
+		#get the tiles for the player on hand
+		self.data = self.game.get_player_on_hand().get_hand()
+		
+		#switch the menu to wait for player
+		return self.select_menu(self.WAIT_PLAYER)
 
 # Container for tilesets #
 class Tileset:

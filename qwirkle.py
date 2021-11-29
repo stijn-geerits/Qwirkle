@@ -95,6 +95,14 @@ class Menu:
 		btn_hover = gui.rectangle(self.btn_game_size, color.button_hover_fill, btn_edge_size, color.button_hover_edge)
 		btn_active = gui.rectangle(self.btn_game_size, color.button_active_fill, btn_edge_size, color.button_active_edge)
 		self.button_game_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
+		#confirm button dimensions
+		self.btn_confirm_size = [int(self.btn_game_size[0]*2.2), 44]
+		#confirm button template
+		btn_unavailable = gui.rectangle(self.btn_confirm_size, color.input_unavailable_fill, btn_edge_size, color.input_unavailable_edge)
+		btn_idle = gui.rectangle(self.btn_confirm_size, color.input_idle_fill, btn_edge_size, color.input_idle_edge)
+		btn_hover = gui.rectangle(self.btn_confirm_size, color.input_active_fill, btn_edge_size, color.input_active_edge)
+		btn_active = gui.rectangle(self.btn_confirm_size, color.input_unavailable_fill, btn_edge_size, color.input_unavailable_edge)
+		self.button_confirm_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		
 		# input templates #
 		#input dimensions
@@ -141,8 +149,7 @@ class Menu:
 			self.widgets = self.__get_widgets_new_game()
 		elif menu == self.WAIT_PLAYER:
 			self.background = self.__get_menu_wait_player()
-			self.widgets = []
-			#self.widgets = self.__get_widgets_wait_player()
+			self.widgets = self.__get_widgets_wait_player()
 		elif menu == self.GAME:
 			self.background = self.__get_menu_game()
 			self.widgets = self.__get_widgets_game()
@@ -227,8 +234,8 @@ class Menu:
 		#draw the overlay
 		surf.blit(overlay, [0, 0])
 		#draw an area to cover up the tiles of the player
-		left = self.size[0]-int(self.btn_game_size[0]*2.3)
-		test = pygame.draw.rect(surf, color.background, [left, self.size[1]-96, self.size[0]-left, 96])
+		#left = self.size[0]-int(self.btn_game_size[0]*2.3)
+		#test = pygame.draw.rect(surf, color.background, [left, self.size[1]-96, self.size[0]-left, 96])
 		#render the text announcing the next player
 		gui.rendertext(surf, lang.player_on_hand %(self.game.get_player_on_hand().get_name()), int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "center", color.background)
 		
@@ -337,6 +344,19 @@ class Menu:
 		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.45), int(self.size[1]*.25)], "center")
 		inpt = input_builder(inptRect, [t.copy() for t in self.input_template], lang.default_player %(2))
 		widgets.append(inpt)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_wait_player(self):
+		#initialize the list of widgets
+		widgets = []
+		
+		# button objects #
+		#confirm button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_confirm_size), [self.size[0]-int(self.btn_game_size[0]*1.15), self.size[1]-8], "midbottom")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_confirm_template], lambda:self.select_menu(self.GAME), lang.confirm)
+		widgets.append(btn)
 		
 		#return the Widget objects
 		return widgets

@@ -24,7 +24,7 @@ input_active_edge = (128, 128, 128)
 
 #grid
 grid_fill = background
-grid_edge = (204, 204, 204)
+grid_edge = (32, 32, 32)
 
 #scoreboard
 scoreboard = (220, 231, 240)

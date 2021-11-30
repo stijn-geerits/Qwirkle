@@ -251,16 +251,24 @@ class Menu:
 		#render the amount of tile in bag
 		gui.rendertext(surf, lang.tiles_in_bag %(self.game.bag.get_current_amount()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
 		#draw a grid for the bag
-		grid = gui.grid([34]*2, [34]*3, color.grid_edge, color.grid_fill)
+		grid = gui.grid([35]*2, [35]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
 		#draw a grid for the hand
-		grid = gui.grid([34], [34]*6, color.grid_edge, color.grid_fill)
-		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*2), self.size[1]-48])
+		grid = gui.grid([35], [35]*6, color.grid_edge, color.grid_fill)
+		surf.blit(grid, gui.set_relpos(grid.get_rect(), [self.size[0]-int(self.btn_game_size[0]*2.3)//2, self.size[1]-48], "midtop"))
 		
 		#draw a grid for the playing field
-		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//34, (self.size[1]-32)//34]
-		grid = gui.grid([34]*field_size[1], [34]*field_size[0], color.grid_edge, color.grid_fill)
+		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//35, (self.size[1]-32)//35]
+		grid = gui.grid([35]*field_size[1], [35]*field_size[0], color.grid_edge, color.grid_fill)
 		surf.blit(grid, gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center"))
+		
+		#<test> tileset
+		tileset = Tileset(GRAPHICSDIR + "tiles.png", 32)
+		gridRect = gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center")
+		for p in range(1, 37):
+			top = gridRect.top + (((p - 1) % 6) * 35) + 2
+			left = gridRect.left + (((p - 1) // 6) * 35) + 2
+			tileset.draw_tile(surf, p, [left, top], False)
 		
 		#return the pygame.Surface object
 		return surf

@@ -23,6 +23,24 @@ class Game:
     def get_tile_dictionary(self):
         return self.tile_dict
 
+    def get_players(self):
+        """
+        Get the player objects
+        """
+        return self.players
+
+    def get_player_score(self, playerID):
+        """
+        Get the score for the player with ID playerID
+        """
+        return self.scoreboard.get_score(playerID)
+
+    def get_tiles_left(self):
+        """
+        Get the amount of tiles that are left in the bag
+        """
+        return self.bag.get_current_amount()
+
     def get_field(self, position=None):
         """
         Get function for field

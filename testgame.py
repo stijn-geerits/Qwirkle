@@ -1,8 +1,17 @@
+#!/usr/bin/env python3
+import sys
+
+# Add classes folder to path
+CLASSESDIR = "Classes/"
+sys.path.insert(1, CLASSESDIR)
+
+# Import classes
 from game import Game
 from player import Player
 
 
 def main():
+    # TODO: Voeg func. toe voor het kiezen van spelersaantal
     # Init the game
     print("Welkom bij Qwirkle!")
     continu = False
@@ -51,6 +60,7 @@ def main():
     print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
 
     mygame.play_tiles(play_tiles, play_positions)
+    # TODO: Line validation
     '''
     xylines = mygame.build_line(play_tiles)
 

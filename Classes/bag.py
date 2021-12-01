@@ -13,7 +13,7 @@ class Bag:
         Every possible combination of color and shape appears 3 times.
         """
         tiles = []
-        tile_id = 0
+        tile_id = 1
         colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
         shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
 

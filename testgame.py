@@ -1,13 +1,38 @@
+#!/usr/bin/env python3
+import sys
+
+# Add classes folder to path
+CLASSESDIR = "Classes/"
+sys.path.insert(1, CLASSESDIR)
+
+# Import classes
 from game import Game
 from player import Player
 
 
 def main():
+    # TODO: Voeg func. toe voor het kiezen van spelersaantal
     # Init the game
-    speler1 = Player(1, "Stijn")
-    speler2 = Player(2, "Laël")
-    speler3 = Player(3, "Stan")
-    mygame = Game([speler1, speler2, speler3])
+    print("Welkom bij Qwirkle!")
+    continu = False
+    id = 0
+    spelers = []
+    while not continu:
+        print("Maak u keuze:"+"\n"+"1:Speler toevoegen"+"\n"+"2:Spel starten")
+        keuze = int(input())
+        if keuze == 1:
+            id += 1
+            na = "Speler"+str(id)
+            speler = Player(id, na)
+            print("Geef de naam van speler " + str(id) + ":")
+            naam = input()
+            if naam !="":
+                speler.change_name(naam)
+            spelers.append(speler)
+
+        if keuze == 2:
+            mygame = Game(spelers)
+            continu = True
 
     tile_dict = generate_tile_dict()
 
@@ -35,6 +60,7 @@ def main():
     print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
 
     mygame.play_tiles(play_tiles, play_positions)
+    # TODO: Line validation
     '''
     xylines = mygame.build_line(play_tiles)
 
@@ -125,7 +151,6 @@ def handle_player_input():
     positions = [tuple(int(el2) for el2 in el) for el in tmp2]
 
     return tile_ids, positions
-
 
 if __name__ == "__main__":
     main()

@@ -251,8 +251,14 @@ class Menu:
 		active_player = self.game.players.index(self.game.get_player_on_hand())
 		
 		#draw the scoreboard
-		grid = gui.grid([32]*player_count, [int(self.btn_game_size[0]*1.5), 48], color.grid_edge, [color.grid_fill]*2*active_player+[color.player_on_hand]*2+[color.grid_fill]*2*(player_count-active_player-1))
-		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.05)])
+		gui.rendertext(surf, lang.score, 32, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.04)], "midtop")
+		grid = gui.grid([32]*player_count, [int(self.btn_game_size[0]*1.6), 48], color.grid_edge, [color.grid_fill]*2*active_player+[color.player_on_hand]*2+[color.grid_fill]*2*(player_count-active_player-1))
+		gridpos = [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.04)+24]
+		surf.blit(grid, gridpos)
+		#draw the players and their scores
+		for p in range(len(self.game.players)):
+			gui.rendertext(surf, self.game.players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*32)+16], "midleft")
+			gui.rendertext(surf, str(self.game.scoreboard.get_score(self.game.players[p].get_id())), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*32)+16], "midright")
 		
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])

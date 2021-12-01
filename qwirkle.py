@@ -246,6 +246,14 @@ class Menu:
 		#set the background for the menu
 		surf.fill(color.background)
 		
+		#get the player data
+		player_count = len(self.game.players)
+		active_player = self.game.players.index(self.game.get_player_on_hand())
+		
+		#draw the scoreboard
+		grid = gui.grid([32]*player_count, [int(self.btn_game_size[0]*1.5), 48], color.grid_edge, [color.grid_fill]*2*active_player+[color.player_on_hand]*2+[color.grid_fill]*2*(player_count-active_player-1))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.05)])
+		
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
 		#render the amount of tile in bag

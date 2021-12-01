@@ -366,22 +366,62 @@ def grid(row_heights, column_widths, edge=(0, 0, 0), fill=(255, 255, 255)):
 	row_heights should contain a list of integers defining the height of each row in px
 	column_widths should contain a list of integers defining the width of each column in px
 	edge should contain a triplet with RGB color values
-	fill should contain a triplet with RGB color values
+	fill should contain a triplet with RGB color values or a list of the previous
 	"""
 	#initialize a pygame.Surface object
 	surf = pygame.Surface([sum(column_widths), sum(row_heights)])
-	#draw the bounding box
-	box = rectangle(surf.get_size(), fill, 1, edge)
-	surf.blit(box, box.get_rect())
-	#draw the row seperators
-	offset = 0
-	for h in row_heights:
-		offset += h
-		pygame.draw.aaline(surf, edge, [0, offset], [surf.get_width(), offset])
-	#draw the column seperators
-	offset = 0
-	for w in column_widths:
-		offset += w
-		pygame.draw.aaline(surf, edge, [offset, 0], [offset, surf.get_height()])
+	#check the fill color
+	if not is_rgb(fill):
+		for color in fill:
+			if not is_rgb(color):
+				print("[gui.py]grid:\x1b[91m Parameter fill does not contain one or more RGB triplets.\x1b[97m")
+				return surf
+		#check whether enough colors were defined
+		if len(fill) != (len(row_heights) * len(column_widths)):
+			print("[gui.py]grid:\x1b[91m Parameter fill does not contain enough RGB triplets.\x1b[97m")
+			return surf
+		#draw each cell
+		color = 0
+		offset = [0, 0]
+		for h in row_heights:
+			for w in column_widths:
+				#get and draw the cell
+				cell = rectangle([w, h], fill[color], 1, edge)
+				surf.blit(cell, offset)
+				#update the color and offset value
+				color += 1
+				offset[0] += w
+			#update the offset value
+			offset[0] = 0
+			offset[1] += h 
+	else:
+		#draw the bounding box
+		box = rectangle(surf.get_size(), fill, 1, edge)
+		surf.blit(box, box.get_rect())
+		#draw the row seperators
+		offset = 0
+		for h in row_heights:
+			offset += h
+			pygame.draw.aaline(surf, edge, [0, offset], [surf.get_width(), offset])
+		#draw the column seperators
+		offset = 0
+		for w in column_widths:
+			offset += w
+			pygame.draw.aaline(surf, edge, [offset, 0], [offset, surf.get_height()])
 	#return the pygame.Surface object
 	return surf
+
+def is_rgb(color):
+	"""
+	Test if the given color is a triplet containing RGB color values
+	
+	RGB color values can have contain any value in the range 0-255
+	"""
+	if len(color) != 3:
+		return False
+	for value in color:
+		if type(value) != int:
+			return False
+		elif value < 0 or value > 255:
+			return False
+	return True

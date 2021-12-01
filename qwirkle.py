@@ -264,7 +264,7 @@ class Menu:
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
 		#render the amount of tile in bag
-		gui.rendertext(surf, lang.tiles_in_bag %(self.game.bag.get_current_amount()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
+		gui.rendertext(surf, lang.tiles_in_bag %(self.game.get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
 		#draw a grid for the bag
 		grid = gui.grid([35]*2, [35]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])

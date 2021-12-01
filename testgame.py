@@ -11,20 +11,19 @@ from player import Player
 
 
 def main():
-    # TODO: Voeg func. toe voor het kiezen van spelersaantal
     # Init the game
     print("Welkom bij Qwirkle!")
     continu = False
-    id = 0
+    player_id = 0
     spelers = []
     while not continu:
         print("Maak u keuze:"+"\n"+"1:Speler toevoegen"+"\n"+"2:Spel starten")
         keuze = int(input())
         if keuze == 1:
-            id += 1
-            na = "Speler"+str(id)
-            speler = Player(id, na)
-            print("Geef de naam van speler " + str(id) + ":")
+            player_id += 1
+            na = "Speler"+str(player_id)
+            speler = Player(player_id, na)
+            print("Geef de naam van speler " + str(player_id) + ":")
             naam = input()
             if naam !="":
                 speler.change_name(naam)
@@ -34,71 +33,56 @@ def main():
             mygame = Game(spelers)
             continu = True
 
-    tile_dict = generate_tile_dict()
+    tile_dict = mygame.get_tile_dictionary()
 
-    board = mygame.get_field()
+    board = make_board_printable(tile_dict, mygame.get_field())
     for row in board:
         print(row)
 
-    # Kies eerste speler
-    mygame.player_on_hand = mygame.players[0]
-    current_player = mygame.get_player_on_hand()
-    print(f"{current_player.get_name()} is aan de beurt")
+    while True:
+        # Kies eerste speler
+        current_player = mygame.next_player()
+        print(f"{current_player.get_name()} is aan de beurt")
 
-    # Toon blokken in hand van speler
-    current_hand = current_player.get_hand()
-    tiles_info = make_tiles_printable(current_hand)
-    print(tiles_info)
+        # Toon blokken in hand van speler
+        current_hand = current_player.get_hand()
+        tiles_info = make_tiles_printable(current_hand)
+        print(tiles_info)
 
-    play_tile_ids, play_positions = handle_player_input()
-    play_tiles = []
-    for tile in current_hand:
-        if tile.get_id() in play_tile_ids:
-            play_tiles.append(tile)
+        play_tile_ids, play_positions = handle_player_input()
+        play_tiles = []
+        for tile in current_hand:
+            if tile.get_id() in play_tile_ids:
+                play_tiles.append(tile)
 
-    play_tiles_p = make_tiles_printable(play_tiles)
-    print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
+        play_tiles_p = make_tiles_printable(play_tiles)
+        print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
 
-    mygame.play_tiles(play_tiles, play_positions)
-    # TODO: Line validation
-    '''
-    xylines = mygame.build_line(play_tiles)
+        mygame.play_tiles(play_tiles, play_positions)
+        # TODO: Line validation
 
-    # Remove single tile lines
-    for xyline in xylines:
-        if len(xyline) == 1:
-            xylines.remove(xyline)
-    print(f"De xy lijnen zijn: {xylines}")
+        xylines = mygame.build_line(play_tiles)
 
-    line_list = mygame.create_line(xylines)
+        # Remove single tile lines
+        for xyline in xylines:
+            if len(xyline) == 1:
+                xylines.remove(xyline)
+        print(f"De xy lijnen zijn: {xylines}")
 
-    for i, line in enumerate(line_list):
-        for line2 in line_list[i::]:
-            if line.is_equal(line2):
-                line_list.remove(line2)
+        line_list = mygame.create_line(xylines)
 
-    print(f"De unieke lijnen zijn: {line_list}")
-    '''
-    p_board = make_board_printable(tile_dict, board)
-    for row in p_board:
-        for el in row:
-            print(el, end=' ')
-        print()
+        for i, line in enumerate(line_list):
+            for line2 in line_list[i::]:
+                if line.is_equal(line2):
+                    line_list.remove(line2)
 
+        print(f"De unieke lijnen zijn: {line_list}")
 
-def generate_tile_dict():
-    tile_dict = {}
-    tile_id = 0
-    colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
-    shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
-
-    for color in colors:
-        for shape in shapes:
-            for i in range(3):
-                tile_dict[tile_id + i] = (color, shape)
-            tile_id += 3
-
-    return tile_dict
+        p_board = make_board_printable(tile_dict, board)
+        for row in p_board:
+            for el in row:
+                print(el, end=' ')
+            print()
 
 
 def make_tiles_printable(tiles):
@@ -122,11 +106,10 @@ def make_board_printable(tile_dict, board):
     printable_board = []
     for row in board:
         printable_row = []
-        for el in row:
-            if el != 0:
-                tile = tile_dict[el]
-                color = tile[0]
-                shape = tile[1]
+        for tile in row:
+            if tile.get_id() != 0:
+                color = tile.get_color()
+                shape = tile.get_shape()
                 tile_str = colors[color] + shapes[shape] + "\x1b[97m"
                 printable_row.append(tile_str)
 
@@ -151,6 +134,7 @@ def handle_player_input():
     positions = [tuple(int(el2) for el2 in el) for el in tmp2]
 
     return tile_ids, positions
+
 
 if __name__ == "__main__":
     main()

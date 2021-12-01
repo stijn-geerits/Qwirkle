@@ -1,7 +1,7 @@
 import player
 import scoreboard
 import bag
-import tile
+from tile import Tile
 import random
 import line
 
@@ -11,12 +11,17 @@ class Game:
         self.players = players
         self.scoreboard = scoreboard.Scoreboard(players)
         self.bag = bag.Bag()
-        self.field = [[0 for x in range(92)] for y in range(92)]
+        self.tile_dict = self.bag.get_tile_dictionary()
+        empty_tile = Tile(0, '', '', 0)
+        self.field = [[empty_tile for x in range(10)] for y in range(10)]
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]
         self.last_move = None
         for player in players:  # new
             player.add_to_hand(self.bag.take_tiles(6))
+
+    def get_tile_dictionary(self):
+        return self.tile_dict
 
     def get_field(self, position=None):
         """
@@ -44,6 +49,7 @@ class Game:
         index = self.players.index(current_player)
         index += 1
         new_player = self.players[index % len(self.players)]
+        self.player_on_hand = new_player
         return new_player
 
     def play_tiles(self, tiles, positions):
@@ -58,37 +64,38 @@ class Game:
         for i in range(len(tiles)):
             (x, y) = positions[i]
             tile = tiles[i]
-            self.field[y][x] = tile.get_id()
+            self.field[y][x] = tile
             tile.set_position((x, y))
 
-    def __build_line(self, tiles):
+    def build_line(self, tiles):
         """
         Build a line for every tile that will be placed on the field
         xline creates a horizontal line trough every tile
         yline creates a vertical line through every tile
         """
+        empty_tile = Tile(0, '', '', 0)
         xylines = []
         for tile in tiles:
             xline = []
             yline = []
-            (x, y) = tile.get_position(tile)
+            (x, y) = tile.get_position()
             t = x
-            while self.get_field((t, y)) != 0:
+            while self.get_field((t, y)) != empty_tile:
                 tile = self.get_field((t, y))
                 xline.append(tile)
                 t = t + 1
             t = x -1
-            while self.get_field((t, y)) != 0:
+            while self.get_field((t, y)) != empty_tile:
                 tile = self.get_field((t, y))
                 xline.insert(0, tile)
                 t = t - 1
             s = y
-            while self.get_field((x, s)) != 0:
+            while self.get_field((x, s)) != empty_tile:
                 tile = self.get_field((x, s))
                 yline.append(tile)
                 s = s + 1
             s = y-1
-            while self.get_field((x, s)) != 0:
+            while self.get_field((x, s)) != empty_tile:
                 tile = self.get_field((x, s))
                 yline.insert(0, tile)
                 s = s - 1
@@ -96,7 +103,7 @@ class Game:
             xylines.append(yline)
         return xylines
 
-    def __validate_line(self, tiles):
+    def validate_line(self, tiles):
         """
         Checks if a line is valid by checking their colors and shapes.
         Returns True if line is valid, False if line is invalid.
@@ -116,7 +123,7 @@ class Game:
         else:
             return False
 
-    def __controle(self, xylines):
+    def controle(self, xylines):
         """
         Checks if move is valid, uses above function
         """
@@ -126,16 +133,17 @@ class Game:
                 return False
         return True
 
-    def __create_line(self, xylines):
+    def create_line(self, xylines):
         """
         If move is valid the line will be created by giving the start and end coordinates to the class Tile
         """
+        li = []
         for xyline in xylines:
             start_tile = xyline[0]
             end_tile = xyline[-1]
             start_cord = end_tile.get_position()
             end_cord = start_tile.get_position()
-            li = line.Line(start_cord, end_cord)
+            li.append( line.Line(start_cord, end_cord) )
         return li
 
     def switch_tiles(self, tiles):

@@ -39,6 +39,12 @@ class Bag:
         self.tiles.append(tile)
         self.__update_current_amount()
 
+    def get_tile_dictionary(self):
+        tile_dict = {}
+        for tile in self.tiles:
+            tile_dict[tile.get_id()] = tile
+        return tile_dict
+
     def get_current_amount(self):
         """
         Get function for current amount of tiles in the bag.\n
@@ -85,27 +91,7 @@ class Bag:
 if __name__ == "__main__":
     # Create new bag
     bag = Bag()
-    print("Current amount in bag " + str(bag.get_current_amount()) + "\n")
+    tile_dict = bag.get_tile_dictionary()
 
-    # Take 6 tiles from the bag
-    hand = bag.take_tiles(6)
-    print("Took 6 tiles from the bag")
-    print("IDs of tiles taken: " + str([hand[i].get_id() for i in range(0, 5)]))
-    print("Current amount in bag " + str(bag.get_current_amount()) + "\n")
+    print(tile_dict)
 
-    # Trade tiles 0 and 2
-    old_tiles1 = []
-    old_tile_indexes = [0, 2]
-    for i in old_tile_indexes:
-        old_tiles1.append(hand[i])
-
-    new_tiles1 = bag.trade_tiles(old_tiles1)
-
-    i = 0
-    for j in old_tile_indexes:
-        hand[j] = new_tiles1[i]
-        i += 1
-
-    print("Traded 2 tiles")
-    print("IDs of tiles in hand: " + str([hand[i].get_id() for i in range(0, 5)]))
-    print("Current amount in bag " + str(bag.get_current_amount()) + "\n")

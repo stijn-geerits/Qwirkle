@@ -255,7 +255,7 @@ class Menu:
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
 		#draw a grid for the hand
 		grid = gui.grid([35], [35]*6, color.grid_edge, color.grid_fill)
-		surf.blit(grid, gui.set_relpos(grid.get_rect(), [self.size[0]-int(self.btn_game_size[0]*2.3)//2, self.size[1]-48], "midtop"))
+		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), self.size[1]-48])
 		
 		#draw a grid for the playing field
 		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//35, (self.size[1]-32)//35]

@@ -595,6 +595,7 @@ def input_builder(rect, states, default=None, textpadding=None):
 ### Main program ###
 if __name__ == "__main__":
 	#set variables
+	active = None
 	background = pygame.Surface(user.winsize)
 	clock = pygame.time.Clock()
 	loop = True
@@ -633,47 +634,72 @@ if __name__ == "__main__":
 			if event.type == pygame.QUIT:
 				loop = False
 			#keyboard events
-			if event.type == pygame.KEYDOWN:
+			elif event.type == pygame.KEYDOWN:
 				#sent pressed keys to input widget
-				if type(selected) == gui.Input:
-					selected.type(event)
-					update.append(selected)
+				if type(active) == gui.Input:
+					active.type(event)
+					update.append(active)
 			#check mouse button events
-			if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
-				for w in widgets:
-					#activate a widget
-					if w.get_current_state() == gui.Widget.HOVER:
-						w.set_current_state(gui.Widget.ACTIVE)
-						update.append(w)
-			if event.type == pygame.MOUSEBUTTONUP:
+			elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
 				if type(selected) in [gui.Widget, gui.Button, gui.Input]:
-					#deactivate a widget
-					if selected.get_current_state() == gui.Widget.ACTIVE and type(selected) != gui.Input:
-						#run button function
-						if type(selected) == gui.Button:
-							rtrn = selected.run_function()
+					#reset the previously active widget
+					if active != None:
+						active.set_current_state(gui.Widget.IDLE)
+					#update the widget state
+					selected.set_current_state(gui.Widget.ACTIVE)
+					#the selected widget becomes the active widget
+					active = selected
+					selected = None
+					#add the widget to the update list
+					update.append(active)
+				#deactivate the active widget
+				elif type(active) == gui.Input:
+					#update the widget state
+					active.set_current_state(gui.Widget.IDLE)
+					#add the widget to the update list
+					update.append(active)
+					#reset the active widget
+					active = None
+			elif event.type == pygame.MOUSEBUTTONUP:
+				#deactivate a widget (not inputs)
+				if type(active) in [gui.Widget, gui.Button]:
+					#run button function
+					if type(active) == gui.Button:
+						rtrn = active.run_function()
+						#set the widget to hover (if it was not set to unavailable)
+						if active.get_current_state() != gui.Widget.UNAVAILABLE:
+							#update the widget state
+							active.set_current_state(gui.Widget.HOVER)
+							#the active widget becomes the selected widget
+							selected = active
+							active = None
+							#add the widget to the update list
+							update.append(selected)
 						else:
-							rtrn = None
-						#a menu was selected
-						if rtrn != None:
-							#clear the update list of old updates
-							update = []
-							#get the new menu data
-							background = menus.get_background()
-							widgets = menus.get_widgets()
-							#clear the widgets and sprites layer
-							widgets_layer.fill(color.alpha)
-							sprites_layer.fill(color.alpha)
-							#add the surfaces and widgets to the update list
-							update.append(background)
-							update.extend(widgets)
-							update.extend([widgets_layer, sprites_layer])
-						#update the widget state (if it still exists)
-						if selected in widgets and selected.get_current_state() != gui.Widget.UNAVAILABLE:
-							selected.set_current_state(gui.Widget.HOVER)
-							#add the widget to the update list, if it isn't there already
-							if not selected in update:
-								update.append(selected)
+							active = None
+					else:
+						rtrn = None
+					#a menu was selected
+					if rtrn != None:
+						#clear the update list of old updates
+						update = []
+						#get the new menu data
+						background = menus.get_background()
+						widgets = menus.get_widgets()
+						#clear the widgets and sprites layer
+						widgets_layer.fill(color.alpha)
+						sprites_layer.fill(color.alpha)
+						#add the surfaces and widgets to the update list
+						update.append(background)
+						update.extend(widgets)
+						update.extend([widgets_layer, sprites_layer])
+					#reset the active widget
+					if not active in widgets:
+						active = None
+					#reset the selected widget
+					if not selected in widgets:
+						selected = None
+						
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
@@ -684,12 +710,20 @@ if __name__ == "__main__":
 					selected = w
 					w.set_current_state(gui.Widget.HOVER)
 					update.append(w)
-				#check whether the widget is not being hovered over (and this has not been set)
-				elif not w.get_rect().collidepoint(pygame.mouse.get_pos()) and (w.get_current_state() == gui.Widget.HOVER or w.get_current_state() == gui.Widget.ACTIVE):
-					if selected == w:
-						selected = None
-					w.set_current_state(gui.Widget.IDLE)
-					update.append(w)
+			#check whether the selected widget is not being hovered over (and this has not been set)
+			if selected != None:
+				if not selected.get_rect().collidepoint(pygame.mouse.get_pos()):
+					selected.set_current_state(gui.Widget.IDLE)
+					update.append(selected)
+					selected = None
+			#check whether the active widget is not being hovered over (and this has not been set)
+			if active != None:
+				#keep an input active when moved off of
+				if type(active) != gui.Input:
+					if not active.get_rect().collidepoint(pygame.mouse.get_pos()):
+						active.set_current_state(gui.Widget.IDLE)
+						update.append(active)
+						active = None
 		
 		#update the display
 		for u in update:

@@ -1,6 +1,7 @@
 #background
 alpha = (0, 0, 0)
 background = (200, 200, 200)
+text = (32, 32, 32)
 
 #button
 button_idle_fill = (82, 189, 236)
@@ -11,6 +12,14 @@ button_hover_fill = (146, 178, 255)
 button_hover_edge = (34, 85, 170)
 button_active_fill = (0, 44, 121)
 button_active_edge = (34, 85, 170)
+confirm_unavailable_fill = (128, 128, 128)
+confirm_unavailable_edge = (32, 32, 32)
+confirm_idle_fill = (224, 224, 224)
+confirm_idle_edge = (32, 32, 32)
+confirm_hover_fill = (255, 255, 255)
+confirm_hover_edge = (128, 128, 128)
+confirm_active_fill = (128, 128, 128)
+confirm_active_edge = (32, 32, 32)
 
 #input
 input_unavailable_fill = (128, 128, 128)

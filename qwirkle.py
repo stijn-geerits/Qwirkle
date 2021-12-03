@@ -657,6 +657,7 @@ if __name__ == "__main__":
 					#reset the previously active widget
 					if active != None:
 						active.set_current_state(gui.Widget.IDLE)
+						update.append(active)
 					#update the widget state
 					selected.set_current_state(gui.Widget.ACTIVE)
 					#the selected widget becomes the active widget

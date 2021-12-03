@@ -185,8 +185,11 @@ class Menu:
 		surf = pygame.Surface(self.size)
 		
 		#set the background color for the menu
-		bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR+"background7.png"), user.winsize)
-		surf.blit(bg, (0,0))
+		if gui.is_rgb(color.background):
+			surf.fill(color.background)
+		else:
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background), user.winsize)
+			surf.blit(bg, [0, 0])
 		#place the qwirkle title graphic
 		gui.renderimage(surf, GRAPHICSDIR + "qwirkle.png", [int(self.size[0]*.5), int(self.size[1]*.05)], "midtop")
 		#place the copyright notice
@@ -199,9 +202,12 @@ class Menu:
 		#initialize the surface
 		surf = pygame.Surface(self.size)
 		
-		#set the background for the menu
-		bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + "background7.png"), user.winsize)
-		surf.blit(bg, (0, 0))
+		#set the background color for the menu
+		if gui.is_rgb(color.background):
+			surf.fill(color.background)
+		else:
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background), user.winsize)
+			surf.blit(bg, [0, 0])
 		#place the menu title
 		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
 		#place the rules text
@@ -214,9 +220,12 @@ class Menu:
 		#initialize the surface
 		surf = pygame.Surface(self.size)
 		
-		#set the background for the menu
-		bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + "background7.png"), user.winsize)
-		surf.blit(bg, (0, 0))
+		#set the background color for the menu
+		if gui.is_rgb(color.background):
+			surf.fill(color.background)
+		else:
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background), user.winsize)
+			surf.blit(bg, [0, 0])
 		#place the menu title
 		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
 		
@@ -237,7 +246,7 @@ class Menu:
 		#draw the overlay
 		surf.blit(overlay, [0, 0])
 		#render the text announcing the next player
-		gui.rendertext(surf, lang.player_on_hand %(self.game.get_player_on_hand().get_name()), int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "center", color.background)
+		gui.rendertext(surf, lang.player_on_hand %(self.game.get_player_on_hand().get_name()), int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "center", color.player_text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -246,9 +255,12 @@ class Menu:
 		#initialize the surface
 		surf = pygame.Surface(self.size)
 		
-		#set the background for the menu
-		bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + "background8.png"), user.winsize)
-		surf.blit(bg, (0, 0))
+		#set the background color for the menu
+		if gui.is_rgb(color.background):
+			surf.fill(color.background)
+		else:
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background), user.winsize)
+			surf.blit(bg, [0, 0])
 		
 		#get the player data
 		players = self.game.get_players()

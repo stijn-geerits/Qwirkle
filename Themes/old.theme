@@ -38,4 +38,5 @@ grid_edge = (32, 32, 32)
 #scoreboard
 scoreboard = background
 player_on_hand = (200, 255, 200)
+player_text = (200, 200, 200)
 

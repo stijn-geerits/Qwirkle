@@ -1,6 +1,6 @@
 #background
 alpha = (0, 0, 0)
-background = (115, 156, 107)
+background = "background7.png"
 text = (32, 32, 32)
 
 #button
@@ -40,3 +40,4 @@ grid_edge = (32, 32, 32)
 #scoreboard
 scoreboard = (224, 226, 230)
 player_on_hand = (251,215,69)
+player_text = (200, 200, 200)

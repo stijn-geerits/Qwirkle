@@ -98,10 +98,10 @@ class Menu:
 		#confirm button dimensions
 		self.btn_confirm_size = [int(self.btn_game_size[0]*2.2), 44]
 		#confirm button template
-		btn_unavailable = gui.rectangle(self.btn_confirm_size, color.input_unavailable_fill, btn_edge_size, color.input_unavailable_edge)
-		btn_idle = gui.rectangle(self.btn_confirm_size, color.input_idle_fill, btn_edge_size, color.input_idle_edge)
-		btn_hover = gui.rectangle(self.btn_confirm_size, color.input_active_fill, btn_edge_size, color.input_active_edge)
-		btn_active = gui.rectangle(self.btn_confirm_size, color.input_unavailable_fill, btn_edge_size, color.input_unavailable_edge)
+		btn_unavailable = gui.rectangle(self.btn_confirm_size, color.confirm_unavailable_fill, btn_edge_size, color.confirm_unavailable_edge)
+		btn_idle = gui.rectangle(self.btn_confirm_size, color.confirm_idle_fill, btn_edge_size, color.confirm_idle_edge)
+		btn_hover = gui.rectangle(self.btn_confirm_size, color.confirm_hover_fill, btn_edge_size, color.confirm_hover_edge)
+		btn_active = gui.rectangle(self.btn_confirm_size, color.confirm_active_fill, btn_edge_size, color.confirm_active_edge)
 		self.button_confirm_template = [btn_unavailable, btn_idle, btn_hover, btn_active]
 		
 		# input templates #
@@ -189,7 +189,7 @@ class Menu:
 		#place the qwirkle title graphic
 		gui.renderimage(surf, GRAPHICSDIR + "qwirkle.png", [int(self.size[0]*.5), int(self.size[1]*.05)], "midtop")
 		#place the copyright notice
-		gui.rendertext(surf, lang.copyright, int(self.size[1]*.03), None, [int(self.size[0]*.5), int(self.size[1]*.97)], "midbottom")
+		gui.rendertext(surf, lang.copyright, int(self.size[1]*.03), None, [int(self.size[0]*.5), int(self.size[1]*.97)], "midbottom", color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -201,9 +201,9 @@ class Menu:
 		#set the background for the menu
 		surf.fill(color.background)
 		#place the menu title
-		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop")
+		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
 		#place the rules text
-		gui.rendertext(surf, lang.rules_text, int(self.size[1]*.04), None, [int(self.size[0]*.02), int(self.size[1]*.11)])
+		gui.rendertext(surf, lang.rules_text, int(self.size[1]*.04), None, [int(self.size[0]*.02), int(self.size[1]*.11)], color=color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -215,7 +215,7 @@ class Menu:
 		#set the background for the menu
 		surf.fill(color.background)
 		#place the menu title
-		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop")
+		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -252,19 +252,19 @@ class Menu:
 		active_player = players.index(self.game.get_player_on_hand())
 		
 		#draw the scoreboard
-		gui.rendertext(surf, lang.score, 32, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.04)], "midtop")
+		gui.rendertext(surf, lang.score, 32, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.04)], "midtop", color.text)
 		grid = gui.grid([32]*player_count, [int(self.btn_game_size[0]*1.6), 48], color.grid_edge, [color.grid_fill]*2*active_player+[color.player_on_hand]*2+[color.grid_fill]*2*(player_count-active_player-1))
 		gridpos = [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.04)+24]
 		surf.blit(grid, gridpos)
 		#draw the players and their scores
 		for p in range(player_count):
-			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*32)+16], "midleft")
-			gui.rendertext(surf, str(self.game.get_player_score(players[p].get_id())), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*32)+16], "midright")
+			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*32)+16], "midleft", color.text)
+			gui.rendertext(surf, str(self.game.get_player_score(players[p].get_id())), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*32)+16], "midright", color.text)
 		
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
 		#render the amount of tile in bag
-		gui.rendertext(surf, lang.tiles_in_bag %(self.game.get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center")
+		gui.rendertext(surf, lang.tiles_in_bag %(self.game.get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center", color.text)
 		#draw a grid for the bag
 		grid = gui.grid([35]*2, [35]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
@@ -301,20 +301,20 @@ class Menu:
 		# button objects #
 		#new game button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.4)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.NEW_GAME), lang.new_game)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.NEW_GAME), lang.new_game, color.text)
 		widgets.append(btn)
 		#rules button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.5)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.RULES), lang.rules)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.RULES), lang.rules, color.text)
 		widgets.append(btn)
 		#settings button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], None, lang.settings)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], None, lang.settings, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#exit button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.7)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], full_quit, lang.exit)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], full_quit, lang.exit, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -327,7 +327,7 @@ class Menu:
 		# button objects #
 		#back button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -340,20 +340,20 @@ class Menu:
 		# button objects #
 		#add player button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75), int(self.size[1]*.15)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], self.__add_input, lang.add)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], self.__add_input, lang.add, color.text)
 		widgets.append(btn)
 		#remove player button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75), int(self.size[1]*.25)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], self.__remove_input, lang.subtract)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_small_template], self.__remove_input, lang.subtract, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#back button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.3), int(self.size[1]*.95)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back, color.text)
 		widgets.append(btn)
 		#start button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.7), int(self.size[1]*.95)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], self.__init_game, lang.start_game)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], self.__init_game, lang.start_game, color.text)
 		widgets.append(btn)
 		
 		# input objects #
@@ -374,7 +374,7 @@ class Menu:
 		# button objects #
 		#confirm button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_confirm_size), [self.size[0]-int(self.btn_game_size[0]*1.15), self.size[1]-8], "midbottom")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_confirm_template], lambda:self.select_menu(self.GAME), lang.confirm)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_confirm_template], lambda:self.select_menu(self.GAME), lang.confirm, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -387,17 +387,17 @@ class Menu:
 		# button objects #
 		#cancel button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*.6), self.size[1]-78], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.cancel)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.cancel, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#play button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.7), self.size[1]-78], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#trade/skip button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.trade)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.trade, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		

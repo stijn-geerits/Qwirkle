@@ -33,9 +33,7 @@ def main():
             mygame = Game(spelers)
             continu = True
 
-    tile_dict = mygame.get_tile_dictionary()
-
-    board = make_board_printable(tile_dict, mygame.get_field())
+    board = make_board_printable(mygame.get_field())
     for row in board:
         print(row)
 
@@ -51,9 +49,10 @@ def main():
 
         play_tile_ids, play_positions = handle_player_input()
         play_tiles = []
-        for tile in current_hand:
-            if tile.get_id() in play_tile_ids:
-                play_tiles.append(tile)
+        for tile_id in play_tile_ids:
+            for tile in current_hand:
+                if tile.get_id() == tile_id:
+                    play_tiles.append(tile)
 
         play_tiles_p = make_tiles_printable(play_tiles)
         print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
@@ -69,16 +68,29 @@ def main():
                 xylines.remove(xyline)
         print(f"De xy lijnen zijn: {xylines}")
 
+        is_move_valid = mygame.controle(xylines)
+        if is_move_valid:
+            print("De gespeelde blokjes zijn geldig")
+        else:
+            print("De gespeelde blokjes zijn ongeldig")
+
         line_list = mygame.create_line(xylines)
 
         for i, line in enumerate(line_list):
-            for line2 in line_list[i::]:
+            for line2 in line_list[i+1::]:
                 if line.is_equal(line2):
                     line_list.remove(line2)
 
         print(f"De unieke lijnen zijn: {line_list}")
 
-        p_board = make_board_printable(tile_dict, board)
+        added_score = 0
+        for line in line_list:
+            added_score += line.get_length()
+        mygame.scoreboard.change_score(current_player.get_id(), added_score)
+        print("De huidige score is:")
+        print(mygame.scoreboard.get_score_all())
+
+        p_board = make_board_printable(mygame.get_field())
         for row in p_board:
             for el in row:
                 print(el, end=' ')
@@ -92,7 +104,7 @@ def make_tiles_printable(tiles):
     return printable_tiles
 
 
-def make_board_printable(tile_dict, board):
+def make_board_printable(board):
     # Color codes
     # 1: Red, 2: Green, 3: Yellow, 4: Blue, 5: Purple, 6: Cyan -> Orange
     colors = {"red": '\x1b[91m', "orange": '\x1b[96m',

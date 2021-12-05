@@ -369,7 +369,7 @@ def grid(row_heights, column_widths, edge=(0, 0, 0), fill=(255, 255, 255)):
 	fill should contain a triplet with RGB color values or a list of the previous
 	"""
 	#initialize a pygame.Surface object
-	surf = pygame.Surface([sum(column_widths), sum(row_heights)])
+	surf = pygame.Surface([sum(column_widths) - len(column_widths) + 1, sum(row_heights) - len(row_heights) + 1])
 	#check the fill color
 	if not is_rgb(fill):
 		for color in fill:
@@ -390,10 +390,10 @@ def grid(row_heights, column_widths, edge=(0, 0, 0), fill=(255, 255, 255)):
 				surf.blit(cell, offset)
 				#update the color and offset value
 				color += 1
-				offset[0] += w
+				offset[0] += (w - 1)
 			#update the offset value
 			offset[0] = 0
-			offset[1] += h 
+			offset[1] += (h - 1)
 	else:
 		#draw the bounding box
 		box = rectangle(surf.get_size(), fill, 1, edge)
@@ -401,12 +401,12 @@ def grid(row_heights, column_widths, edge=(0, 0, 0), fill=(255, 255, 255)):
 		#draw the row seperators
 		offset = 0
 		for h in row_heights:
-			offset += h
+			offset += (h - 1)
 			pygame.draw.aaline(surf, edge, [0, offset], [surf.get_width(), offset])
 		#draw the column seperators
 		offset = 0
 		for w in column_widths:
-			offset += w
+			offset += (w - 1)
 			pygame.draw.aaline(surf, edge, [offset, 0], [offset, surf.get_height()])
 	#return the pygame.Surface object
 	return surf

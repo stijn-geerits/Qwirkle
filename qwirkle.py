@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # import classes #
-import inspect, pygame, sys
+import inspect, json, pygame, sys
 
 
 
@@ -279,20 +279,25 @@ class Menu:
 		
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
+		
 		#render the amount of tile in bag
 		gui.rendertext(surf, lang.tiles_in_bag %(self.game.get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center", color.text)
 		#draw a grid for the bag
-		grid = gui.grid([35]*2, [35]*3, color.grid_edge, color.grid_fill)
+		grid = gui.grid([36]*2, [36]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
+		
 		#draw a grid for the hand
-		grid = gui.grid([35], [35]*6, color.grid_edge, color.grid_fill)
+		grid = gui.grid([36], [36]*6, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), self.size[1]-48])
+		#draw the tiles in the hand
+		gridRect = grid.get_rect().move([self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), self.size[1]-48])
+		for tile in range(len(self.data)):
+			surf.blit(self.data[tile].get_image(), [gridRect.left + (tile * 35) + 2, gridRect.top + 2])
 		
 		#draw a grid for the playing field
-		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//35, (self.size[1]-32)//35]
-		grid = gui.grid([35]*field_size[1], [35]*field_size[0], color.grid_edge, color.grid_fill)
+		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//36, (self.size[1]-32)//36]
+		grid = gui.grid([36]*field_size[1], [36]*field_size[0], color.grid_edge, color.grid_fill)
 		surf.blit(grid, gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center"))
-		
 		#<test> tileset
 		tileset = Tileset(GRAPHICSDIR + "tiles.png", 32)
 		gridRect = gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center")
@@ -489,7 +494,7 @@ class Menu:
 		
 		# game object #
 		#initialize the game variable
-		self.game = Game(players)
+		self.game = Game(players, Tileset(GRAPHICSDIR + "tiles.png", 32, True))
 		
 		# tile objects #
 		#get the tiles for the player on hand
@@ -503,11 +508,22 @@ class Tileset:
 	"""
 	Store and manage tilesets
 	"""
-	def __init__(self, image, tilesize):
+	def __init__(self, image, tilesize, use_tilemap=False):
 		#Load the tileset image file
 		self.tileset = pygame.image.load(image)
 		#Set the tile size
 		self.tilesize = tilesize
+		
+		#Load the tilemap
+		if use_tilemap:
+			#Open the tilemap
+			file = open(image[:image.rfind('.')] + ".map", 'r')
+			#Interpret the tilemap
+			self.tilemap = json.loads(file.read())
+			#Close the tilemap
+			file.close()
+		else:
+			self.tilemap = None
 		
 		#Calculate the amount of tiles total and in each direction
 		self.tileheight = self.tileset.get_height() // self.tilesize
@@ -521,6 +537,10 @@ class Tileset:
 		
 		Returns a 0x0 surface if tile is outside the range of possible tiles.
 		"""
+		#Map the tile
+		if self.tilemap != None:
+			tile = self.tilemap.index(tile)
+		
 		if tile > 0 and tile < self.tilecount:
 			#Return a surface containing the given tile
 			return self.tileset.subsurface([(tile % self.tilewidth) * self.tilesize, (tile // self.tilewidth) * self.tilesize, self.tilesize, self.tilesize])
@@ -536,6 +556,10 @@ class Tileset:
 		If tilecoords is set to False, x and y will be interpreted as absolute
 		coordinates. Otherwise, x and y are considered positions in a tile grid.
 		"""
+		#Map the tile
+		if self.tilemap != None:
+			tile = self.tilemap.index(tile)
+		
 		if tile < 0 or tile >= self.tilecount:
 			#Tile does not exist
 			return -1

@@ -7,12 +7,17 @@ import line
 
 
 class Game:
-    def __init__(self, players):
+    def __init__(self, players, tileset=None):
         self.players = players
         self.scoreboard = scoreboard.Scoreboard(players)
         self.bag = bag.Bag()
         self.tile_dict = self.bag.get_tile_dictionary()
-        empty_tile = Tile(0, '', '', 0)
+        if tileset != None:
+            for tile in self.tile_dict:
+                self.tile_dict[tile].set_image(tileset.get_tile(self.tile_dict[tile].get_shape() + self.tile_dict[tile].get_color()))
+            empty_tile = Tile(0, '', "empty", 0, tileset.get_tile("empty"))
+        else:
+            empty_tile = Tile(0, '', '', 0)
         self.field = [[empty_tile for x in range(10)] for y in range(10)]
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]

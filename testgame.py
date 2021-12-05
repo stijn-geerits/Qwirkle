@@ -122,7 +122,7 @@ def make_board_printable(board):
             if tile.get_id() != 0:
                 color = tile.get_color()
                 shape = tile.get_shape()
-                tile_str = colors[color] + shapes[shape] + "\x1b[97m"
+                tile_str = colors[color] + shapes[shape] + "\x1b[00m"
                 printable_row.append(tile_str)
 
             else:

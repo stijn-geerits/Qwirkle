@@ -141,7 +141,7 @@ class Button(Widget):
 		"""
 		#verify that the button is active before running the function
 		if self.current_state != self.ACTIVE:
-			print("[gui.py]Button.activate:\x1b[91m Cannot run the function of a button that is not active.\x1b[97m")
+			print("[gui.py]Button.activate:\x1b[91m Cannot run the function of a button that is not active.\x1b[00m")
 		#prevent running the function prior to its definition
 		elif self.function != None:
 			return self.function()
@@ -247,7 +247,7 @@ def set_relpos(rect, location, relpos):
 		rect.topright = location
 	else:
 		#invalid relpos value given, go with standard setting
-		print("[gui.py]set_relpos:\x1b[91m Invalid relpos value '%s' received, defaulting to 'topleft'.\x1b[97m" % relpos)
+		print("[gui.py]set_relpos:\x1b[91m Invalid relpos value '%s' received, defaulting to 'topleft'.\x1b[00m" % relpos)
 		rect.topleft = location
 	return rect
 
@@ -374,11 +374,11 @@ def grid(row_heights, column_widths, edge=(0, 0, 0), fill=(255, 255, 255)):
 	if not is_rgb(fill):
 		for color in fill:
 			if not is_rgb(color):
-				print("[gui.py]grid:\x1b[91m Parameter fill does not contain one or more RGB triplets.\x1b[97m")
+				print("[gui.py]grid:\x1b[91m Parameter fill does not contain one or more RGB triplets.\x1b[00m")
 				return surf
 		#check whether enough colors were defined
 		if len(fill) != (len(row_heights) * len(column_widths)):
-			print("[gui.py]grid:\x1b[91m Parameter fill does not contain enough RGB triplets.\x1b[97m")
+			print("[gui.py]grid:\x1b[91m Parameter fill does not contain enough RGB triplets.\x1b[00m")
 			return surf
 		#draw each cell
 		color = 0

@@ -154,7 +154,7 @@ class Menu:
 			self.background = self.__get_menu_game()
 			self.widgets = self.__get_widgets_game()
 		else:
-			print("[qwirkle.py]Menu.get_background:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[97m")
+			print("[qwirkle.py]Menu.get_background:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[00m")
 			menu = self.select_menu(self.EMPTY)
 		#return the selected menu
 		return menu

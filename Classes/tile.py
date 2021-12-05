@@ -63,7 +63,7 @@ class Tile:
         """
         #pygame.Rect objects of pygame.Surface objects are placed at 0x0 by default
         if self.image != None:
-            return self.image.get_rect().move(position)
+            return self.image.get_rect().move(self.position)
         else:
             return pygame.Rect(position + [0, 0])
 

@@ -15,7 +15,7 @@ THEMESDIR = "Themes/"
 #insert the CLASSESDIR into the search list for importing scripts
 sys.path.insert(1, CLASSESDIR)
 #import the custom classes
-import gui; from game import Game; from player import Player
+import gui; from game import Game; from player import Player; from tile import Tile
 
 
 
@@ -118,7 +118,7 @@ class Menu:
 		#initialize the main menu
 		self.select_menu(self.MAIN)
 		#initialize a variable for the data and game object
-		self.data = []
+		self.tiles = []
 		self.game = None
 		return
 	
@@ -158,12 +158,6 @@ class Menu:
 			menu = self.select_menu(self.EMPTY)
 		#return the selected menu
 		return menu
-	
-	def get_data(self):
-		"""
-		Returns the auxiliary data for the current menu
-		"""
-		return self.data
 	
 	def get_background(self):
 		"""
@@ -291,8 +285,10 @@ class Menu:
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), self.size[1]-48])
 		#draw the tiles in the hand
 		gridRect = grid.get_rect().move([self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), self.size[1]-48])
-		for tile in range(len(self.data)):
-			surf.blit(self.data[tile].get_image(), [gridRect.left + (tile * 35) + 2, gridRect.top + 2])
+		for tile in range(len(self.tiles)):
+			surf.blit(self.tiles[tile].get_image(), [gridRect.left + (tile * 35) + 2, gridRect.top + 2])
+			#also set the location of the tiles
+			self.tiles[tile].set_position([gridRect.left + (tile * 35) + 2, gridRect.top + 2])
 		
 		#draw a grid for the playing field
 		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//36, (self.size[1]-32)//36]
@@ -496,10 +492,33 @@ class Menu:
 		
 		# tile objects #
 		#get the tiles for the player on hand
-		self.data = self.game.get_player_on_hand().get_hand()
+		self.tiles = self.game.get_player_on_hand().get_hand()
 		
 		#switch the menu to wait for player
 		return self.select_menu(self.WAIT_PLAYER)
+	
+	def grab_tile(self, mouse_pos):
+		"""
+		Grab an available tile object on the surface
+		
+		Returns None if the mouse does not select a tile
+		"""
+		#check all player tiles
+		for tile in self.tiles:
+			#check whether the tile is selected
+			if tile.get_rect().collidepoint(mouse_pos):
+				self.background.fill(color.grid_fill, tile.get_rect())
+				#return the tile object
+				return tile
+		#no tile selected
+		return None
+	
+	def drop_tile(self, tile):
+		"""
+		Drop a tile at the current position
+		"""
+		self.background.blit(tile.get_image(), tile.get_rect())
+		return
 
 # Container for tilesets #
 class Tileset:
@@ -635,6 +654,8 @@ if __name__ == "__main__":
 	loop = True
 	rtrn = None
 	selected = None
+	sprite = None
+	sprite_offset = [0, 0]
 	sprites_layer = pygame.Surface(user.winsize)
 	update = []
 	widgets = []
@@ -653,8 +674,9 @@ if __name__ == "__main__":
 	sprites_layer.fill(color.alpha)
 	sprites_layer.set_colorkey(color.alpha)
 	
-	#add the surfaces and widgets to the update list
+	#add the surfaces, sprite and widgets to the update list
 	update.append(background)
+	update.append(sprite)
 	update.extend(widgets)
 	update.extend([widgets_layer, sprites_layer])
 	
@@ -675,6 +697,7 @@ if __name__ == "__main__":
 					update.append(active)
 			#check mouse button events
 			elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
+				sprite = menus.grab_tile(pygame.mouse.get_pos())
 				if type(selected) in [gui.Widget, gui.Button, gui.Input]:
 					#reset the previously active widget
 					if active != None:
@@ -695,7 +718,16 @@ if __name__ == "__main__":
 					update.append(active)
 					#reset the active widget
 					active = None
+				#grab a tile
+				elif type(sprite) == Tile:
+					sprite_offset = [pygame.mouse.get_pos()[0] - sprite.get_position()[0], pygame.mouse.get_pos()[1] - sprite.get_position()[1]]
 			elif event.type == pygame.MOUSEBUTTONUP:
+				#deselect a tile
+				if type(sprite) == Tile:
+					menus.drop_tile(sprite)
+					sprite = None
+					sprites_layer.fill(color.alpha)
+					update.append(sprites_layer)
 				#deactivate a widget (not inputs)
 				if type(active) in [gui.Widget, gui.Button]:
 					#run button function
@@ -718,14 +750,15 @@ if __name__ == "__main__":
 					if rtrn != None:
 						#clear the update list of old updates
 						update = []
-						#get the new menu data
+						#get the new menu info
 						background = menus.get_background()
 						widgets = menus.get_widgets()
 						#clear the widgets and sprites layer
 						widgets_layer.fill(color.alpha)
 						sprites_layer.fill(color.alpha)
-						#add the surfaces and widgets to the update list
+						#add the surfaces, sprite and widgets to the update list
 						update.append(background)
+						update.append(sprite)
 						update.extend(widgets)
 						update.extend([widgets_layer, sprites_layer])
 					#reset the active widget
@@ -734,11 +767,14 @@ if __name__ == "__main__":
 					#reset the selected widget
 					if not selected in widgets:
 						selected = None
-						
 		
 		#look whether the mouse was moved
 		mouse_move = pygame.mouse.get_rel()
 		if mouse_move != (0, 0):
+			#move the sprite to the mouse cursor
+			if type(sprite) == Tile:
+				sprite.set_position([pygame.mouse.get_pos()[0] - sprite_offset[0], pygame.mouse.get_pos()[1] - sprite_offset[1]])
+				update.append(sprite)
 			for w in widgets:
 				#check whether the widget is being hovered over (and the widget is set to idle)
 				if w.get_rect().collidepoint(pygame.mouse.get_pos()) and w.get_current_state() == gui.Widget.IDLE:
@@ -765,6 +801,10 @@ if __name__ == "__main__":
 			#update a button or input
 			if type(u) == gui.Button or type(u) == gui.Input:
 				u.blit_on(widgets_layer)
+			#sprites
+			elif type(u) == Tile:
+				sprites_layer.fill(color.alpha)
+				sprites_layer.blit(u.get_image(), u.get_rect())
 		if len(update) > 0:
 			update = []
 			window.blit(background, [0, 0])

@@ -106,10 +106,13 @@ def make_tiles_printable(tiles):
 
 def make_board_printable(board):
     # Color codes
-    # 1: Red, 2: Green, 3: Yellow, 4: Blue, 5: Purple, 6: Cyan -> Orange
-    colors = {"red": '\x1b[91m', "orange": '\x1b[96m',
-              "yellow": '\x1b[93m', "green": '\x1b[92m',
-              "blue": '\x1b[94m', "purple": '\x1b[95m'}
+    # 38;2;r;g;b
+    colors = {"red": '\x1b[38;2;192;32;32m', 
+              "orange": '\x1b[38;2;192;96;32m',
+              "yellow": '\x1b[38;2;192;192;32m', 
+              "green": '\x1b[38;2;32;144;32m',
+              "blue": '\x1b[38;2;32;32;192m',
+              "purple": '\x1b[38;2;128;32;144m'}
 
     shapes = {"circle": chr(0x25cf), "x": "X",
               "diamond": chr(0x25c6), "square": chr(0x25aa),

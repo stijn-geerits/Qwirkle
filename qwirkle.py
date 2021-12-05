@@ -298,13 +298,11 @@ class Menu:
 		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//36, (self.size[1]-32)//36]
 		grid = gui.grid([36]*field_size[1], [36]*field_size[0], color.grid_edge, color.grid_fill)
 		surf.blit(grid, gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center"))
-		#<test> tileset
-		tileset = Tileset(GRAPHICSDIR + "tiles.png", 32)
+		#draw the game field
 		gridRect = gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center")
-		for p in range(1, 37):
-			top = gridRect.top + (((p - 1) % 6) * 35) + 2
-			left = gridRect.left + (((p - 1) // 6) * 35) + 2
-			tileset.draw_tile(surf, p, [left, top], False)
+		for y in range(field_size[1]):
+			for x in range(field_size[0]):
+				surf.blit(self.game.get_field([x, y]).get_image(), [gridRect.left + (x * 35) + 2, gridRect.top + (x * 35) + 2])
 		
 		#return the pygame.Surface object
 		return surf

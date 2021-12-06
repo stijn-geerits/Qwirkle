@@ -75,6 +75,19 @@ class Game:
         self.player_on_hand = new_player
         return new_player
 
+    def previous_player(self):
+        """
+        Import the current player on hand
+        Add current index by 1 and respect the rules by % !! len(players) = 3 , objects has index: 0, 1, 2 !!
+        Determines the new player on hand, return
+        """
+        current_player = self.player_on_hand
+        index = self.players.index(current_player)
+        index -= 1
+        new_player = self.players[index % len(self.players)]
+        self.player_on_hand = new_player
+        return new_player
+
     def play_tiles(self, tiles, positions):
         """
         Take tiles from current players hand, trade them with bag and insert new in hand
@@ -151,7 +164,7 @@ class Game:
         Checks if move is valid, uses above function
         """
         for xyline in xylines:
-            if self.__validate_line(xyline) is False:
+            if self.validate_line(xyline) is False:
                 print("Move not valid")
                 return False
         return True

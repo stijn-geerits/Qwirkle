@@ -38,7 +38,7 @@ def main():
         print(row)
 
     while True:
-        # Kies eerste speler
+        # Kies speler
         current_player = mygame.next_player()
         print(f"{current_player.get_name()} is aan de beurt")
 
@@ -58,8 +58,8 @@ def main():
         print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
 
         mygame.play_tiles(play_tiles, play_positions)
-        # TODO: Line validation
 
+        # Build lines
         xylines = mygame.build_line(play_tiles)
 
         # Remove single tile lines
@@ -68,33 +68,36 @@ def main():
                 xylines.remove(xyline)
         print(f"De xy lijnen zijn: {xylines}")
 
+        # Controle lines
         is_move_valid = mygame.controle(xylines)
         if is_move_valid:
             print("De gespeelde blokjes zijn geldig")
+            # Create lines
+            line_list = mygame.create_line(xylines)
+
+            # Delete equal lines
+            for i, line in enumerate(line_list):
+                for line2 in line_list[i + 1::]:
+                    if line.is_equal(line2):
+                        line_list.remove(line2)
+
+            print(f"De unieke lijnen zijn: {line_list}")
+
+            added_score = 0
+            for line in line_list:
+                added_score += line.get_length()
+            mygame.scoreboard.change_score(current_player.get_id(), added_score)
+            print("De huidige score is:")
+            print(mygame.scoreboard.get_score_all())
+
+            p_board = make_board_printable(mygame.get_field())
+            for row in p_board:
+                for el in row:
+                    print(el, end=' ')
+                print()
         else:
             print("De gespeelde blokjes zijn ongeldig")
-
-        line_list = mygame.create_line(xylines)
-
-        for i, line in enumerate(line_list):
-            for line2 in line_list[i+1::]:
-                if line.is_equal(line2):
-                    line_list.remove(line2)
-
-        print(f"De unieke lijnen zijn: {line_list}")
-
-        added_score = 0
-        for line in line_list:
-            added_score += line.get_length()
-        mygame.scoreboard.change_score(current_player.get_id(), added_score)
-        print("De huidige score is:")
-        print(mygame.scoreboard.get_score_all())
-
-        p_board = make_board_printable(mygame.get_field())
-        for row in p_board:
-            for el in row:
-                print(el, end=' ')
-            print()
+            current_player = mygame.previous_player()
 
 
 def make_tiles_printable(tiles):

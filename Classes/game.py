@@ -95,12 +95,11 @@ class Game:
         This function has 4 child functions: build_line, validate line, controle, create_line
         """
         self.player_on_hand.take_from_hand(tiles)
-        new_tile = self.bag.trade_tiles(tiles)
+        new_tile = self.bag.take_tiles(len(tiles))
         self.player_on_hand.add_to_hand(new_tile)
         for i in range(len(tiles)):
             (x, y) = positions[i]
-            tile = tiles[i]
-            self.field[y][x] = tile
+            self.field[y][x] = tiles[i]
             tile.set_position((x, y))
 
     def build_line(self, tiles):

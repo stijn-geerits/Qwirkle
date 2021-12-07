@@ -190,9 +190,9 @@ class Input(Widget):
 					self.value = self.value[:-1]
 			#ignore the following key presses
 			elif keys.key in [pygame.K_ESCAPE, pygame.K_HOME, pygame.K_END, pygame.K_INSERT, pygame.K_TAB]:
-				inputted += ""
+				self.value += ''
 			elif keys.key in range(pygame.K_F1, pygame.K_F12 + 1):
-				inputted += ""
+				self.value += ''
 			#add the typed character to the value
 			else:
 				self.value += keys.unicode

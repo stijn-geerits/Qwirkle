@@ -268,8 +268,8 @@ class Menu:
 		surf.blit(grid, gridpos)
 		#draw the players and their scores
 		for p in range(player_count):
-			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*32)+16], "midleft", color.text)
-			gui.rendertext(surf, str(self.game.get_player_score(players[p].get_id())), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*32)+16], "midright", color.text)
+			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*31)+16], "midleft", color.text)
+			gui.rendertext(surf, str(self.game.get_player_score(players[p].get_id())), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
 		
 		#draw a line as section between playing field and user interactibles
 		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])

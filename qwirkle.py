@@ -778,6 +778,10 @@ if __name__ == "__main__":
 			for w in widgets:
 				#check whether the widget is being hovered over (and the widget is set to idle)
 				if w.get_rect().collidepoint(pygame.mouse.get_pos()) and w.get_current_state() == gui.Widget.IDLE:
+					#make sure to deselect the previously selected widget
+					if selected != None:
+						selected.set_current_state(gui.Widget.IDLE)
+						update.append(selected)
 					selected = w
 					w.set_current_state(gui.Widget.HOVER)
 					update.append(w)

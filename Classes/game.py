@@ -12,13 +12,13 @@ class Game:
         self.scoreboard = scoreboard.Scoreboard(players)
         self.bag = bag.Bag()
         self.tile_dict = self.bag.get_tile_dictionary()
-        if tileset != None:
+        if tileset is not None:
             for tile in self.tile_dict:
                 self.tile_dict[tile].set_image(tileset.get_tile(self.tile_dict[tile].get_shape() + self.tile_dict[tile].get_color()))
-            empty_tile = Tile(0, '', "empty", 0, tileset.get_tile("empty"))
+            self.empty_tile = Tile(0, '', "empty", 0, tileset.get_tile("empty"))
         else:
-            empty_tile = Tile(0, '', '', 0)
-        self.field = [[empty_tile for x in range(92)] for y in range(92)]
+            self.empty_tile = Tile(0, '', '', 0)
+        self.field = [[self.empty_tile for x in range(92)] for y in range(92)]
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]
         self.last_move = None
@@ -98,7 +98,7 @@ class Game:
         new_tile = self.bag.take_tiles(len(tiles))
         self.player_on_hand.add_to_hand(new_tile)
         for i in range(len(tiles)):
-            (x, y) = positions[i]
+            (x, y) = positions[i]  # controle op leeg element
             self.field[y][x] = tiles[i]
             tile.set_position((x, y))
 
@@ -108,29 +108,28 @@ class Game:
         xline creates a horizontal line trough every tile
         yline creates a vertical line through every tile
         """
-        empty_tile = Tile(0, '', '', 0)
         xylines = []
         for tile in tiles:
             xline = []
             yline = []
             (x, y) = tile.get_position()
             t = x
-            while self.get_field((t, y)) != empty_tile:
+            while self.get_field((t, y)) != self.empty_tile:
                 tile = self.get_field((t, y))
                 xline.append(tile)
                 t = t + 1
             t = x -1
-            while self.get_field((t, y)) != empty_tile:
+            while self.get_field((t, y)) != self.empty_tile:
                 tile = self.get_field((t, y))
                 xline.insert(0, tile)
                 t = t - 1
             s = y
-            while self.get_field((x, s)) != empty_tile:
+            while self.get_field((x, s)) != self.empty_tile:
                 tile = self.get_field((x, s))
                 yline.append(tile)
                 s = s + 1
             s = y-1
-            while self.get_field((x, s)) != empty_tile:
+            while self.get_field((x, s)) != self.empty_tile:
                 tile = self.get_field((x, s))
                 yline.insert(0, tile)
                 s = s - 1
@@ -162,7 +161,7 @@ class Game:
         """
         Checks if move is valid, uses above function
         """
-        for xyline in xylines:
+        for xyline in xylines:  # controle op minstens 1 bestaand blokje in xy lijnen
             if self.validate_line(xyline) is False:
                 print("Move not valid")
                 return False

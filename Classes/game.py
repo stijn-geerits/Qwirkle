@@ -24,6 +24,7 @@ class Game:
         self.last_move = None
         for player in players:  # new
             player.add_to_hand(self.bag.take_tiles(6))
+        self.first_move = True
 
     def get_tile_dictionary(self):
         return self.tile_dict
@@ -55,6 +56,13 @@ class Game:
         else:
             (x, y) = position
             return self.field[y][x]
+
+    def set_field(self, field):
+        """
+        Set the gameboard to the given state
+        This function should only be used for rewind purposes
+        """
+        self.field = field
 
     def get_player_on_hand(self):
         """
@@ -93,8 +101,11 @@ class Game:
         Take tiles from current players hand, trade them with bag and insert new in hand
         Every tile will be placed on corresponding position on field
         This function has 4 child functions: build_line, validate line, controle, create_line
-        ! This function will not update the player hand if it does not succeed, no rewind is necessary.
         """
+        # Save unchanged state of the board and hand, for rewind purposes
+        prev_board = self.get_field()
+        prev_hand = self.player_on_hand.get_hand()
+
         for position, tile in zip(positions, tiles):
             (x, y) = position
             # If there is no tile already on played position
@@ -109,8 +120,49 @@ class Game:
         self.player_on_hand.take_from_hand(tiles)
         new_tile = self.bag.take_tiles(len(tiles))
         self.player_on_hand.add_to_hand(new_tile)
-        # Return False if function succeeded
-        return False
+
+        # Build lines
+        xylines = self.build_line(tiles)
+
+        # Remove single tile lines
+        for xyline in xylines:
+            if len(xyline) == 1:
+                xylines.remove(xyline)
+        print(f"De xy lijnen zijn: {xylines}")
+
+        # Controle lines
+        is_move_valid = self.controle(xylines, self.first_move, tiles)
+
+        if is_move_valid:
+            print("De gespeelde blokjes zijn geldig")
+            # Create lines
+            line_list = self.create_line(xylines)
+
+            # Delete equal lines
+            for i, line in enumerate(line_list):
+                for line2 in line_list[i + 1::]:
+                    if line.is_equal(line2):
+                        line_list.remove(line2)
+
+            print(f"De unieke lijnen zijn: {line_list}")
+            # Calculate score by length of unique lines
+            added_score = 0
+            for line in line_list:
+                added_score += line.get_length()
+            self.scoreboard.change_score(self.player_on_hand.get_id(), added_score)
+
+            self.first_move = False
+            # Return False if function succeeded
+            return False
+
+        else:  # If move is not valid, restart players turn
+            print("De gespeelde blokjes zijn ongeldig")
+            self.player_on_hand.set_hand(prev_hand)
+            self.set_field(prev_board)
+            self.previous_player()
+            # Return True if function did not succeed
+            return True
+
 
 
 

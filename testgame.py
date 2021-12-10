@@ -51,9 +51,6 @@ def main():
         tiles_info = make_tiles_printable(current_hand)
         print(tiles_info)
 
-        # Save unchanged state of the board and hand, for rewind purposes
-        prev_board = mygame.get_field()
-        prev_hand = current_hand
         choice = ""
         while choice != "1" and choice != "2":
             print("Kies je actie:\t1. Aanleggen\t2. Ruilen")
@@ -76,48 +73,16 @@ def main():
             # If the function does not succeed, rewind the players turn
             # The function does not update players hand unless it succeeds
             if mygame.play_tiles(play_tiles, play_positions):
-                is_move_valid = False
-            else:
-                # Build lines
-                xylines = mygame.build_line(play_tiles)
+                continue
 
-                # Remove single tile lines
-                for xyline in xylines:
-                    if len(xyline) == 1:
-                        xylines.remove(xyline)
-                print(f"De xy lijnen zijn: {xylines}")
-
-                # Controle lines
-                is_move_valid = mygame.controle(xylines, first_move, play_tiles)
-
-            if is_move_valid:  # If move is valid, create lines and count score
-                print("De gespeelde blokjes zijn geldig")
-                # Create lines
-                line_list = mygame.create_line(xylines)
-
-                # Delete equal lines
-                for i, line in enumerate(line_list):
-                    for line2 in line_list[i + 1::]:
-                        if line.is_equal(line2):
-                            line_list.remove(line2)
-
-                print(f"De unieke lijnen zijn: {line_list}")
-                # Calculate score by length of unique lines
-                added_score = 0
-                for line in line_list:
-                    added_score += line.get_length()
-                mygame.scoreboard.change_score(current_player.get_id(), added_score)
-                print("De huidige score is:")
-                print(mygame.scoreboard.get_score_all())
-                # Print the new state of the board
-                p_board = make_board_printable(mygame.get_field())
-                for row in p_board:
-                    for el in row:
-                        print(el, end=' ')
-                    print()
-            else:  # If move is not valid, restart players turn
-                print("De gespeelde blokjes zijn ongeldig")
-                current_player = mygame.previous_player()
+            print("De huidige score is:")
+            print(mygame.scoreboard.get_score_all())
+            # Print the new state of the board
+            p_board = make_board_printable(mygame.get_field())
+            for row in p_board:
+                for el in row:
+                    print(el, end=' ')
+                print()
 
         elif choice == "2":
             # Handle the player input with option trade

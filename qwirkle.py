@@ -287,7 +287,7 @@ class Menu:
 		#draw the players and their scores
 		for p in range(player_count):
 			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*31)+16], "midleft", color.text)
-			gui.rendertext(surf, str(self.game.get_player_score(players[p].get_id())), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
+			gui.rendertext(surf, str(int(self.game.get_player_score(players[p].get_id()))), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
 		
 		#render the amount of tiles in the bag
 		gui.rendertext(surf, lang.tiles_in_bag %(self.game.get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center", color.text)
@@ -662,9 +662,11 @@ class Menu:
 				#add the tile position to the list with its positions
 				positions.append([(tile.get_position()[0] - self.data["field"].left) // 35, (tile.get_position()[1] - self.data["field"].top) // 35])
 		#play the tiles
-		self.game.play_tiles(played, positions)
+		failed = self.game.play_tiles(played, positions)
 		#go to the wait for player menu
-		self.select_menu(self.WAIT_PLAYER)
+		if not failed:
+			self.tiles = self.game.get_player_on_hand().get_hand()
+			self.select_menu(self.WAIT_PLAYER)
 		#return the amount of played tiles
 		return len(played)
 

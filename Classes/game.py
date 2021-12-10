@@ -18,7 +18,7 @@ class Game:
             self.empty_tile = Tile(0, '', "empty", 0, tileset.get_tile("empty"))
         else:
             self.empty_tile = Tile(0, '', '', 0)
-        self.field = [[self.empty_tile for x in range(92)] for y in range(92)]
+        self.field = [[self.empty_tile for x in range(15)] for y in range(15)]
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]
         self.last_move = None
@@ -93,14 +93,26 @@ class Game:
         Take tiles from current players hand, trade them with bag and insert new in hand
         Every tile will be placed on corresponding position on field
         This function has 4 child functions: build_line, validate line, controle, create_line
+        ! This function will not update the player hand if it does not succeed, no rewind is necessary.
         """
+        for position, tile in zip(positions, tiles):
+            (x, y) = position
+            # If there is no tile already on played position
+            if self.field[y][x] == self.empty_tile:
+                # Place tile on position
+                self.field[y][x] = tile
+                tile.set_position((x, y))
+            else:  # Return True if function did not succeed
+                return True
+
+        # Update player hand
         self.player_on_hand.take_from_hand(tiles)
         new_tile = self.bag.take_tiles(len(tiles))
         self.player_on_hand.add_to_hand(new_tile)
-        for i in range(len(tiles)):
-            (x, y) = positions[i]  # controle op leeg element
-            self.field[y][x] = tiles[i]
-            tile.set_position((x, y))
+        # Return False if function succeeded
+        return False
+
+
 
     def build_line(self, tiles):
         """

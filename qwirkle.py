@@ -272,7 +272,7 @@ class Menu:
 		gridRect = gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center")
 		for y in range(field_size[1]):
 			for x in range(field_size[0]):
-				surf.blit(self.game.get_field([x, y]).get_image(), [gridRect.left + (x * 35) + 2, gridRect.top + (x * 35) + 2])
+				surf.blit(self.game.get_field([x, y]).get_image(), [gridRect.left + (x * 35) + 2, gridRect.top + (y * 35) + 2])
 		#store the pygame.Rect object of the playing field grid for future reference
 		self.data["field"] = gridRect
 		
@@ -411,7 +411,7 @@ class Menu:
 		# button objects #
 		#cancel button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*.6), self.size[1]-78], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.cancel, color.text)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__cancel, lang.cancel, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#play button
@@ -612,7 +612,41 @@ class Menu:
 				else:
 					w.set_current_state(gui.Widget.IDLE)
 		return
-		
+	
+	def __cancel(self):
+		if self.menu != self.GAME:
+			print("[qwirkle.py]Menu.__cancel:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
+			return
+		#search for the tiles that are not in hand
+		moved = []
+		for tile in self.tiles:
+			#the current tile is on the playing field or bag
+			if tile.get_rect().colliderect(self.data["field"]) or tile.get_rect().colliderect(self.data["bag"]):
+				#add the tile to the list of moved tiles
+				moved.append(tile)
+		#move all tiles into available slots in hand
+		moving = 0
+		for x in range(6):
+			pos = [self.data["hand"].left + (x * 35) + 2, self.data["hand"].top + 2]
+			#check if the current spot already has a tile
+			has_tile = False
+			t = self.grab_tile(pos)
+			#the spot is emtpy
+			if type(t) != Tile:
+				#grab the tile, move it to the location and drop it there
+				self.grab_tile(moved[moving].get_position())
+				moved[moving].set_position(pos)
+				self.drop_tile(moved[moving])
+				#go to the next tile that needs to be moved
+				moving += 1
+			else:
+				#return the grabbed tile to its place
+				self.drop_tile(t)
+			#all tiles have been moved
+			if moving == len(moved):
+				break
+		return len(moved)
+	
 	def __play(self):
 		if self.menu != self.GAME:
 			print("[qwirkle.py]Menu.__play:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
@@ -625,6 +659,7 @@ class Menu:
 			if tile.get_rect().colliderect(self.data["field"]):
 				#add the tile to the list with played tiles
 				played.append(tile)
+				#add the tile position to the list with its positions
 				positions.append([(tile.get_position()[0] - self.data["field"].left) // 35, (tile.get_position()[1] - self.data["field"].top) // 35])
 		#play the tiles
 		self.game.play_tiles(played, positions)

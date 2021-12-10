@@ -421,7 +421,7 @@ class Menu:
 		widgets.append(btn)
 		#trade/skip button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.trade, color.text)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__trade, lang.trade, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		
@@ -663,12 +663,34 @@ class Menu:
 				positions.append([(tile.get_position()[0] - self.data["field"].left) // 35, (tile.get_position()[1] - self.data["field"].top) // 35])
 		#play the tiles
 		failed = self.game.play_tiles(played, positions)
-		#go to the wait for player menu
+		#play was correct
 		if not failed:
+			#update the tiles
 			self.tiles = self.game.get_player_on_hand().get_hand()
+			#go to the wait for player menu
 			self.select_menu(self.WAIT_PLAYER)
 		#return the amount of played tiles
 		return len(played)
+	
+	def __trade(self):
+		if self.menu != self.GAME:
+			print("[qwirkle.py]Menu.__trade:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
+			return
+		#search for the tiles that are on the bag
+		trades = []
+		for tile in self.tiles:
+			#the current tile is on the bag
+			if tile.get_rect().colliderect(self.data["bag"]):
+				#add the tile to the list of tiles to trade
+				trades.append(tile)
+		#trade the tiles
+		self.game.switch_tiles(trades)
+		#update the tiles
+		self.tiles = self.game.get_player_on_hand().get_hand()
+		#go to the wait for player menu
+		self.select_menu(self.WAIT_PLAYER)
+		#return the amount of traded tiles
+		return len(trades)
 
 # Container for tilesets #
 class Tileset:

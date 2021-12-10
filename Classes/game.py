@@ -151,7 +151,7 @@ class Game:
                 added_score += line.get_length()
             self.scoreboard.change_score(self.player_on_hand.get_id(), added_score)
 
-            self.player_on_hand=self.next_player()
+            self.player_on_hand = self.next_player()
             self.first_move = False
             # Return False if function succeeded
             return False
@@ -164,10 +164,7 @@ class Game:
             # Return True if function did not succeed
             return True
 
-
-
-
-    def build_line(self, tiles):
+    def __build_line(self, tiles):
         """
         Build a line for every tile that will be placed on the field
         xline creates a horizontal line trough every tile
@@ -202,7 +199,7 @@ class Game:
             xylines.append(yline)
         return xylines
 
-    def validate_line(self, tiles):
+    def __validate_line(self, tiles):
         """
         Checks if a line is valid by checking their colors and shapes.
         Returns True if line is valid, False if line is invalid.
@@ -222,7 +219,7 @@ class Game:
         else:
             return False
 
-    def controle(self, xylines, first_move, play_tiles):
+    def __controle(self, xylines, first_move, play_tiles):
         """
         Checks if move is valid, uses above function
         """
@@ -241,7 +238,7 @@ class Game:
         else:
             return False
 
-    def create_line(self, xylines):
+    def __create_line(self, xylines):
         """
         If move is valid the line will be created by giving the start and end coordinates to the class Tile
         """
@@ -261,6 +258,7 @@ class Game:
         self.player_on_hand.take_from_hand(tiles)
         new_tiles = self.bag.trade_tiles(tiles)
         self.player_on_hand.add_to_hand(new_tiles)
+        self.player_on_hand = self.next_player()
 
     def cancel(self):
         """

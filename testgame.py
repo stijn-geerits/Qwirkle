@@ -36,7 +36,8 @@ def main():
     board = make_board_printable(mygame.get_field())
     for row in board:
         print(row)
-
+    # TODO: Check op overlappende plaatsing van tegels (input + board)
+    #       Zoek manier om ongeldige beurt terug te draaien
     while True:
         # Kies speler
         current_player = mygame.next_player()
@@ -47,57 +48,83 @@ def main():
         tiles_info = make_tiles_printable(current_hand)
         print(tiles_info)
 
-        play_tile_ids, play_positions = handle_player_input()
-        play_tiles = []
-        for tile_id in play_tile_ids:
-            for tile in current_hand:
-                if tile.get_id() == tile_id:
-                    play_tiles.append(tile)
+        print("Kies je actie:\t1. Aanleggen\t2. Ruilen")
+        choice = str(input(":"))
+        if choice == "1":
+            # Handle player input with option play
+            play_tile_ids, play_positions = handle_player_input("play")
+            # Get the tiles from the players hand by ID
+            play_tiles = []
+            for tile_id in play_tile_ids:
+                for tile in current_hand:
+                    if tile.get_id() == tile_id:
+                        play_tiles.append(tile)
 
-        play_tiles_p = make_tiles_printable(play_tiles)
-        print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
+            # Show the played tiles and positions
+            play_tiles_p = make_tiles_printable(play_tiles)
+            print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
+            # Play the tiles
+            mygame.play_tiles(play_tiles, play_positions)
 
-        mygame.play_tiles(play_tiles, play_positions)
+            # Build lines
+            xylines = mygame.build_line(play_tiles)
 
-        # Build lines
-        xylines = mygame.build_line(play_tiles)
+            # Remove single tile lines
+            for xyline in xylines:
+                if len(xyline) == 1:
+                    xylines.remove(xyline)
+            print(f"De xy lijnen zijn: {xylines}")
 
-        # Remove single tile lines
-        for xyline in xylines:
-            if len(xyline) == 1:
-                xylines.remove(xyline)
-        print(f"De xy lijnen zijn: {xylines}")
+            # Controle lines
+            is_move_valid = mygame.controle(xylines)
+            if is_move_valid:  # If move is valid, create lines and count score
+                print("De gespeelde blokjes zijn geldig")
+                # Create lines
+                line_list = mygame.create_line(xylines)
 
-        # Controle lines
-        is_move_valid = mygame.controle(xylines)
-        if is_move_valid:
-            print("De gespeelde blokjes zijn geldig")
-            # Create lines
-            line_list = mygame.create_line(xylines)
+                # Delete equal lines
+                for i, line in enumerate(line_list):
+                    for line2 in line_list[i + 1::]:
+                        if line.is_equal(line2):
+                            line_list.remove(line2)
 
-            # Delete equal lines
-            for i, line in enumerate(line_list):
-                for line2 in line_list[i + 1::]:
-                    if line.is_equal(line2):
-                        line_list.remove(line2)
+                print(f"De unieke lijnen zijn: {line_list}")
+                # Calculate score by length of unique lines
+                added_score = 0
+                for line in line_list:
+                    added_score += line.get_length()
+                mygame.scoreboard.change_score(current_player.get_id(), added_score)
+                print("De huidige score is:")
+                print(mygame.scoreboard.get_score_all())
+                # Print the new state of the board
+                p_board = make_board_printable(mygame.get_field())
+                for row in p_board:
+                    for el in row:
+                        print(el, end=' ')
+                    print()
+            else:  # If move is not valid, restart players turn
+                print("De gespeelde blokjes zijn ongeldig")
+                current_player = mygame.previous_player()
 
-            print(f"De unieke lijnen zijn: {line_list}")
+        elif choice == "2":
+            # Handle the player input with option trade
+            trade_tile_ids = handle_player_input("trade")
+            # Get the tiles from players hand by ID
+            trade_tiles = []
+            for tile_id in trade_tile_ids:
+                for tile in current_hand:
+                    if tile.get_id() == tile_id:
+                        trade_tiles.append(tile)
+            # Print the traded tiles
+            trade_tiles_p = make_tiles_printable(trade_tiles)
+            print(f"Je hebt geruild: {trade_tiles_p}")
+            # Trade the tiles
+            mygame.switch_tiles(trade_tiles)
+            # Show players new hand
+            current_hand = current_player.get_hand()
+            tiles_info = make_tiles_printable(current_hand)
+            print(tiles_info)
 
-            added_score = 0
-            for line in line_list:
-                added_score += line.get_length()
-            mygame.scoreboard.change_score(current_player.get_id(), added_score)
-            print("De huidige score is:")
-            print(mygame.scoreboard.get_score_all())
-
-            p_board = make_board_printable(mygame.get_field())
-            for row in p_board:
-                for el in row:
-                    print(el, end=' ')
-                print()
-        else:
-            print("De gespeelde blokjes zijn ongeldig")
-            current_player = mygame.previous_player()
 
 
 def make_tiles_printable(tiles):
@@ -139,19 +166,27 @@ def make_board_printable(board):
     return printable_board
 
 
-def handle_player_input():
-    print("Geef de id's van de blokjes en hun locaties die je wil plaatsen." + "\n" + "bv: 15;(3,5);25;(6,9)")
-    user_input = str(input(':'))
-    user_input = user_input.split(";")
+def handle_player_input(action):
+    if action == "play":
+        print("Geef de id's van de blokjes en hun locaties die je wil plaatsen." + "\n" + "bv: 15;(3,5);25;(6,9)")
+        user_input = str(input(':'))
+        user_input = user_input.split(";")
 
-    tile_ids = list(map(int, user_input[::2]))
+        tile_ids = list(map(int, user_input[::2]))
 
-    position_strings = user_input[1::2]
-    tmp1 = [el.strip('()') for el in position_strings]
-    tmp2 = [el.split(',') for el in tmp1]
-    positions = [tuple(int(el2) for el2 in el) for el in tmp2]
+        position_strings = user_input[1::2]
+        tmp1 = [el.strip('()') for el in position_strings]
+        tmp2 = [el.split(',') for el in tmp1]
+        positions = [tuple(int(el2) for el2 in el) for el in tmp2]
 
-    return tile_ids, positions
+        return tile_ids, positions
+    elif action == "trade":
+        print("Geef de id's van de blokjes die je wil ruilen." + "\n" + "bv: 15;25")
+        user_input = str(input(':'))
+        user_input = user_input.split(";")
+
+        tile_ids = list(map(int, user_input))
+        return tile_ids
 
 
 if __name__ == "__main__":

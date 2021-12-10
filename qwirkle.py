@@ -118,8 +118,9 @@ class Menu:
 		#initialize the main menu
 		self.select_menu(self.MAIN)
 		#initialize a variable for the data and game object
-		self.tiles = []
+		self.data = {}
 		self.game = None
+		self.tiles = []
 		return
 	
 	def get_menu(self):
@@ -256,10 +257,27 @@ class Menu:
 			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), user.winsize)
 			surf.blit(bg, [0, 0])
 		
+		#reset the data variable
+		data = {}
 		#get the player data
 		players = self.game.get_players()
 		player_count = len(players)
 		active_player = players.index(self.game.get_player_on_hand())
+		
+		#draw a grid for the playing field
+		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//36, (self.size[1]-32)//36]
+		grid = gui.grid([36]*field_size[1], [36]*field_size[0], color.grid_edge, color.grid_fill)
+		surf.blit(grid, gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center"))
+		#draw the game field
+		gridRect = gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center")
+		for y in range(field_size[1]):
+			for x in range(field_size[0]):
+				surf.blit(self.game.get_field([x, y]).get_image(), [gridRect.left + (x * 35) + 2, gridRect.top + (x * 35) + 2])
+		#store the pygame.Rect object of the playing field grid for future reference
+		self.data["field"] = gridRect
+		
+		#draw a line as section between playing field and user interactibles
+		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
 		
 		#draw the scoreboard
 		gui.rendertext(surf, lang.score, 32, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.04)], "midtop", color.text)
@@ -271,14 +289,13 @@ class Menu:
 			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*31)+16], "midleft", color.text)
 			gui.rendertext(surf, str(self.game.get_player_score(players[p].get_id())), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
 		
-		#draw a line as section between playing field and user interactibles
-		pygame.draw.aaline(surf, color.grid_edge, [self.size[0]-int(self.btn_game_size[0]*2.3), 0], [self.size[0]-int(self.btn_game_size[0]*2.3), self.size[1]])
-		
-		#render the amount of tile in bag
+		#render the amount of tiles in the bag
 		gui.rendertext(surf, lang.tiles_in_bag %(self.game.get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center", color.text)
 		#draw a grid for the bag
 		grid = gui.grid([36]*2, [36]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
+		#store the pygame.Rect object of the bag grid for future reference
+		self.data["bag"] = grid.get_rect().move([self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
 		
 		#draw a grid for the hand
 		grid = gui.grid([36], [36]*6, color.grid_edge, color.grid_fill)
@@ -289,16 +306,8 @@ class Menu:
 			surf.blit(self.tiles[tile].get_image(), [gridRect.left + (tile * 35) + 2, gridRect.top + 2])
 			#also set the location of the tiles
 			self.tiles[tile].set_position([gridRect.left + (tile * 35) + 2, gridRect.top + 2])
-		
-		#draw a grid for the playing field
-		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//36, (self.size[1]-32)//36]
-		grid = gui.grid([36]*field_size[1], [36]*field_size[0], color.grid_edge, color.grid_fill)
-		surf.blit(grid, gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center"))
-		#draw the game field
-		gridRect = gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center")
-		for y in range(field_size[1]):
-			for x in range(field_size[0]):
-				surf.blit(self.game.get_field([x, y]).get_image(), [gridRect.left + (x * 35) + 2, gridRect.top + (x * 35) + 2])
+		#store the pygame.Rect object of the hand grid for future reference
+		self.data["hand"] = gridRect
 		
 		#return the pygame.Surface object
 		return surf
@@ -507,7 +516,10 @@ class Menu:
 		for tile in self.tiles:
 			#check whether the tile is selected
 			if tile.get_rect().collidepoint(mouse_pos):
+				#fill in the are where the tile was
 				self.background.fill(color.grid_fill, tile.get_rect())
+				#store the current position of the tile
+				self.data["oldpos"] = tile.get_rect().topleft
 				#return the tile object
 				return tile
 		#no tile selected
@@ -517,6 +529,20 @@ class Menu:
 		"""
 		Drop a tile at the current position
 		"""
+		#check whether the tile is on a valid grid
+		for grid in ["field", "bag", "hand"]:
+			gridRect = self.data[grid]
+			#the tile is on the grid
+			if gridRect.collidepoint(tile.get_rect().center):
+				#calculate the new position for the tile
+				xTile = (tile.get_rect().centerx - gridRect.left) // 35
+				yTile = (tile.get_rect().centery - gridRect.top) // 35
+				#place the tile in the grid
+				tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
+				self.background.blit(tile.get_image(), tile.get_rect())
+				return
+		#the tile is not on a grid
+		tile.set_position(self.data["oldpos"])
 		self.background.blit(tile.get_image(), tile.get_rect())
 		return
 

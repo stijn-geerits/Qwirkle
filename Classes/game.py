@@ -180,7 +180,7 @@ class Game:
         self.previous_player()
 
 
-    def build_line(self, tiles):
+    def __build_line(self, tiles):
         """
         Build a line for every tile that will be placed on the field
         xline creates a horizontal line trough every tile

@@ -1,6 +1,10 @@
-#background
+#basics
 alpha = (0, 0, 0)
-background = "background9.png"
+background_main = "background9.png"
+background_new_game = background_main
+background_game = "background10.png"
+background_rules = background_game
+background_settings = background_main
 text = (26,28,44)
 
 #button

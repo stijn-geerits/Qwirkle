@@ -36,11 +36,14 @@ def main():
     board = make_board_printable(mygame.get_field())
     for row in board:
         print(row)
+
+    first_move = True
     # TODO: Check op overlappende plaatsing van tegels (input + board)
     #       Zoek manier om ongeldige beurt terug te draaien
     while True:
         # Kies speler
         current_player = mygame.next_player()
+        print("--------------------------------------------")
         print(f"{current_player.get_name()} is aan de beurt")
 
         # Toon blokken in hand van speler
@@ -63,8 +66,14 @@ def main():
             # Show the played tiles and positions
             play_tiles_p = make_tiles_printable(play_tiles)
             print(f"Je hebt gespeeld: {play_tiles_p}, {play_positions}")
+
             # Play the tiles
-            mygame.play_tiles(play_tiles, play_positions)
+            # If the function does not succeed, rewind the players turn
+            # The function does not update players hand unless it succeeds
+            if mygame.play_tiles(play_tiles, play_positions):
+                print("De gespeelde blokjes zijn ongeldig")
+                mygame.previous_player()
+                continue
 
             # Build lines
             xylines = mygame.build_line(play_tiles)
@@ -76,7 +85,7 @@ def main():
             print(f"De xy lijnen zijn: {xylines}")
 
             # Controle lines
-            is_move_valid = mygame.controle(xylines)
+            is_move_valid = mygame.controle(xylines, first_move, play_tiles)
             if is_move_valid:  # If move is valid, create lines and count score
                 print("De gespeelde blokjes zijn geldig")
                 # Create lines
@@ -123,8 +132,10 @@ def main():
             # Show players new hand
             current_hand = current_player.get_hand()
             tiles_info = make_tiles_printable(current_hand)
+            print(f"{current_player.get_name()}, dit is je nieuwe hand")
             print(tiles_info)
 
+        first_move = False
 
 
 def make_tiles_printable(tiles):
@@ -168,25 +179,34 @@ def make_board_printable(board):
 
 def handle_player_input(action):
     if action == "play":
-        print("Geef de id's van de blokjes en hun locaties die je wil plaatsen." + "\n" + "bv: 15;(3,5);25;(6,9)")
-        user_input = str(input(':'))
-        user_input = user_input.split(";")
+        while True:
+            print("Geef de id's van de blokjes en hun locaties die je wil plaatsen." + "\n" + "bv: 15;(3,5);25;(6,9)")
+            user_input = str(input(':'))
+            user_input = user_input.split(";")
 
-        tile_ids = list(map(int, user_input[::2]))
+            tile_ids = list(map(int, user_input[::2]))
 
-        position_strings = user_input[1::2]
-        tmp1 = [el.strip('()') for el in position_strings]
-        tmp2 = [el.split(',') for el in tmp1]
-        positions = [tuple(int(el2) for el2 in el) for el in tmp2]
+            position_strings = user_input[1::2]
+            tmp1 = [el.strip('()') for el in position_strings]
+            tmp2 = [el.split(',') for el in tmp1]
+            positions = [tuple(int(el2) for el2 in el) for el in tmp2]
 
-        return tile_ids, positions
+            if len(tile_ids) == len(set(tile_ids)) and len(positions) == len(set(positions)):
+                return tile_ids, positions
+            else:
+                print("Deze invoer is ongeldig, probeer opnieuw")
+
     elif action == "trade":
-        print("Geef de id's van de blokjes die je wil ruilen." + "\n" + "bv: 15;25")
-        user_input = str(input(':'))
-        user_input = user_input.split(";")
+        while True:
+            print("Geef de id's van de blokjes die je wil ruilen." + "\n" + "bv: 15;25")
+            user_input = str(input(':'))
+            user_input = user_input.split(";")
 
-        tile_ids = list(map(int, user_input))
-        return tile_ids
+            tile_ids = list(map(int, user_input))
+            if len(tile_ids) == len(set(tile_ids)):
+                return tile_ids
+            else:
+                print("Deze invoer is ongeldig, probeer opnieuw")
 
 
 if __name__ == "__main__":

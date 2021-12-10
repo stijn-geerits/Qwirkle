@@ -122,7 +122,7 @@ class Game:
         self.player_on_hand.add_to_hand(new_tile)
 
         # Build lines
-        xylines = self.build_line(tiles)
+        xylines = self.__build_line(tiles)
 
         # Remove single tile lines
         for xyline in xylines:
@@ -131,12 +131,12 @@ class Game:
         print(f"De xy lijnen zijn: {xylines}")
 
         # Controle lines
-        is_move_valid = self.controle(xylines, self.first_move, tiles)
+        is_move_valid = self.__controle(xylines, self.first_move, tiles)
 
         if is_move_valid:
             print("De gespeelde blokjes zijn geldig")
             # Create lines
-            line_list = self.create_line(xylines)
+            line_list = self.__create_line(xylines)
 
             # Delete equal lines
             for i, line in enumerate(line_list):
@@ -230,7 +230,7 @@ class Game:
                     tile_in_board = True
                 if first_move is True:
                     tile_in_board = True
-            if self.validate_line(xyline) is False:
+            if self.__validate_line(xyline) is False:
                 print("Move not valid")
                 return False
         if tile_in_board is True:

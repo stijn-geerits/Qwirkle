@@ -97,9 +97,9 @@ class Game:
         self.player_on_hand.take_from_hand(tiles)
         new_tile = self.bag.take_tiles(len(tiles))
         self.player_on_hand.add_to_hand(new_tile)
-        for i in range(len(tiles)):
-            (x, y) = positions[i]  # controle op leeg element
-            self.field[y][x] = tiles[i]
+        for i, tile in enumerate(tiles):
+            (x, y) = positions[i]  # TODO: controle op leeg element
+            self.field[y][x] = tile
             tile.set_position((x, y))
 
     def build_line(self, tiles):
@@ -157,15 +157,24 @@ class Game:
         else:
             return False
 
-    def controle(self, xylines):
+    def controle(self, xylines, first_move, play_tiles):
         """
         Checks if move is valid, uses above function
         """
-        for xyline in xylines:  # controle op minstens 1 bestaand blokje in xy lijnen
+        tile_in_board = False
+        for xyline in xylines:
+            for tile in xyline:  # controle op minstens 1 bestaand blokje in xy lijnen
+                if tile not in play_tiles:
+                    tile_in_board = True
+                if first_move is True:
+                    tile_in_board = True
             if self.validate_line(xyline) is False:
                 print("Move not valid")
                 return False
-        return True
+        if tile_in_board is True:
+            return True
+        else:
+            return False
 
     def create_line(self, xylines):
         """

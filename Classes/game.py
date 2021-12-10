@@ -151,6 +151,7 @@ class Game:
                 added_score += line.get_length()
             self.scoreboard.change_score(self.player_on_hand.get_id(), added_score)
 
+            self.player_on_hand=self.next_player()
             self.first_move = False
             # Return False if function succeeded
             return False

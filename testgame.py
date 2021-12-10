@@ -36,6 +36,8 @@ def main():
     board = make_board_printable(mygame.get_field())
     for row in board:
         print(row)
+
+    first_move = True
     # TODO: Check op overlappende plaatsing van tegels (input + board)
     #       Zoek manier om ongeldige beurt terug te draaien
     while True:
@@ -83,7 +85,7 @@ def main():
             print(f"De xy lijnen zijn: {xylines}")
 
             # Controle lines
-            is_move_valid = mygame.controle(xylines)
+            is_move_valid = mygame.controle(xylines, first_move, play_tiles)
             if is_move_valid:  # If move is valid, create lines and count score
                 print("De gespeelde blokjes zijn geldig")
                 # Create lines
@@ -132,6 +134,8 @@ def main():
             tiles_info = make_tiles_printable(current_hand)
             print(f"{current_player.get_name()}, dit is je nieuwe hand")
             print(tiles_info)
+
+        first_move = False
 
 
 def make_tiles_printable(tiles):

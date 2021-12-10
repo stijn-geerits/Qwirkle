@@ -554,16 +554,62 @@ class Menu:
 					#place the tile in the grid
 					tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
 					self.background.blit(tile.get_image(), tile.get_rect())
+					#update the button states
+					self.__update_widgets_game()
 					return
 				#the tile is on an empty space in the field
 				elif grid == "field" and self.game.get_field([xTile, yTile]).get_shape() == "empty":
 					#place the tile in the grid
 					tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
 					self.background.blit(tile.get_image(), tile.get_rect())
+					#update the button states
+					self.__update_widgets_game()
 					return
 		#the tile is not on a grid
 		tile.set_position(self.data["oldpos"])
 		self.background.blit(tile.get_image(), tile.get_rect())
+		return
+	
+	def __update_widgets_game(self):
+		if self.menu != self.GAME:
+			print("[qwirkle.py]Menu.__update_widgets_game:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
+			return
+		for w in self.widgets:
+			if type(w) != gui.Button:
+				continue
+			#cancel button
+			if w.get_label() == lang.cancel:
+				#only disable the button when all tiles are in hand
+				disable = True
+				for tile in self.tiles:
+					if tile.get_rect().colliderect(self.data["field"]) or tile.get_rect().colliderect(self.data["bag"]):
+						disable = False
+				if disable:
+					w.set_current_state(gui.Widget.UNAVAILABLE)
+				else:
+					w.set_current_state(gui.Widget.IDLE)
+			#play button
+			elif w.get_label() == lang.play:
+				#only disable the button when no tiles are on the field
+				disable = True
+				for tile in self.tiles:
+					if tile.get_rect().colliderect(self.data["field"]):
+						disable = False
+				if disable:
+					w.set_current_state(gui.Widget.UNAVAILABLE)
+				else:
+					w.set_current_state(gui.Widget.IDLE)
+			#trade/skip button
+			elif w.get_label() == lang.trade or w.get_label() == lang.skip:
+				#only disable the button when no tiles are in the bag (both visual and technical bag)
+				disable = True
+				for tile in self.tiles:
+					if tile.get_rect().colliderect(self.data["bag"]):
+						disable = False
+				if disable and self.game.get_tiles_left() > 0:
+					w.set_current_state(gui.Widget.UNAVAILABLE)
+				else:
+					w.set_current_state(gui.Widget.IDLE)
 		return
 
 # Container for tilesets #
@@ -743,7 +789,8 @@ if __name__ == "__main__":
 					update.append(active)
 			#check mouse button events
 			elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
-				sprite = menus.grab_tile(pygame.mouse.get_pos())
+				if menus.get_menu() == Menu.GAME:
+					sprite = menus.grab_tile(pygame.mouse.get_pos())
 				if type(selected) in [gui.Widget, gui.Button, gui.Input]:
 					#reset the previously active widget
 					if active != None:
@@ -774,6 +821,8 @@ if __name__ == "__main__":
 					sprite = None
 					sprites_layer.fill(color.alpha)
 					update.append(sprites_layer)
+					#add the widgets to the update list
+					update.extend(widgets)
 				#deactivate a widget (not inputs)
 				if type(active) in [gui.Widget, gui.Button]:
 					#run button function

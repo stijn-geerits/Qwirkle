@@ -51,8 +51,13 @@ def main():
         tiles_info = make_tiles_printable(current_hand)
         print(tiles_info)
 
-        print("Kies je actie:\t1. Aanleggen\t2. Ruilen")
-        choice = str(input(":"))
+        # Save unchanged state of the board and hand, for rewind purposes
+        prev_board = mygame.get_field()
+        prev_hand = current_hand
+        choice = ""
+        while choice != "1" and choice != "2":
+            print("Kies je actie:\t1. Aanleggen\t2. Ruilen")
+            choice = str(input(":"))
         if choice == "1":
             # Handle player input with option play
             play_tile_ids, play_positions = handle_player_input("play")
@@ -71,21 +76,20 @@ def main():
             # If the function does not succeed, rewind the players turn
             # The function does not update players hand unless it succeeds
             if mygame.play_tiles(play_tiles, play_positions):
-                print("De gespeelde blokjes zijn ongeldig")
-                mygame.previous_player()
-                continue
+                is_move_valid = False
+            else:
+                # Build lines
+                xylines = mygame.build_line(play_tiles)
 
-            # Build lines
-            xylines = mygame.build_line(play_tiles)
+                # Remove single tile lines
+                for xyline in xylines:
+                    if len(xyline) == 1:
+                        xylines.remove(xyline)
+                print(f"De xy lijnen zijn: {xylines}")
 
-            # Remove single tile lines
-            for xyline in xylines:
-                if len(xyline) == 1:
-                    xylines.remove(xyline)
-            print(f"De xy lijnen zijn: {xylines}")
+                # Controle lines
+                is_move_valid = mygame.controle(xylines, first_move, play_tiles)
 
-            # Controle lines
-            is_move_valid = mygame.controle(xylines, first_move, play_tiles)
             if is_move_valid:  # If move is valid, create lines and count score
                 print("De gespeelde blokjes zijn geldig")
                 # Create lines

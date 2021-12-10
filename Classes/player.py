@@ -55,6 +55,13 @@ class Player:
         """
         return self.hand
 
+    def set_hand(self, hand):
+        """
+        Set function for player's hand
+        This function should only be used for rewind purposes
+        """
+        self.hand = hand
+
     def get_id(self):
         """
         Get function for player's id

@@ -56,6 +56,13 @@ class Game:
             (x, y) = position
             return self.field[y][x]
 
+    def set_field(self, field):
+        """
+        Set the gameboard to the given state
+        This function should only be used for rewind purposes
+        """
+        self.field = field
+
     def get_player_on_hand(self):
         """
         Get function for current player on hand
@@ -93,7 +100,6 @@ class Game:
         Take tiles from current players hand, trade them with bag and insert new in hand
         Every tile will be placed on corresponding position on field
         This function has 4 child functions: build_line, validate line, controle, create_line
-        ! This function will not update the player hand if it does not succeed, no rewind is necessary.
         """
         for position, tile in zip(positions, tiles):
             (x, y) = position

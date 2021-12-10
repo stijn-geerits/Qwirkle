@@ -4,6 +4,7 @@ import bag
 from tile import Tile
 import random
 import line
+from copy import copy
 
 
 class Game:
@@ -103,8 +104,10 @@ class Game:
         This function has 4 child functions: build_line, validate line, controle, create_line
         """
         # Save unchanged state of the board and hand, for rewind purposes
-        prev_board = self.get_field()
-        prev_hand = self.player_on_hand.get_hand()
+        # Needs to be COPIES of field and hand, otherwise they will change along
+        # with the original and rewind will have no effect
+        prev_board = copy(self.get_field())
+        prev_hand = copy(self.player_on_hand.get_hand())
 
         for position, tile in zip(positions, tiles):
             (x, y) = position
@@ -114,6 +117,8 @@ class Game:
                 self.field[y][x] = tile
                 tile.set_position((x, y))
             else:  # Return True if function did not succeed
+                print("De gespeelde blokjes zijn ongeldig")
+                self.__rewind(prev_hand, prev_board)
                 return True
 
         # Update player hand
@@ -158,13 +163,24 @@ class Game:
 
         else:  # If move is not valid, restart players turn
             print("De gespeelde blokjes zijn ongeldig")
-            self.player_on_hand.set_hand(prev_hand)
-            self.set_field(prev_board)
-            self.previous_player()
+            self.__rewind(prev_hand, prev_board)
             # Return True if function did not succeed
             return True
 
-    def __build_line(self, tiles):
+
+    def __rewind(self, prev_hand, prev_board):
+        """
+        Internal function to turn back the board and hand state en restart the players turn
+        Args:
+            prev_hand: Hand state to rewind to
+            prev_board: Board state to rewind to
+        """
+        self.player_on_hand.set_hand(prev_hand)
+        self.set_field(prev_board)
+        self.previous_player()
+
+
+    def build_line(self, tiles):
         """
         Build a line for every tile that will be placed on the field
         xline creates a horizontal line trough every tile

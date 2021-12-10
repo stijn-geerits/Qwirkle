@@ -18,7 +18,7 @@ class Game:
             self.empty_tile = Tile(0, '', "empty", 0, tileset.get_tile("empty"))
         else:
             self.empty_tile = Tile(0, '', '', 0)
-        self.field = [[self.empty_tile for x in range(15)] for y in range(15)]
+        self.field = [[self.empty_tile for x in range(92)] for y in range(92)]
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]
         self.last_move = None

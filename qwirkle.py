@@ -537,10 +537,29 @@ class Menu:
 				#calculate the new position for the tile
 				xTile = (tile.get_rect().centerx - gridRect.left) // 35
 				yTile = (tile.get_rect().centery - gridRect.top) // 35
-				#place the tile in the grid
-				tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
-				self.background.blit(tile.get_image(), tile.get_rect())
-				return
+				#look whether the space is occupied by a different tile
+				search = self.tiles.copy()
+				search.remove(tile)
+				for s in search:
+					#the active tile is at the requested grid position
+					if s.get_rect().collidepoint(tile.get_rect().center):
+						s.set_position(self.data["oldpos"])
+						tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
+						self.background.blit(s.get_image(), s.get_rect())
+						self.background.blit(tile.get_image(), tile.get_rect())
+						return
+				#if the space in the bag or hand is not occupied
+				if grid == "bag" or grid == "hand":
+					#place the tile in the grid
+					tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
+					self.background.blit(tile.get_image(), tile.get_rect())
+					return
+				#the tile is on an empty space in the field
+				elif grid == "field" and self.game.get_field([xTile, yTile]).get_shape() == "empty":
+					#place the tile in the grid
+					tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
+					self.background.blit(tile.get_image(), tile.get_rect())
+					return
 		#the tile is not on a grid
 		tile.set_position(self.data["oldpos"])
 		self.background.blit(tile.get_image(), tile.get_rect())

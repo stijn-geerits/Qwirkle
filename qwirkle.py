@@ -416,7 +416,7 @@ class Menu:
 		widgets.append(btn)
 		#play button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.7), self.size[1]-78], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], None, lang.play, color.text)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__play, lang.play, color.text)
 		btn.set_current_state(gui.Widget.UNAVAILABLE)
 		widgets.append(btn)
 		#trade/skip button
@@ -574,6 +574,7 @@ class Menu:
 		if self.menu != self.GAME:
 			print("[qwirkle.py]Menu.__update_widgets_game:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
 			return
+		#search for the widgets that need to be updated
 		for w in self.widgets:
 			if type(w) != gui.Button:
 				continue
@@ -611,6 +612,26 @@ class Menu:
 				else:
 					w.set_current_state(gui.Widget.IDLE)
 		return
+		
+	def __play(self):
+		if self.menu != self.GAME:
+			print("[qwirkle.py]Menu.__play:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
+			return
+		#search for the tiles that are on the playing field
+		played = []
+		positions = []
+		for tile in self.tiles:
+			#the current tile is on the playing field
+			if tile.get_rect().colliderect(self.data["field"]):
+				#add the tile to the list with played tiles
+				played.append(tile)
+				positions.append([(tile.get_position()[0] - self.data["field"].left) // 35, (tile.get_position()[1] - self.data["field"].top) // 35])
+		#play the tiles
+		self.game.play_tiles(played, positions)
+		#go to the wait for player menu
+		self.select_menu(self.WAIT_PLAYER)
+		#return the amount of played tiles
+		return len(played)
 
 # Container for tilesets #
 class Tileset:

@@ -519,7 +519,7 @@ class Menu:
 				#fill in the are where the tile was
 				self.background.fill(color.grid_fill, tile.get_rect())
 				#store the current position of the tile
-				self.data["oldpos"] = tile.get_rect().topleft
+				self.data["oldpos"] = tile.get_position()
 				#return the tile object
 				return tile
 		#no tile selected
@@ -541,8 +541,9 @@ class Menu:
 				search = self.tiles.copy()
 				search.remove(tile)
 				for s in search:
-					#the active tile is at the requested grid position
+					#the current tile is at the requested grid position
 					if s.get_rect().collidepoint(tile.get_rect().center):
+						#swap the positions of the current and active tile
 						s.set_position(self.data["oldpos"])
 						tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
 						self.background.blit(s.get_image(), s.get_rect())

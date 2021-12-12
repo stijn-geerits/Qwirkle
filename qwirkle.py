@@ -119,8 +119,6 @@ class Menu:
 		self.select_menu(self.MAIN)
 		#initialize a variable for the data and game object
 		self.data = {}
-		self.game = None
-		self.tiles = []
 		return
 	
 	def get_menu(self):
@@ -241,7 +239,7 @@ class Menu:
 		#draw the overlay
 		surf.blit(overlay, [0, 0])
 		#render the text announcing the next player
-		gui.rendertext(surf, lang.player_on_hand %(self.game.get_player_on_hand().get_name()), int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "center", color.player_text)
+		gui.rendertext(surf, lang.player_on_hand %(self.data["game"].get_player_on_hand().get_name()), int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "center", color.player_text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -258,9 +256,9 @@ class Menu:
 			surf.blit(bg, [0, 0])
 		
 		#get the player data
-		players = self.game.get_players()
+		players = self.data["game"].get_players()
 		player_count = len(players)
-		active_player = players.index(self.game.get_player_on_hand())
+		active_player = players.index(self.data["game"].get_player_on_hand())
 		
 		#draw a grid for the playing field
 		field_size = [(self.size[0]-int(self.btn_game_size[0]*2.3)-32)//36, (self.size[1]-32)//36]
@@ -270,7 +268,7 @@ class Menu:
 		gridRect = gui.set_relpos(grid.get_rect(), [(self.size[0]-int(self.btn_game_size[0]*2.3))//2, self.size[1]//2], "center")
 		for y in range(field_size[1]):
 			for x in range(field_size[0]):
-				surf.blit(self.game.get_field([x, y]).get_image(), [gridRect.left + (x * 35) + 2, gridRect.top + (y * 35) + 2])
+				surf.blit(self.data["game"].get_field([x, y]).get_image(), [gridRect.left + (x * 35) + 2, gridRect.top + (y * 35) + 2])
 		#store the pygame.Rect object of the playing field grid for future reference
 		self.data["field"] = gridRect
 		
@@ -285,10 +283,10 @@ class Menu:
 		#draw the players and their scores
 		for p in range(player_count):
 			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*31)+16], "midleft", color.text)
-			gui.rendertext(surf, str(int(self.game.get_player_score(players[p].get_id()))), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
+			gui.rendertext(surf, str(int(self.data["game"].get_player_score(players[p].get_id()))), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
 		
 		#render the amount of tiles in the bag
-		gui.rendertext(surf, lang.tiles_in_bag %(self.game.get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center", color.text)
+		gui.rendertext(surf, lang.tiles_in_bag %(self.data["game"].get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center", color.text)
 		#draw a grid for the bag
 		grid = gui.grid([36]*2, [36]*3, color.grid_edge, color.grid_fill)
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), int(self.size[1]*.6)])
@@ -300,10 +298,10 @@ class Menu:
 		surf.blit(grid, [self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), self.size[1]-48])
 		#draw the tiles in the hand
 		gridRect = grid.get_rect().move([self.size[0]-int(self.btn_game_size[0]*1.15)-(grid.get_width()//2), self.size[1]-48])
-		for tile in range(len(self.tiles)):
-			surf.blit(self.tiles[tile].get_image(), [gridRect.left + (tile * 35) + 2, gridRect.top + 2])
+		for tile in range(len(self.data["tiles"])):
+			surf.blit(self.data["tiles"][tile].get_image(), [gridRect.left + (tile * 35) + 2, gridRect.top + 2])
 			#also set the location of the tiles
-			self.tiles[tile].set_position([gridRect.left + (tile * 35) + 2, gridRect.top + 2])
+			self.data["tiles"][tile].set_position([gridRect.left + (tile * 35) + 2, gridRect.top + 2])
 		#store the pygame.Rect object of the hand grid for future reference
 		self.data["hand"] = gridRect
 		
@@ -419,7 +417,7 @@ class Menu:
 		widgets.append(btn)
 		#trade/skip button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")
-		if self.game.get_tiles_left() > 0:
+		if self.data["game"].get_tiles_left() > 0:
 			btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__trade, lang.trade, color.text)
 			btn.set_current_state(gui.Widget.UNAVAILABLE)
 		else:
@@ -498,11 +496,11 @@ class Menu:
 		
 		# game object #
 		#initialize the game variable
-		self.game = Game(players, Tileset(GRAPHICSDIR + "tiles.png", 32, True))
+		self.data["game"] = Game(players, Tileset(GRAPHICSDIR + "tiles.png", 32, True))
 		
 		# tile objects #
 		#get the tiles for the player on hand
-		self.tiles = self.game.get_player_on_hand().get_hand()
+		self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 		
 		#switch the menu to wait for player
 		return self.select_menu(self.WAIT_PLAYER)
@@ -514,7 +512,7 @@ class Menu:
 		Returns None if the mouse does not select a tile
 		"""
 		#check all player tiles
-		for tile in self.tiles:
+		for tile in self.data["tiles"]:
 			#check whether the tile is selected
 			if tile.get_rect().collidepoint(mouse_pos):
 				#fill in the are where the tile was
@@ -539,7 +537,7 @@ class Menu:
 				xTile = (tile.get_rect().centerx - gridRect.left) // 35
 				yTile = (tile.get_rect().centery - gridRect.top) // 35
 				#look whether the space is occupied by a different tile
-				search = self.tiles.copy()
+				search = self.data["tiles"].copy()
 				search.remove(tile)
 				for s in search:
 					#the current tile is at the requested grid position
@@ -559,7 +557,7 @@ class Menu:
 					self.__update_widgets_game()
 					return
 				#the tile is on an empty space in the field
-				elif grid == "field" and self.game.get_field([xTile, yTile]).get_shape() == "empty":
+				elif grid == "field" and self.data["game"].get_field([xTile, yTile]).get_shape() == "empty":
 					#place the tile in the grid
 					tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])
 					self.background.blit(tile.get_image(), tile.get_rect())
@@ -583,7 +581,7 @@ class Menu:
 			if w.get_label() == lang.cancel:
 				#only disable the button when all tiles are in hand
 				disable = True
-				for tile in self.tiles:
+				for tile in self.data["tiles"]:
 					if tile.get_rect().colliderect(self.data["field"]) or tile.get_rect().colliderect(self.data["bag"]):
 						disable = False
 				if disable:
@@ -594,7 +592,7 @@ class Menu:
 			elif w.get_label() == lang.play:
 				#only disable the button when no tiles are on the field
 				disable = True
-				for tile in self.tiles:
+				for tile in self.data["tiles"]:
 					if tile.get_rect().colliderect(self.data["field"]):
 						disable = False
 				if disable:
@@ -605,10 +603,10 @@ class Menu:
 			elif w.get_label() == lang.trade:
 				#only disable the button when no tiles are in the bag (both visual and technical bag)
 				disable = True
-				for tile in self.tiles:
+				for tile in self.data["tiles"]:
 					if tile.get_rect().colliderect(self.data["bag"]):
 						disable = False
-				if disable and self.game.get_tiles_left() > 0:
+				if disable and self.data["game"].get_tiles_left() > 0:
 					w.set_current_state(gui.Widget.UNAVAILABLE)
 				else:
 					w.set_current_state(gui.Widget.IDLE)
@@ -620,7 +618,7 @@ class Menu:
 			return
 		#search for the tiles that are not in hand
 		moved = []
-		for tile in self.tiles:
+		for tile in self.data["tiles"]:
 			#the current tile is on the playing field or bag
 			if tile.get_rect().colliderect(self.data["field"]) or tile.get_rect().colliderect(self.data["bag"]):
 				#add the tile to the list of moved tiles
@@ -655,7 +653,7 @@ class Menu:
 		#search for the tiles that are on the playing field
 		played = []
 		positions = []
-		for tile in self.tiles:
+		for tile in self.data["tiles"]:
 			#the current tile is on the playing field
 			if tile.get_rect().colliderect(self.data["field"]):
 				#add the tile to the list with played tiles
@@ -663,11 +661,11 @@ class Menu:
 				#add the tile position to the list with its positions
 				positions.append([(tile.get_position()[0] - self.data["field"].left) // 35, (tile.get_position()[1] - self.data["field"].top) // 35])
 		#play the tiles
-		failed = self.game.play_tiles(played, positions)
+		failed = self.data["game"].play_tiles(played, positions)
 		#play was correct
 		if not failed:
 			#update the tiles
-			self.tiles = self.game.get_player_on_hand().get_hand()
+			self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 			#go to the wait for player menu
 			self.select_menu(self.WAIT_PLAYER)
 		#return the amount of played tiles
@@ -679,15 +677,15 @@ class Menu:
 			return
 		#search for the tiles that are on the bag
 		trades = []
-		for tile in self.tiles:
+		for tile in self.data["tiles"]:
 			#the current tile is on the bag
 			if tile.get_rect().colliderect(self.data["bag"]):
 				#add the tile to the list of tiles to trade
 				trades.append(tile)
 		#trade the tiles
-		self.game.switch_tiles(trades)
+		self.data["game"].switch_tiles(trades)
 		#update the tiles
-		self.tiles = self.game.get_player_on_hand().get_hand()
+		self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 		#go to the wait for player menu
 		self.select_menu(self.WAIT_PLAYER)
 		#return the amount of traded tiles
@@ -698,9 +696,9 @@ class Menu:
 			print("[qwirkle.py]Menu.__skip:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
 			return
 		#go to the next player
-		self.game.next_player()
+		self.data["game"].next_player()
 		#update the tiles
-		self.tiles = self.game.get_player_on_hand().get_hand()
+		self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 		#go to the wait for player menu
 		self.select_menu(self.WAIT_PLAYER)
 		#return with code 0

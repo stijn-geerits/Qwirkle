@@ -9,7 +9,7 @@ pygame.init()
 
 ### Classes ###
 # General class for graphical widgets #
-class Widget():
+class Widget:
 	"""
 	General class for widgets in the pygame environment
 	"""
@@ -213,7 +213,134 @@ class Input(Widget):
 		#calculate the font size for the text
 		fontsize = self.states[self.current_state].get_height() - self.padding
 		#render the value (move the rect object by the padding amount and only sent the topleft coordinate)
-		rendertext(surface, self.value, fontsize, location=self.get_rect().move(self.padding, 0).midleft, relpos="midleft")
+		rendertext(surface, self.value, fontsize, None, self.get_rect().move(self.padding, 0).midleft, "midleft")
+		return
+
+# Class for graphical selector widget #
+class Selector(Widget):
+	"""
+	Class for selector widgets in the pygame environment
+	"""
+	
+	def __init__(self, selections, selected=0, rotate=True, updater=None):
+		#call the parent function
+		Widget.__init__(self)
+		self.selections = selections
+		self.selected = selected
+		self.rotate = rotate
+		self.updater = updater
+		return
+	
+	def get_selections(self):
+		"""
+		Return the list of possible selections
+		"""
+		return self.selections
+	
+	def set_selections(self, selections):
+		"""
+		Set the list of possible selections
+		"""
+		self.selections = selections
+		#make sure the selected variable stays valid
+		if self.selected >= len(selections):
+			self.selected = len(selections) - 1
+			#call the updater function (if defined)
+			if self.updater != None:
+				self.updater()
+		return
+	
+	def get_selected(self):
+		"""
+		Returns the currently selected value
+		"""
+		return self.selections[self.selected]
+	
+	def set_selected(self, selected):
+		"""
+		Set the index of the currently selected value
+		"""
+		self.selected = selected
+		#call the updater function (if defined)
+		if self.updater != None:
+			self.updater()
+		return
+	
+	def select_next(self):
+		"""
+		Select the next possible value
+		
+		Returns the index of the selected value
+		Unless the rotate option is set to False, it will loop back to the first element 
+		"""
+		#select the next value
+		if self.selected < len(self.selections) - 1:
+			self.selected += 1
+			#call the updater function (if defined)
+			if self.updater != None:
+				self.updater()
+		#select the first value
+		elif self.selected == len(self.selections) - 1 and self.rotate:
+			self.selected = 0
+			#call the updater function (if defined)
+			if self.updater != None:
+				self.updater()
+		#return the selected index
+		return self.selected
+	
+	def select_previous(self):
+		"""
+		Select the previous possible value
+		
+		Returns the index of the selected value
+		Unless the rotate option is set to False, it will loop back to the last element 
+		"""
+		#select the previous value
+		if self.selected > 0:
+			self.selected -= 1
+			#call the updater function (if defined)
+			if self.updater != None:
+				self.updater()
+		#select the last value
+		elif self.selected == 0 and self.rotate:
+			self.selected = len(self.selections) - 1
+			#call the updater function (if defined)
+			if self.updater != None:
+				self.updater()
+		#return the selected index
+		return self.selected
+	
+	def get_rotate(self, rotate):
+		"""
+		Get whether the selector will loop around the list of options
+		"""
+		return self.rotate
+	
+	def set_rotate(self, rotate):
+		"""
+		Set whether the selector should loop around the list of options
+		"""
+		self.rotate = rotate
+		return
+	
+	def set_updater(self, updater):
+		"""
+		Set the function to call upon an update of the selected value
+		"""
+		#set the updater function
+		self.updater = updater
+		return
+	
+	def blit_on(self, surface):
+		"""
+		Blit the widget on the surface
+		"""
+		#call the parent function
+		Widget.blit_on(self, surface)
+		#calculate the font size for the text
+		fontsize = self.states[self.current_state].get_height() - 4
+		#render the value (move the rect object by the padding amount and only sent the topleft coordinate)
+		rendertext(surface, self.selections[self.selected], fontsize, None, self.get_rect().center, "center")
 		return
 
 

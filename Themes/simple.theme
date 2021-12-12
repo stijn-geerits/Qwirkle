@@ -7,6 +7,10 @@ background_rules = "background7.png"
 background_settings = "background7.png"
 text = (32, 32, 32)
 
+#selector
+selector_fill = (20, 132, 173)
+selector_edge = (0, 0, 0)
+
 #button
 button_idle_fill = (20, 132, 173)
 button_idle_edge = (0, 0, 0)

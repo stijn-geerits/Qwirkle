@@ -7,6 +7,10 @@ background_rules = (200, 200, 200)
 background_settings = (200, 200, 200)
 text = (32, 32, 32)
 
+#selector
+selector_fill = (34, 85, 170)
+selector_edge = (0, 44, 121)
+
 #button
 button_unavailable_fill = (102, 102, 102)
 button_unavailable_edge = (61, 61, 61)

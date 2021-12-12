@@ -7,6 +7,10 @@ background_rules = "background10.png"
 background_settings = "background9.png"
 text = (26,28,44)
 
+#selector
+selector_fill = (177,62,83)
+selector_edge = (0, 0, 0)
+
 #button
 button_idle_fill = (177,62,83)
 button_idle_edge = (0, 0, 0)

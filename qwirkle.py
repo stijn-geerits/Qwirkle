@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # import classes #
-import inspect, json, pygame, sys
+import inspect, json, os, pygame, sys
 
 
 
@@ -91,6 +91,17 @@ class Menu:
 	
 	def __init__(self, window_size):
 		self.size = window_size
+		
+		# selector templates #
+		#selector dimensions
+		self.sltr_size = [int(self.size[0] * .24), int(self.size[1] * .08)]
+		sltr_edge_size = int(min(self.size) * .004)
+		#selector template
+		sltr_unavailable = gui.rectangle(self.sltr_size, color.selector_fill, sltr_edge_size, color.selector_edge)
+		sltr_idle = sltr_unavailable.copy()
+		sltr_hover = sltr_unavailable.copy()
+		sltr_active = sltr_unavailable.copy()
+		self.selector_template = [sltr_unavailable, sltr_idle, sltr_hover, sltr_active]
 		
 		# button templates #
 		#button dimensions
@@ -266,6 +277,9 @@ class Menu:
 			surf.blit(bg, [0, 0])
 		#place the menu title
 		gui.rendertext(surf, lang.settings, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
+		
+		#render the text for selecting the language
+		gui.rendertext(surf, lang.select_lang, self.sltr_size[1]-4, None, [int(self.size[0]*.05), int(self.size[1]*.2)], "midleft", color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -462,10 +476,28 @@ class Menu:
 		#initialize a list of widgets
 		widgets = []
 		
+		# selector objects #
+		#lang selector
+		langs = []
+		for l in os.listdir(LANGUAGEDIR):
+			if l.endswith(".lang"):
+				langs.append(l[:l.rfind('.')])
+		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.75), int(self.size[1]*.2)], "center")
+		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], langs, langs.index(user.lang), updater=lambda:self.__update_settings(0))
+		widgets.append(sltr)
+		
 		# button objects #
-		#back button
+		#previous lang button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)-(self.sltr_size[0]//2), int(self.size[1]*.2)], "midright")
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], sltr.select_previous, '<', color.text)
+		widgets.append(btn)
+		#next lang button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)+(self.sltr_size[0]//2), int(self.size[1]*.2)], "midleft")
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], sltr.select_next, '>', color.text)
+		widgets.append(btn)
+		#apply button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back, color.text)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], self.__save_settings, lang.apply, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -523,6 +555,35 @@ class Menu:
 		
 		#return the Widget objects
 		return widgets
+	
+	def __update_settings(self, update):
+		#grab the globals
+		global user, lang, color
+		#grab the set settings
+		setting = 0
+		for w in self.widgets:
+			if type(w) == gui.Selector:
+				#the language is updated
+				if setting == 0 and update == 0:
+					user.lang = w.get_selected()
+					lang = Lang()
+					self.select_menu(self.menu)
+				setting += 1
+		return update
+	
+	def __save_settings(self):
+		#grab the config global
+		global user
+		#open the user config file
+		file = open(CONFIGDIR + "user.conf", 'w')
+		#write the new user config
+		file.write(user.get_config())
+		#close the user config file
+		file.close()
+		#go to the main menu
+		self.select_menu(self.MAIN)
+		#return with an exit code of 0
+		return 0
 	
 	def __add_input(self):
 		#only run if the current menu is the new game menu
@@ -924,6 +985,22 @@ def input_builder(rect, states, default=None, textpadding=None):
 	#return the input object
 	return inpt
 
+def selector_builder(rect, states, selections, pre_select=None, rotate=True, updater=None):
+	"""
+	Returns a fully set up selector object
+	"""
+	#define the selector object
+	if pre_select != None:
+		sltr = gui.Selector(selections, pre_select, rotate, updater)
+	else:
+		sltr = gui.Selector(selections, rotate=rotate, updater=updater)
+	#move the selector in place
+	sltr.place(rect.topleft)
+	#define the selector's states (seperate list into individual arguments using '*')
+	sltr.define_states(*states)
+	#return the selector object
+	return sltr
+
 
 
 ### Main program ###
@@ -1091,8 +1168,8 @@ if __name__ == "__main__":
 		
 		#update the display
 		for u in update:
-			#update a button or input
-			if type(u) == gui.Button or type(u) == gui.Input:
+			#update a button, input or selector
+			if type(u) in [gui.Button, gui.Input, gui.Selector]:
 				u.blit_on(widgets_layer)
 			#sprites
 			elif type(u) == Tile:

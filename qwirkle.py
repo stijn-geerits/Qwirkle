@@ -257,8 +257,6 @@ class Menu:
 			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), user.winsize)
 			surf.blit(bg, [0, 0])
 		
-		#reset the data variable
-		data = {}
 		#get the player data
 		players = self.game.get_players()
 		player_count = len(players)
@@ -421,8 +419,11 @@ class Menu:
 		widgets.append(btn)
 		#trade/skip button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_game_size), [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.6+self.btn_game_size[1]*2.4)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__trade, lang.trade, color.text)
-		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		if self.game.get_tiles_left() > 0:
+			btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__trade, lang.trade, color.text)
+			btn.set_current_state(gui.Widget.UNAVAILABLE)
+		else:
+			btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__skip, lang.skip, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -600,8 +601,8 @@ class Menu:
 					w.set_current_state(gui.Widget.UNAVAILABLE)
 				else:
 					w.set_current_state(gui.Widget.IDLE)
-			#trade/skip button
-			elif w.get_label() == lang.trade or w.get_label() == lang.skip:
+			#trade button
+			elif w.get_label() == lang.trade:
 				#only disable the button when no tiles are in the bag (both visual and technical bag)
 				disable = True
 				for tile in self.tiles:
@@ -691,6 +692,19 @@ class Menu:
 		self.select_menu(self.WAIT_PLAYER)
 		#return the amount of traded tiles
 		return len(trades)
+	
+	def __skip(self):
+		if self.menu != self.GAME:
+			print("[qwirkle.py]Menu.__skip:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
+			return
+		#go to the next player
+		self.game.next_player()
+		#update the tiles
+		self.tiles = self.game.get_player_on_hand().get_hand()
+		#go to the wait for player menu
+		self.select_menu(self.WAIT_PLAYER)
+		#return with code 0
+		return 0
 
 # Container for tilesets #
 class Tileset:

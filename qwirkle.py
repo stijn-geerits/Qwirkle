@@ -82,11 +82,12 @@ class Menu:
 	#possible menu values
 	EMPTY = 0
 	MAIN = 1
-	RULES = 2
-	NEW_GAME = 3
-	WAIT_PLAYER = 4
-	GAME = 5
-	GAME_OVER = 6
+	NEW_GAME = 2
+	RULES = 3
+	SETTINGS = 4
+	WAIT_PLAYER = 5
+	GAME = 6
+	GAME_OVER = 7
 	
 	def __init__(self, window_size):
 		self.size = window_size
@@ -162,12 +163,15 @@ class Menu:
 		elif menu == self.MAIN:
 			self.background = self.__get_menu_main()
 			self.widgets = self.__get_widgets_main()
-		elif menu == self.RULES:
-			self.background = self.__get_menu_rules()
-			self.widgets = self.__get_widgets_rules()
 		elif menu == self.NEW_GAME:
 			self.background = self.__get_menu_new_game()
 			self.widgets = self.__get_widgets_new_game()
+		elif menu == self.RULES:
+			self.background = self.__get_menu_rules()
+			self.widgets = self.__get_widgets_rules()
+		elif menu == self.SETTINGS:
+			self.background = self.__get_menu_settings()
+			self.widgets = self.__get_widgets_settings()
 		elif menu == self.WAIT_PLAYER:
 			self.background = self.__get_menu_wait_player()
 			self.widgets = self.__get_widgets_wait_player()
@@ -206,30 +210,12 @@ class Menu:
 		if gui.is_rgb(color.background_main):
 			surf.fill(color.background_main)
 		else:
-			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_main), user.winsize)
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_main), self.size)
 			surf.blit(bg, [0, 0])
 		#place the qwirkle title graphic
 		gui.renderimage(surf, GRAPHICSDIR + "qwirkle.png", [int(self.size[0]*.5), int(self.size[1]*.05)], "midtop")
 		#place the copyright notice
 		gui.rendertext(surf, lang.copyright, int(self.size[1]*.03), None, [int(self.size[0]*.5), int(self.size[1]*.97)], "midbottom", color.text)
-		
-		#return the pygame.Surface object
-		return surf
-	
-	def __get_menu_rules(self):
-		#initialize the surface
-		surf = pygame.Surface(self.size)
-		
-		#set the background color for the menu
-		if gui.is_rgb(color.background_rules):
-			surf.fill(color.background_rules)
-		else:
-			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_rules), user.winsize)
-			surf.blit(bg, [0, 0])
-		#place the menu title
-		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
-		#place the rules text
-		gui.rendertext(surf, lang.rules_text, int(self.size[1]*.04), None, [int(self.size[0]*.02), int(self.size[1]*.11)], color=color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -242,10 +228,44 @@ class Menu:
 		if gui.is_rgb(color.background_new_game):
 			surf.fill(color.background_new_game)
 		else:
-			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_new_game), user.winsize)
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_new_game), self.size)
 			surf.blit(bg, [0, 0])
 		#place the menu title
 		gui.rendertext(surf, lang.player_selection, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
+		
+		#return the pygame.Surface object
+		return surf
+	
+	def __get_menu_rules(self):
+		#initialize the surface
+		surf = pygame.Surface(self.size)
+		
+		#set the background color for the menu
+		if gui.is_rgb(color.background_rules):
+			surf.fill(color.background_rules)
+		else:
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_rules), self.size)
+			surf.blit(bg, [0, 0])
+		#place the menu title
+		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
+		#place the rules text
+		gui.rendertext(surf, lang.rules_text, int(self.size[1]*.04), None, [int(self.size[0]*.02), int(self.size[1]*.11)], color=color.text)
+		
+		#return the pygame.Surface object
+		return surf
+	
+	def __get_menu_settings(self):
+		#initialize the surface
+		surf = pygame.Surface(self.size)
+		
+		#set the background color for the menu
+		if gui.is_rgb(color.background_settings):
+			surf.fill(color.background_settings)
+		else:
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_settings), self.size)
+			surf.blit(bg, [0, 0])
+		#place the menu title
+		gui.rendertext(surf, lang.settings, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -277,7 +297,7 @@ class Menu:
 		if gui.is_rgb(color.background_game):
 			surf.fill(color.background_game)
 		else:
-			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), user.winsize)
+			bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), self.size)
 			surf.blit(bg, [0, 0])
 		
 		#get the player data
@@ -381,25 +401,11 @@ class Menu:
 		widgets.append(btn)
 		#settings button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.6)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], None, lang.settings, color.text)
-		btn.set_current_state(gui.Widget.UNAVAILABLE)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.SETTINGS), lang.settings, color.text)
 		widgets.append(btn)
 		#exit button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.7)], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_template], full_quit, lang.exit, color.text)
-		widgets.append(btn)
-		
-		#return the Widget objects
-		return widgets
-	
-	def __get_widgets_rules(self):
-		#initialize a list of widgets
-		widgets = []
-		
-		# button objects #
-		#back button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -435,6 +441,32 @@ class Menu:
 		inptRect = gui.set_relpos(pygame.Rect([0, 0]+self.input_size), [int(self.size[0]*.45), int(self.size[1]*.25)], "center")
 		inpt = input_builder(inptRect, [t.copy() for t in self.input_template], lang.default_player %(2))
 		widgets.append(inpt)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_rules(self):
+		#initialize a list of widgets
+		widgets = []
+		
+		# button objects #
+		#back button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back, color.text)
+		widgets.append(btn)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_settings(self):
+		#initialize a list of widgets
+		widgets = []
+		
+		# button objects #
+		#back button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back, color.text)
+		widgets.append(btn)
 		
 		#return the Widget objects
 		return widgets

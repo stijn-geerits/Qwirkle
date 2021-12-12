@@ -65,6 +65,7 @@ class Menu:
 	NEW_GAME = 3
 	WAIT_PLAYER = 4
 	GAME = 5
+	GAME_OVER = 6
 	
 	def __init__(self, window_size):
 		self.size = window_size
@@ -152,6 +153,9 @@ class Menu:
 		elif menu == self.GAME:
 			self.background = self.__get_menu_game()
 			self.widgets = self.__get_widgets_game()
+		elif menu == self.GAME_OVER:
+			self.background = self.__get_menu_game_over()
+			self.widgets = self.__get_widgets_game_over()
 		else:
 			print("[qwirkle.py]Menu.get_background:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[00m")
 			menu = self.select_menu(self.EMPTY)
@@ -233,7 +237,7 @@ class Menu:
 		for w in widgets:
 			w.blit_on(surf)
 		
-		#create a semi transparent black overlay
+		#create a semi transparent, black overlay
 		overlay = pygame.Surface(surf.get_size())
 		overlay.set_alpha(204)
 		#draw the overlay
@@ -304,6 +308,33 @@ class Menu:
 			self.data["tiles"][tile].set_position([gridRect.left + (tile * 35) + 2, gridRect.top + 2])
 		#store the pygame.Rect object of the hand grid for future reference
 		self.data["hand"] = gridRect
+		
+		#return the pygame.Surface object
+		return surf
+	
+	def __get_menu_game_over(self):
+		#get the surface for the game menu
+		surf = self.__get_menu_game()
+		#draw the game menu widgets on the surface
+		widgets = self.__get_widgets_game()
+		for w in widgets:
+			w.blit_on(surf)
+		
+		#create a semi transparent, black overlay
+		overlay = pygame.Surface(surf.get_size())
+		overlay.set_alpha(204)
+		#draw the overlay
+		surf.blit(overlay, [0, 0])
+		
+		#find the winning player
+		players = self.data["game"].get_players()
+		scores = [self.data["game"].get_player_score(p.get_id()) for p in players]
+		winner = players[scores.index(max(scores))]
+		
+		#render the text announcing the game is over
+		gui.rendertext(surf, lang.game_over, int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "midbottom", color.player_text)
+		#render the text announcing the winner
+		gui.rendertext(surf, lang.winner %(winner.get_name()), int(self.size[1]*.05), None, [self.size[0]//2, self.size[1]//2], "midtop", color.player_text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -422,6 +453,19 @@ class Menu:
 			btn.set_current_state(gui.Widget.UNAVAILABLE)
 		else:
 			btn = button_builder(btnRect, [t.copy() for t in self.button_game_template], self.__skip, lang.skip, color.text)
+		widgets.append(btn)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_game_over(self):
+		#initialize the list of widgets
+		widgets = []
+		
+		# button objects #
+		#confirm button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_confirm_size), [self.size[0]-int(self.btn_game_size[0]*1.15), self.size[1]-8], "midbottom")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_confirm_template], lambda:self.select_menu(self.MAIN), lang.end_game, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects

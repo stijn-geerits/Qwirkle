@@ -1,10 +1,10 @@
 #basics
 alpha = (0, 0, 0)
 background_main = (200, 200, 200)
-background_new_game = background_main
-background_game = background_main
-background_rules = background_main
-background_settings = background_main
+background_new_game = (200, 200, 200)
+background_game = (200, 200, 200)
+background_rules = (200, 200, 200)
+background_settings = (200, 200, 200)
 text = (32, 32, 32)
 
 #button
@@ -36,11 +36,11 @@ input_active_fill = (255, 255, 255)
 input_active_edge = (128, 128, 128)
 
 #grid
-grid_fill = background_main
+grid_fill = (200, 200, 200)
 grid_edge = (32, 32, 32)
 
 #scoreboard
-scoreboard = background_main
+scoreboard = (200, 200, 200)
 player_on_hand = (200, 255, 200)
 player_text = (200, 200, 200)
 

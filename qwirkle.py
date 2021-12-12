@@ -21,8 +21,15 @@ import gui; from game import Game; from player import Player; from tile import T
 
 ### Classes ###
 # Container for storing and retreiving user config files #
-class user:
-	exec(open(CONFIGDIR + "user.conf", 'r').read())
+class User:
+	def __init__(self):
+		file = open(CONFIGDIR + "user.conf", 'r')
+		content = file.read()
+		file.close()
+		for line in content.splitlines():
+			if not (line.strip().startswith('#') or line.strip() == ''):
+				exec("self." + line)
+		return
 	
 	def get_config(self):
 		"""
@@ -46,12 +53,26 @@ class user:
 		return cfg.rstrip('\n')
 
 # Container for storing language files #
-class lang:
-	exec(open(LANGUAGEDIR + user.lang + ".lang", 'r').read())
+class Lang:
+	def __init__(self):
+		file = open(LANGUAGEDIR + user.lang + ".lang", 'r')
+		content = file.read()
+		file.close()
+		for line in content.splitlines():
+			if not (line.strip().startswith('#') or line.strip() == ''):
+				exec("self." + line)
+		return
 
 # Container for storing color theme data #
-class color:
-	exec(open(THEMESDIR + user.theme + ".theme", 'r').read())
+class Color:
+	def __init__(self):
+		file = open(THEMESDIR + user.theme + ".theme", 'r')
+		content = file.read()
+		file.close()
+		for line in content.splitlines():
+			if not (line.strip().startswith('#') or line.strip() == ''):
+				exec("self." + line)
+		return
 
 # Container for all menu data #
 class Menu:
@@ -875,6 +896,11 @@ def input_builder(rect, states, default=None, textpadding=None):
 
 ### Main program ###
 if __name__ == "__main__":
+	#globals
+	global user, lang, color
+	user = User()
+	lang = Lang()
+	color = Color()
 	#set variables
 	active = None
 	background = pygame.Surface(user.winsize)

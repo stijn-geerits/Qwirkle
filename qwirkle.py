@@ -91,7 +91,15 @@ class Menu:
 	
 	def __init__(self, window_size):
 		self.size = window_size
-		
+		#set the widget templates
+		self.__set_widget_templates()
+		#initialize the main menu
+		self.select_menu(self.MAIN)
+		#initialize a variable for the data and game object
+		self.data = {}
+		return
+	
+	def __set_widget_templates(self):
 		# selector templates #
 		#selector dimensions
 		self.sltr_size = [int(self.size[0] * .24), int(self.size[1] * .08)]
@@ -148,11 +156,6 @@ class Menu:
 		input_hover = gui.rectangle(self.input_size, color.input_hover_fill, input_edge_size, color.input_hover_edge)
 		input_active = gui.rectangle(self.input_size, color.input_active_fill, input_edge_size, color.input_active_edge)
 		self.input_template = [input_unavailable, input_idle, input_hover, input_active]
-		
-		#initialize the main menu
-		self.select_menu(self.MAIN)
-		#initialize a variable for the data and game object
-		self.data = {}
 		return
 	
 	def get_menu(self):
@@ -280,6 +283,8 @@ class Menu:
 		
 		#render the text for selecting the language
 		gui.rendertext(surf, lang.select_lang, self.sltr_size[1]-4, None, [int(self.size[0]*.05), int(self.size[1]*.2)], "midleft", color.text)
+		#render the text for selecting the theme
+		gui.rendertext(surf, lang.select_theme, self.sltr_size[1]-4, None, [int(self.size[0]*.05), int(self.size[1]*.3)], "midleft", color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -485,15 +490,31 @@ class Menu:
 		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.75), int(self.size[1]*.2)], "center")
 		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], langs, langs.index(user.lang), updater=lambda:self.__update_settings(0))
 		widgets.append(sltr)
+		#theme selector
+		themes = []
+		for t in os.listdir(THEMESDIR):
+			if t.endswith(".theme"):
+				themes.append(t[:t.rfind('.')])
+		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.75), int(self.size[1]*.3)], "center")
+		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], themes, themes.index(user.theme), updater=lambda:self.__update_settings(1))
+		widgets.append(sltr)
 		
 		# button objects #
 		#previous lang button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)-(self.sltr_size[0]//2), int(self.size[1]*.2)], "midright")
-		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], sltr.select_previous, '<', color.text)
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[0].select_previous, '<', color.text)
 		widgets.append(btn)
 		#next lang button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)+(self.sltr_size[0]//2), int(self.size[1]*.2)], "midleft")
-		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], sltr.select_next, '>', color.text)
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[0].select_next, '>', color.text)
+		widgets.append(btn)
+		#previous theme button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)-(self.sltr_size[0]//2), int(self.size[1]*.3)], "midright")
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[1].select_previous, '<', color.text)
+		widgets.append(btn)
+		#next theme button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)+(self.sltr_size[0]//2), int(self.size[1]*.3)], "midleft")
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[1].select_next, '>', color.text)
 		widgets.append(btn)
 		#apply button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
@@ -567,6 +588,12 @@ class Menu:
 				if setting == 0 and update == 0:
 					user.lang = w.get_selected()
 					lang = Lang()
+					self.select_menu(self.menu)
+				#the theme is updated
+				elif setting == 1 and update == 1:
+					user.theme = w.get_selected()
+					color = Color()
+					self.__set_widget_templates()
 					self.select_menu(self.menu)
 				setting += 1
 		return update

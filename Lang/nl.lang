@@ -24,3 +24,5 @@ winner = "De winnaar is %s"
 end_game = "Beëindig het Spel"
 apply = "Bevestig"
 select_lang = "Taal:"
+select_theme = "Thema:"
+

@@ -24,3 +24,5 @@ winner = "The winner is %s"
 end_game = "End Game"
 apply = "Apply"
 select_lang = "Language:"
+select_theme = "Theme:"
+

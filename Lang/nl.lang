@@ -25,4 +25,7 @@ end_game = "Beëindig het Spel"
 apply = "Bevestig"
 select_lang = "Taal:"
 select_theme = "Thema:"
+select_resolution = "Scherm resolutie:"
+resolution_warning = "(vereist herstart)"
+apply_restart = "Bevestig en herstart"
 

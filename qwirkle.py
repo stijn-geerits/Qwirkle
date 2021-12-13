@@ -632,7 +632,7 @@ class Menu:
 		file.close()
 		#restart the game
 		if restart:
-			os.execv(sys.executable, [sys.executable, __file__] + sys.argv)
+			os.execv(sys.executable, ["python"] + sys.argv)
 		#go to the main menu
 		else:
 			self.select_menu(self.MAIN)

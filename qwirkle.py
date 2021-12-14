@@ -389,15 +389,10 @@ class Menu:
 		#draw the overlay
 		surf.blit(overlay, [0, 0])
 		
-		#find the winning player
-		players = self.data["game"].get_players()
-		scores = [self.data["game"].get_player_score(p.get_id()) for p in players]
-		winner = players[scores.index(max(scores))]
-		
 		#render the text announcing the game is over
 		gui.rendertext(surf, lang.game_over, int(self.size[1]*.1), None, [self.size[0]//2, self.size[1]//2], "midbottom", color.player_text)
 		#render the text announcing the winner
-		gui.rendertext(surf, lang.winner %(winner.get_name()), int(self.size[1]*.05), None, [self.size[0]//2, self.size[1]//2], "midtop", color.player_text)
+		gui.rendertext(surf, lang.winner %(self.data["game"].get_winning_player().get_name()), int(self.size[1]*.05), None, [self.size[0]//2, self.size[1]//2], "midtop", color.player_text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -874,13 +869,16 @@ class Menu:
 				positions.append([(tile.get_position()[0] - self.data["field"].left) // 35, (tile.get_position()[1] - self.data["field"].top) // 35])
 		#play the tiles
 		failed = self.data["game"].play_tiles(played, positions)
+		#test if game is over
+		if self.data["game"].get_game_over():
+			self.select_menu(self.GAME_OVER)
 		#play was correct
-		if not failed:
+		elif not failed:
 			#update the tiles
 			self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 			#go to the wait for player menu
 			self.select_menu(self.WAIT_PLAYER)
-		#return the amount of played tiles
+		#return the amount of (not) played tiles
 		return len(played)
 	
 	def __trade(self):
@@ -895,12 +893,17 @@ class Menu:
 				#add the tile to the list of tiles to trade
 				trades.append(tile)
 		#trade the tiles
-		self.data["game"].switch_tiles(trades)
-		#update the tiles
-		self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
-		#go to the wait for player menu
-		self.select_menu(self.WAIT_PLAYER)
-		#return the amount of traded tiles
+		failed = self.data["game"].switch_tiles(trades)
+		#test if game is over
+		if self.data["game"].get_game_over():
+			self.select_menu(self.GAME_OVER)
+		#trade was correct
+		elif not failed:
+			#update the tiles
+			self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
+			#go to the wait for player menu
+			self.select_menu(self.WAIT_PLAYER)
+		#return the amount of (not) traded tiles
 		return len(trades)
 	
 	def __skip(self):
@@ -908,7 +911,7 @@ class Menu:
 			print("[qwirkle.py]Menu.__skip:\x1b[91m Internal error. Called with wrong menu set.\x1b[00m")
 			return
 		#go to the next player
-		self.data["game"].next_player()
+		self.data["game"].next_player(True)
 		#update the tiles
 		self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 		#go to the wait for player menu

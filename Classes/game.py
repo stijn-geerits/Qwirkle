@@ -26,6 +26,8 @@ class Game:
         for player in players:  # new
             player.add_to_hand(self.bag.take_tiles(6))
         self.first_move = True
+        self.skip_counter = 0
+        self.is_game_over = False
 
     def get_tile_dictionary(self):
         return self.tile_dict
@@ -71,13 +73,35 @@ class Game:
         """
         return self.player_on_hand
 
-    def next_player(self):
+    def get_game_over(self):
+        """
+        Get function for game over boolean
+        """
+        return self.is_game_over
+
+    def get_winning_player(self):
+        scores = [self.get_player_score(p.get_id()) for p in self.players]
+        winner = players[scores.index(max(scores))]
+        return winner
+
+    def next_player(self, skip=False):
         """
         Import the current player on hand
         Add current index by 1 and respect the rules by % !! len(players) = 3 , objects has index: 0, 1, 2 !!
         Determines the new player on hand, return
         """
+        if skip:
+            self.skip_counter += 1
+            if self.skip_counter >= len(self.players):
+                self.is_game_over = True
+        else:
+            self.skip_counter = 0
+
         current_player = self.player_on_hand
+        if current_player.get_hand() == []:
+            self.scoreboard.change_score(current_player.get_id(), 6)  # Give six bonus points to player who finishes first
+            self.is_game_over = True
+
         index = self.players.index(current_player)
         index += 1
         new_player = self.players[index % len(self.players)]
@@ -136,6 +160,8 @@ class Game:
             added_score = 0
             for line in line_list:
                 added_score += line.get_length()
+                if line.get_length() == 6:
+                    added_score += 6
             self.scoreboard.change_score(self.player_on_hand.get_id(), added_score)
 
             # Update player hand
@@ -167,6 +193,8 @@ class Game:
             prev_hand: Hand state to rewind to
             prev_board: Board state to rewind to
         """
+        for tile in prev_hand:
+            tile.set_position(0)
         self.player_on_hand.set_hand(prev_hand)
         self.set_field(prev_board)
         self.previous_player()

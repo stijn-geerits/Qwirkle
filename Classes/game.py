@@ -268,7 +268,7 @@ class Game:
                 print("Move not valid")
                 return False
 
-            #control if one line contains all played tiles
+            # control if one line contains all played tiles
             i = 0
             for tile in play_tiles:
                 if tile in xyline:

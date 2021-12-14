@@ -28,4 +28,6 @@ select_theme = "Thema:"
 select_resolution = "Scherm resolutie:"
 resolution_warning = "(vereist herstart)"
 apply_restart = "Bevestig en herstart"
+error_play = "Deze zet is niet geldig"
+error_trade = "Dit aantal tegels kan niet geruild worden"
 

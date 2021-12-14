@@ -37,11 +37,9 @@ def main():
     for row in board:
         print(row)
 
-    first_move = True
-
     while True:
         # Kies speler
-        current_player = mygame.next_player()
+        current_player = mygame.get_player_on_hand()
         print("--------------------------------------------")
         print(f"{current_player.get_name()} is aan de beurt")
 
@@ -104,7 +102,12 @@ def main():
             print(f"{current_player.get_name()}, dit is je nieuwe hand")
             print(tiles_info)
 
-        first_move = False
+            # Print the new state of the board
+            p_board = make_board_printable(mygame.get_field())
+            for row in p_board:
+                for el in row:
+                    print(el, end=' ')
+                print()
 
 
 def make_tiles_printable(tiles):

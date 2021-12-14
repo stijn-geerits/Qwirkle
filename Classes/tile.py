@@ -1,6 +1,3 @@
-# 6 valid colors: red, orange, yellow, green, blue, purple
-# 6 valid shapes: circle, x, diamond, square, star, clover
-
 import pygame
 
 class Tile:

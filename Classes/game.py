@@ -4,7 +4,6 @@ import bag
 from tile import Tile
 import random
 import line
-from copy import copy
 
 
 class Game:
@@ -117,8 +116,8 @@ class Game:
         # Save unchanged state of the board and hand, for rewind purposes
         # Needs to be COPIES of field and hand, otherwise they will change along
         # with the original and rewind will have no effect
-        prev_board = copy(self.get_field())
-        prev_hand = copy(self.player_on_hand.get_hand())
+        prev_board = [[self.get_field((x, y)) for x in range(92)] for y in range(92)]
+        prev_hand = self.player_on_hand.get_hand().copy()
         prev_positions = [tile.get_position() for tile in prev_hand]
 
         for position, tile in zip(positions, tiles):
@@ -186,7 +185,6 @@ class Game:
             # Return True if function did not succeed
             return True
 
-
     def __rewind(self, prev_hand, prev_board, prev_positions):
         """
         Internal function to turn back the board and hand state en restart the players turn
@@ -198,7 +196,6 @@ class Game:
             tile.set_position(position)
         self.player_on_hand.set_hand(prev_hand)
         self.set_field(prev_board)
-
 
     def __build_line(self, tiles):
         """

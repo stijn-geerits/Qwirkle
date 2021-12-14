@@ -95,7 +95,7 @@ class Menu:
 		self.__set_widget_templates()
 		#initialize the main menu
 		self.select_menu(self.MAIN)
-		#initialize a variable for the data and game object
+		#initialize a variable for all sort of menu data
 		self.data = {}
 		return
 	
@@ -878,6 +878,8 @@ class Menu:
 			self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 			#go to the wait for player menu
 			self.select_menu(self.WAIT_PLAYER)
+		else:
+			gui.rendertext(self.background, lang.error_play, 16, None, [self.data["field"].centerx, self.size[1]-16], "center", color.text)
 		#return the amount of (not) played tiles
 		return len(played)
 	
@@ -903,6 +905,8 @@ class Menu:
 			self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
 			#go to the wait for player menu
 			self.select_menu(self.WAIT_PLAYER)
+		else:
+			gui.rendertext(self.background, lang.error_trade, 16, None, [self.data["field"].centerx, self.size[1]-16], "center", color.text)
 		#return the amount of (not) traded tiles
 		return len(trades)
 	

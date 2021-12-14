@@ -173,6 +173,8 @@ class Game:
             added_score = 0
             for line in line_list:
                 added_score += line.get_length()
+                if line.get_length() == 6:
+                    added_score += 6
             self.scoreboard.change_score(self.player_on_hand.get_id(), added_score)
 
             # Update player hand

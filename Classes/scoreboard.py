@@ -1,6 +1,3 @@
-import player
-
-
 class Scoreboard:
     def __init__(self, players):
         self.scoreboard = {}

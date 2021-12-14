@@ -1,8 +1,3 @@
-from tile import Tile
-
-
-# Deze functie controleert niet of de posities van de start- en eindblokjes correct zijn,
-# enkel of de kleuren en vormen kloppen.
 def validate_line(tiles):
     """
     Checks if a line is valid by checking their colors and shapes.

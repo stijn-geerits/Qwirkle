@@ -186,7 +186,6 @@ class Game:
             # Return True if function did not succeed
             return True
 
-
     def __rewind(self, prev_hand, prev_board, prev_positions):
         """
         Internal function to turn back the board and hand state en restart the players turn
@@ -198,7 +197,6 @@ class Game:
             tile.set_position(position)
         self.player_on_hand.set_hand(prev_hand)
         self.set_field(prev_board)
-
 
     def __build_line(self, tiles):
         """

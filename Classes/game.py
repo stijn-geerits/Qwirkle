@@ -81,7 +81,7 @@ class Game:
 
     def get_winning_player(self):
         scores = [self.get_player_score(p.get_id()) for p in self.players]
-        winner = players[scores.index(max(scores))]
+        winner = self.players[scores.index(max(scores))]
         return winner
 
     def next_player(self, skip=False):

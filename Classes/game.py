@@ -257,6 +257,7 @@ class Game:
         Checks if move is valid, uses above function
         """
         tile_in_board = False
+        found_line = False
         for xyline in xylines:
             for tile in xyline:  # controle op minstens 1 bestaand blokje in xy lijnen
                 if tile not in play_tiles:
@@ -266,7 +267,16 @@ class Game:
             if self.__validate_line(xyline) is False:
                 print("Move not valid")
                 return False
-        if tile_in_board is True:
+
+            #control if one line contains all played tiles
+            i = 0
+            for tile in play_tiles:
+                if tile in xyline:
+                    i += 1
+            if i == len(play_tiles):
+                found_line = True
+
+        if tile_in_board and found_line:
             return True
         else:
             return False

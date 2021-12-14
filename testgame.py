@@ -38,8 +38,7 @@ def main():
         print(row)
 
     first_move = True
-    # TODO: Check op overlappende plaatsing van tegels (input + board)
-    #       Zoek manier om ongeldige beurt terug te draaien
+
     while True:
         # Kies speler
         current_player = mygame.next_player()
@@ -97,7 +96,8 @@ def main():
             trade_tiles_p = make_tiles_printable(trade_tiles)
             print(f"Je hebt geruild: {trade_tiles_p}")
             # Trade the tiles
-            mygame.switch_tiles(trade_tiles)
+            if mygame.switch_tiles(trade_tiles):
+                continue
             # Show players new hand
             current_hand = current_player.get_hand()
             tiles_info = make_tiles_printable(current_hand)

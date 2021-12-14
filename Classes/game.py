@@ -84,7 +84,7 @@ class Game:
         self.player_on_hand = new_player
         return new_player
 
-    def previous_player(self):
+    def previous_player(self): # can be removed
         """
         Import the current player on hand
         Add current index by 1 and respect the rules by % !! len(players) = 3 , objects has index: 0, 1, 2 !!
@@ -121,11 +121,6 @@ class Game:
                 self.__rewind(prev_hand, prev_board)
                 return True
 
-        # Update player hand
-        self.player_on_hand.take_from_hand(tiles)
-        new_tile = self.bag.take_tiles(len(tiles))
-        self.player_on_hand.add_to_hand(new_tile)
-
         # Build lines
         xylines = self.__build_line(tiles)
 
@@ -155,6 +150,16 @@ class Game:
             for line in line_list:
                 added_score += line.get_length()
             self.scoreboard.change_score(self.player_on_hand.get_id(), added_score)
+
+            # Update player hand
+            self.player_on_hand.take_from_hand(tiles)
+            amount = self.bag.get_current_amount()
+            if len(tiles) <= amount:
+                new_tile = self.bag.take_tiles(len(tiles))
+                self.player_on_hand.add_to_hand(new_tile)
+            else:
+                new_tile = self.bag.take_tiles(amount)
+                self.player_on_hand.add_to_hand(new_tile)
 
             self.player_on_hand = self.next_player()
             self.first_move = False
@@ -271,10 +276,26 @@ class Game:
         """
         Take tiles from current players hand, trade them with bag and insert new in hand
         """
+
         self.player_on_hand.take_from_hand(tiles)
-        new_tiles = self.bag.trade_tiles(tiles)
-        self.player_on_hand.add_to_hand(new_tiles)
-        self.player_on_hand = self.next_player()
+
+        valid_move = False
+        amount = self.bag.get_current_amount()
+        if len(tiles) <= amount:
+            valid_move = True
+        else:
+            valid_move = False
+
+        if valid_move:
+            new_tiles = self.bag.trade_tiles(tiles)
+            self.player_on_hand.add_to_hand(new_tiles)
+            self.player_on_hand = self.next_player()
+            return False
+
+        else:  # If move is not valid, restart players turn
+            print("De gespeelde blokjes zijn ongeldig")
+            self.player_on_hand.add_to_hand(tiles)
+            return True
 
     def cancel(self):
         """

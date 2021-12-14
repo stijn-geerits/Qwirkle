@@ -24,22 +24,3 @@ def validate_line(tiles):
         return True
     else:
         return False
-
-
-# Test
-def main():
-    tiles = []
-    for i, shape in enumerate(['clover', 'square', 'diamond', 'star']):
-        tiles.append(Tile(i, 'blue', shape, 0))
-    is_line_valid = validate_line(tiles)
-    print(is_line_valid)
-
-    tiles2 = []
-    for i, shape in enumerate(['clover', 'square', 'square', 'star']):
-        tiles2.append(Tile(i, 'blue', shape, 0))
-    is_line_valid = validate_line(tiles2)
-    print(is_line_valid)
-
-
-if __name__ == '__main__':
-    main()

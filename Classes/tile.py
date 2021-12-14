@@ -61,22 +61,8 @@ class Tile:
         """
         Get the pygame.Rect object for the tile
         """
-        #pygame.Rect objects of pygame.Surface objects are placed at 0x0 by default
+        # pygame.Rect objects of pygame.Surface objects are placed at 0x0 by default
         if self.image != None:
             return self.image.get_rect().move(self.position)
         else:
-            return pygame.Rect(position + [0, 0])
-
-
-# Test
-if __name__ == "__main__":
-    example_tile = Tile(0, 'blue', 'square', (0, 0))
-
-    print("Tile has ID: " + str(example_tile.get_id()))
-    print("Tile has Color: " + example_tile.get_color())
-    print("Tile has Shape: " + example_tile.get_shape())
-    print("Tile has Position: X: " + str(example_tile.get_position()[0]) + " Y: " + str(example_tile.get_position()[1]))
-
-    example_tile.set_position((4, 5))
-
-    print("Tile has Position: X: " + str(example_tile.get_position()[0]) + " Y: " + str(example_tile.get_position()[1]))
+            return pygame.Rect(self.position + [0, 0])

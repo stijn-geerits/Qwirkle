@@ -63,21 +63,3 @@ class Line:
             return True
         else:
             return False
-
-
-# Test
-if __name__ == '__main__':
-    line = Line((1, 2), (1, 6))
-    line_length = line.get_length()
-    print("The length of the line is: " + str(line_length))
-    line_angle = line.get_angle()
-    print("The angle of the line is: " + str(line_angle))
-
-    line1 = Line((1, 5), (4, 5))
-    print(line.is_equal(line1))
-
-    line2 = Line((1, 2), (1, 6))
-    print(line.is_equal(line2))
-
-    line3 = Line((1, 6), (1, 2))
-    print(line.is_equal(line3))

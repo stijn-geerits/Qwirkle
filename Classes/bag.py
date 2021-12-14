@@ -47,13 +47,13 @@ class Bag:
 
     def get_current_amount(self):
         """
-        Get function for current amount of tiles in the bag.\n
+        Get function for current amount of tiles in the bag.
         """
         return self.current_amount
 
     def take_tiles(self, amount):
         """
-        Takes a given amount of tiles from the bag and returns them in a list.\n
+        Takes a given amount of tiles from the bag and returns them in a list.
         """
         tiles = []
         for _ in range(amount):
@@ -71,7 +71,7 @@ class Bag:
     def trade_tiles(self, old_tiles):
         """
         Takes a list of Tile objects. An amount equal to the amount of old tiles is taken from the tiles list.
-        The old tiles are added back to the bag. \n
+        The old tiles are added back to the bag.
         """
         # Different behaviour if old_tiles is single tile or list
         if isinstance(old_tiles, list):  # new_tiles will be list
@@ -85,13 +85,3 @@ class Bag:
 
         self.__update_current_amount()
         return new_tiles
-
-
-# Test
-if __name__ == "__main__":
-    # Create new bag
-    bag = Bag()
-    tile_dict = bag.get_tile_dictionary()
-
-    print(tile_dict)
-

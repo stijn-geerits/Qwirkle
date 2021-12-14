@@ -119,6 +119,7 @@ class Game:
         # with the original and rewind will have no effect
         prev_board = copy(self.get_field())
         prev_hand = copy(self.player_on_hand.get_hand())
+        prev_positions = [tile.get_position() for tile in prev_hand]
 
         for position, tile in zip(positions, tiles):
             (x, y) = position
@@ -129,7 +130,7 @@ class Game:
                 tile.set_position((x, y))
             else:  # Return True if function did not succeed
                 print("De gespeelde blokjes zijn ongeldig")
-                self.__rewind(prev_hand, prev_board)
+                self.__rewind(prev_hand, prev_board, prev_positions)
                 return True
 
         # Build lines
@@ -181,23 +182,22 @@ class Game:
 
         else:  # If move is not valid, restart players turn
             print("De gespeelde blokjes zijn ongeldig")
-            self.__rewind(prev_hand, prev_board)
+            self.__rewind(prev_hand, prev_board, prev_positions)
             # Return True if function did not succeed
             return True
 
 
-    def __rewind(self, prev_hand, prev_board):
+    def __rewind(self, prev_hand, prev_board, prev_positions):
         """
         Internal function to turn back the board and hand state en restart the players turn
         Args:
             prev_hand: Hand state to rewind to
             prev_board: Board state to rewind to
         """
-        for tile in prev_hand:
-            tile.set_position(0)
+        for tile, position in zip(prev_hand, prev_positions):
+            tile.set_position(position)
         self.player_on_hand.set_hand(prev_hand)
         self.set_field(prev_board)
-        self.previous_player()
 
 
     def __build_line(self, tiles):
@@ -291,9 +291,6 @@ class Game:
         """
         Take tiles from current players hand, trade them with bag and insert new in hand
         """
-
-        self.player_on_hand.take_from_hand(tiles)
-
         valid_move = False
         amount = self.bag.get_current_amount()
         if len(tiles) <= amount:
@@ -302,6 +299,7 @@ class Game:
             valid_move = False
 
         if valid_move:
+            self.player_on_hand.take_from_hand(tiles)
             new_tiles = self.bag.trade_tiles(tiles)
             self.player_on_hand.add_to_hand(new_tiles)
             self.player_on_hand = self.next_player()
@@ -317,69 +315,3 @@ class Game:
         Re-initial current player on hand
         """
         return self.player_on_hand
-
-
-if __name__ == "__main__":
-    speler1 = player.Player(1, "Stijn")
-    speler2 = player.Player(2, "Laël")
-    speler3 = player.Player(3, "Stan")
-    game = Game([speler1, speler2, speler3])
-
-    while True:
-        tiles = []
-        for tile in player.Player.get_hand(game.player_on_hand):
-            tiles.append(tile.get_id())
-        print(player.Player.get_name(game.player_on_hand)+" jij bent aan de beurt."+"\n"+"Dit is jouw hand: "+str(tiles)
-              + "\n"+"Maak een keuze:"+"\n"+"1: Aanleggen"+"\n"+"2: Ruilen")
-
-        correct = False
-        while not correct:
-            keuze = int(input())
-            if keuze == 1:
-                correct = True
-                print("Je koos voor aanleggen.")
-                print("Geef de id's van de blokjes en hun locaties die je wil plaatsen."+"\n"+"bv: 15;(3,5);25;(6,9)")
-                invoer = str(input())
-                invoer = invoer.split(";")
-                blokjes = invoer[::2]
-                hand = player.Player.get_hand(game.player_on_hand)
-                blokken = []
-                print(blokjes)
-                print(tiles)
-                for blokje in blokjes:
-                    if blokje in tiles:
-                        index = tiles.index(blokje)
-                        blokken.append(hand[index])
-                locaties = invoer[1::2]
-                print(blokken)
-                print(locaties)
-                game.play_tiles(blokken, locaties)
-
-            elif keuze == 2:
-                correct = True
-                print("Je koos voor ruilen.")
-
-            else:
-                print("Foute invoer.")
-
-        """
-        # blokjes leggen op speelveld
-        game.player_on_hand = game.players[0]
-        print(speler1.get_hand())
-        positions = [(5, 3), (8, 9)]
-        game.play_tiles(tiles, positions)
-        print(speler1.get_hand())
-        print(game.get_field((8, 9)))
-        """
-        """
-        # wijzigen speler aan de beurt
-        huidige_speler = game.get_player_on_hand()
-        nieuwe_speler = game.next_player()
-        print(huidige_speler.get_name())
-        print(nieuwe_speler.get_name())
-        """
-        """
-        # weergeven van speelveld
-        for i in game.get_field():
-            print(*i)
-        """

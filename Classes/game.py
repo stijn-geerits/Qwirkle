@@ -206,6 +206,8 @@ class Game:
             prev_hand: Hand state to rewind to
             prev_board: Board state to rewind to
         """
+        for tile in prev_hand:
+            tile.set_position(0)
         self.player_on_hand.set_hand(prev_hand)
         self.set_field(prev_board)
         self.previous_player()

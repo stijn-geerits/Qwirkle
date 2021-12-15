@@ -343,9 +343,3 @@ class Game:
         else:  # If move is not valid, restart players turn
             print("De gespeelde blokjes zijn ongeldig")
             return True
-
-    def cancel(self):
-        """
-        Re-initial current player on hand
-        """
-        return self.player_on_hand

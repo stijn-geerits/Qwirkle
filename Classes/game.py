@@ -19,11 +19,12 @@ class Game:
             self.empty_tile = Tile(0, '', '', 0)
         self.board_length = 92  # for test: 20
         self.field = [[self.empty_tile for x in range(self.board_length)] for y in range(self.board_length)]
-        self.last_move = None
         for player in players:  # new
             player.add_to_hand(self.bag.take_tiles(6))
+        self.maximum = 0
         self.player_on_hand = self.get_starting_player()
         self.first_move = True
+        self.last_move = None
         self.skip_counter = 0
         self.is_game_over = False
 

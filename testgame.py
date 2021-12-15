@@ -72,8 +72,8 @@ def main():
         print(tiles_info)
 
         choice = ""
-        while choice != "1" and choice != "2":
-            print("Kies je actie:\t1. Aanleggen\t2. Ruilen")
+        while choice != "1" and choice != "2" and choice != "3":
+            print("Kies je actie:\t1. Aanleggen\t2. Ruilen\t3. Stop spel")
             choice = str(input(":"))
         if choice == "1":
             # Handle player input with option play
@@ -144,6 +144,9 @@ def main():
                 for el in row:
                     print(el, end=' ')
                 print()
+
+        elif choice == "3":
+            sys.exit("ByeBye")
 
 
 def make_tiles_printable(tiles):

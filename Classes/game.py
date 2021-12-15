@@ -115,8 +115,9 @@ class Game:
         This function has 4 child functions: build_line, validate line, controle, create_line
         """
         # Save unchanged state of the board and hand, for rewind purposes
-        # Needs to be COPIES of field and hand, otherwise they will change along
-        # with the original and rewind will have no effect
+        # Needs to contain references to the same objects as in board and hand
+        # and NOT references to board and hand themselves,
+        # otherwise they will change along with the original and rewind will have no effect
         prev_board = [[self.get_field((x, y)) for x in range(self.board_length)] for y in range(self.board_length)]
         prev_hand = self.player_on_hand.get_hand().copy()
         prev_positions = [tile.get_position() for tile in prev_hand]

@@ -287,12 +287,14 @@ class Menu:
 		gui.rendertext(surf, lang.settings, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
 		
 		#render the text for selecting the resolution
-		gui.rendertext(surf, lang.select_resolution, self.sltr_size[1]-4, None, [int(self.size[0]*.05), int(self.size[1]*.2)], "midleft", color.text)
-		gui.rendertext(surf, lang.resolution_warning, self.sltr_size[1]//2, None, [int(self.size[0]*.05), int(self.size[1]*.22)], "topleft", color.text)
+		gui.rendertext(surf, lang.select_resolution, self.sltr_size[1]-4, None, [int(self.size[0]*.02), int(self.size[1]*.2)], "midleft", color.text)
+		gui.rendertext(surf, lang.resolution_warning, self.sltr_size[1]//2, None, [int(self.size[0]*.02), int(self.size[1]*.22)], "topleft", color.text)
+		#render the text for selecting the framerate
+		gui.rendertext(surf, lang.select_framerate, self.sltr_size[1]-4, None, [int(self.size[0]*.02), int(self.size[1]*.3)], "midleft", color.text)
 		#render the text for selecting the language
-		gui.rendertext(surf, lang.select_lang, self.sltr_size[1]-4, None, [int(self.size[0]*.05), int(self.size[1]*.3)], "midleft", color.text)
+		gui.rendertext(surf, lang.select_lang, self.sltr_size[1]-4, None, [int(self.size[0]*.02), int(self.size[1]*.4)], "midleft", color.text)
 		#render the text for selecting the theme
-		gui.rendertext(surf, lang.select_theme, self.sltr_size[1]-4, None, [int(self.size[0]*.05), int(self.size[1]*.4)], "midleft", color.text)
+		gui.rendertext(surf, lang.select_theme, self.sltr_size[1]-4, None, [int(self.size[0]*.02), int(self.size[1]*.5)], "midleft", color.text)
 		
 		#return the pygame.Surface object
 		return surf
@@ -554,50 +556,63 @@ class Menu:
 		# selector objects #
 		#resolution selector
 		resolutions = ["800x600", "1024x768", "1280x720", "1280x800", "1280x1024", "1440x900", "1680x1050", "1920x1080"]
-		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.75), int(self.size[1]*.2)], "center")
+		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.8), int(self.size[1]*.2)], "center")
 		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], resolutions, resolutions.index('x'.join([str(s) for s in user.winsize])), updater=lambda:self.__update_settings(0))
+		widgets.append(sltr)
+		#fps selector
+		framerate = ["30", "60", "75", "120", "144", "240"]
+		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.8), int(self.size[1]*.3)], "center")
+		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], framerate, framerate.index(str(user.fps)), updater=lambda:self.__update_settings(1))
 		widgets.append(sltr)
 		#lang selector
 		langs = []
 		for l in os.listdir(LANGUAGEDIR):
 			if l.endswith(".lang"):
 				langs.append(l[:l.rfind('.')])
-		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.75), int(self.size[1]*.3)], "center")
-		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], langs, langs.index(user.lang), updater=lambda:self.__update_settings(1))
+		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.8), int(self.size[1]*.4)], "center")
+		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], langs, langs.index(user.lang), updater=lambda:self.__update_settings(2))
 		widgets.append(sltr)
 		#theme selector
 		themes = []
 		for t in os.listdir(THEMESDIR):
 			if t.endswith(".theme"):
 				themes.append(t[:t.rfind('.')])
-		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.75), int(self.size[1]*.4)], "center")
-		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], themes, themes.index(user.theme), updater=lambda:self.__update_settings(2))
+		sltrRect = gui.set_relpos(pygame.Rect([0, 0]+self.sltr_size), [int(self.size[0]*.8), int(self.size[1]*.5)], "center")
+		sltr = selector_builder(sltrRect, [t.copy() for t in self.selector_template], themes, themes.index(user.theme), updater=lambda:self.__update_settings(3))
 		widgets.append(sltr)
 		
 		# button objects #
 		#previous resolution button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)-(self.sltr_size[0]//2), int(self.size[1]*.2)], "midright")
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)-(self.sltr_size[0]//2), int(self.size[1]*.2)], "midright")
 		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[0].select_previous, '<', color.text)
 		widgets.append(btn)
 		#next resolution button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)+(self.sltr_size[0]//2), int(self.size[1]*.2)], "midleft")
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)+(self.sltr_size[0]//2), int(self.size[1]*.2)], "midleft")
 		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[0].select_next, '>', color.text)
 		widgets.append(btn)
-		#previous lang button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)-(self.sltr_size[0]//2), int(self.size[1]*.3)], "midright")
+		#previous framerate button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)-(self.sltr_size[0]//2), int(self.size[1]*.3)], "midright")
 		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[1].select_previous, '<', color.text)
 		widgets.append(btn)
-		#next lang button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)+(self.sltr_size[0]//2), int(self.size[1]*.3)], "midleft")
+		#next framerate button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)+(self.sltr_size[0]//2), int(self.size[1]*.3)], "midleft")
 		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[1].select_next, '>', color.text)
 		widgets.append(btn)
-		#previous theme button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)-(self.sltr_size[0]//2), int(self.size[1]*.4)], "midright")
+		#previous lang button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)-(self.sltr_size[0]//2), int(self.size[1]*.4)], "midright")
 		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[2].select_previous, '<', color.text)
 		widgets.append(btn)
-		#next theme button
-		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.75)+(self.sltr_size[0]//2), int(self.size[1]*.4)], "midleft")
+		#next lang button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)+(self.sltr_size[0]//2), int(self.size[1]*.4)], "midleft")
 		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[2].select_next, '>', color.text)
+		widgets.append(btn)
+		#previous theme button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)-(self.sltr_size[0]//2), int(self.size[1]*.5)], "midright")
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[3].select_previous, '<', color.text)
+		widgets.append(btn)
+		#next theme button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_small_size), [int(self.size[0]*.8)+(self.sltr_size[0]//2), int(self.size[1]*.5)], "midleft")
+		btn = button_builder(btnRect,  [t.copy() for t in self.button_small_template], widgets[3].select_next, '>', color.text)
 		widgets.append(btn)
 		#apply and restart button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.85)], "center")
@@ -695,13 +710,16 @@ class Menu:
 				#the screen resolution is updated
 				if setting == 0 and update == 0:
 					user.winsize = [int(s) for s in w.get_selected().split('x')]
-				#the language is updated
+				#the framerate is updated
 				elif setting == 1 and update == 1:
+					user.fps = int(w.get_selected())
+				#the language is updated
+				elif setting == 2 and update == 2:
 					user.lang = w.get_selected()
 					lang = Lang()
 					self.select_menu(self.menu)
 				#the theme is updated
-				elif setting == 2 and update == 2:
+				elif setting == 3 and update == 3:
 					user.theme = w.get_selected()
 					color = Color()
 					self.__set_widget_templates()

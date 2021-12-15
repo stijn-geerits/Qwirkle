@@ -1,4 +1,48 @@
-# Qwirkle
+# Getting started
+## Windows:
+* Dowload the newest version of python on: https://www.python.org/downloads/
+* Install pygame by entering following command in to the cmd:  
+`pip install pygame`
+* Download this repository as a zip and extract the zip in a chosen folder.
+* Locate your cmd to that folder en enter:  
+`python qwirkle.py`
+
+## macOS:
+* Download the latest version of python on: https://www.python.org/downloads/
+* To install pygame, open the terminal and run the following command:  
+`python3 -m pip install -U pygame --user`
+* Either download this repository as a zip and extract or clone it with  
+`git clone https://github.com/stijn-geerits/Qwirkle.git`
+* With your terminal in the correct directory, run the command  
+`python qwirkle.py`  
+or  
+`./qwirkle.py`  
+(You may need to `chmod +x qwirkle.py`)
+
+
+## Linux:
+* Install a python 3.X package (if it isn't already):
+  + On Debian based systems:  
+  `sudo apt-get install python3`
+  + On Fedora based systems:  
+  `sudo dnf install python3`
+* Install pygame:  
+`python3 pip install pygame`
+* Either download this repository as a zip or clone it:  
+  + Install git (if it isn't already)
+    - On Debian based systems:  
+    `sudo apt-get install git`
+    - On Fedora based systems:  
+    `sudo dnf install git`
+  + Clone the repository:  
+  `git clone https://github.com/stijn-geerits/Qwirkle`
+* Run the game by double clicking or running in a terminal:  
+`python3 qwirkle.py`  
+or  
+`./qwirkle.py`  
+(If this does not work, run: `chmod +x qwirkle.py`)
+
+# Requirements
 
 * Er zullen 108 blokken zijn.
 * Er zullen zes kleuren zijn: rood, oranje, geel, groen, blauw en paars.

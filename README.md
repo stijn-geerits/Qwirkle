@@ -14,7 +14,7 @@
 * Either download this repository as a zip and extract or clone it with  
 `git clone https://github.com/stijn-geerits/Qwirkle.git`
 * With your terminal in the correct directory, run the command  
-`python qwirkle.py`  
+`python3 qwirkle.py`  
 or  
 `./qwirkle.py`  
 (You may need to `chmod +x qwirkle.py`)

@@ -1,5 +1,10 @@
 # Getting started
 *Windows
+Dowload the newest version of python on: https://www.python.org/downloads/
+Install pygame by entering "pip install pygame" in to cmd. 
+Download this repository as a zip and exrtact the zip in a chosen folder.
+Locate your cmd to this folder en enter "python qwirkle.py".
+
 *Mac OS
 *linux
 

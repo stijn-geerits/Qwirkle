@@ -1,5 +1,6 @@
 import pygame
 
+
 class Tile:
     def __init__(self, tile_id, color, shape, position, image=None):
         self.id = tile_id

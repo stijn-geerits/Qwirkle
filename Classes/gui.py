@@ -378,7 +378,7 @@ def set_relpos(rect, location, relpos):
 		rect.topleft = location
 	return rect
 
-def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="topleft", color=(32, 32, 32)):
+def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="topleft", color=(32, 32, 32), alpha=(0, 0, 0)):
 	"""
 	Display the given text on the surface, with the given font and size, at the given location
 	"""
@@ -398,7 +398,15 @@ def rendertext(surface, text, size=32, font=None, location=[0, 0], relpos="tople
 	#render the text and put it in place
 	textpos = []
 	for line in range(0, lines):
-		text[line] = font.render(text[line], True, color)
+		string = text[line]
+		#render the text
+		text[line] = font.render(string, True, color)
+		#fill the area with the transparent color
+		text[line].fill(alpha)
+		#set the transparent colorkey
+		text[line].set_colorkey(alpha)
+		#re-render the text
+		text[line] = font.render(string, True, color)
 		#update the position according to the relpos variable
 		textpos.append(set_relpos(text[line].get_rect(), [location[0], location[1]+int(size*line)], relpos))
 	

@@ -22,24 +22,24 @@ or
 
 ## Linux:
 * Install a python 3.X package (if it isn't already):
-  + On Debian based systems:
+  + On Debian based systems:  
   `sudo apt-get install python3`
-  + On Fedora based systems:
+  + On Fedora based systems:  
   `sudo dnf install python3`
-* Install pygame:
+* Install pygame:  
 `python3 pip install pygame`
-* Either download this repository as a zip or clone it:
+* Either download this repository as a zip or clone it:  
   + Install git (if it isn't already)
-    - On Debian based systems:
+    - On Debian based systems:  
     `sudo apt-get install git`
-    - On Fedora based systems:
+    - On Fedora based systems:  
     `sudo dnf install git`
-  + Clone the repository
+  + Clone the repository:  
   `git clone https://github.com/stijn-geerits/Qwirkle`
-* Run the game by double clicking or running in a terminal:
-`python3 qwirkle.py`
-or
-`./qwirkle.py`
+* Run the game by double clicking or running in a terminal:  
+`python3 qwirkle.py`  
+or  
+`./qwirkle.py`  
 (If this does not work, run: `chmod +x qwirkle.py`)
 
 # Requirements

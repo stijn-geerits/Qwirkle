@@ -183,7 +183,6 @@ class Game:
         for xyline in xylines:
             if len(xyline) == 1:
                 xylines.remove(xyline)
-        print(f"De xy lijnen zijn: {xylines}")
 
         # Controle lines
         is_move_valid = self.__controle(xylines, tiles)
@@ -199,7 +198,6 @@ class Game:
                     if line.is_equal(line2):
                         line_list.remove(line2)
 
-            print(f"De unieke lijnen zijn: {line_list}")
             # Calculate score by length of unique lines
             added_score = 0
             for line in line_list:
@@ -315,7 +313,7 @@ class Game:
                 if self.first_move is True:
                     tile_in_board = True
             if self.__validate_line(xyline) is False:
-                print("Move not valid")
+                print("De gespeelde blokjes zijn ongeldig")
                 return False
 
             # control if one line contains all played tiles

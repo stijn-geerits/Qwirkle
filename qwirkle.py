@@ -849,7 +849,7 @@ class Menu:
 		#check whether the tile is on a valid grid
 		for grid in ["field", "bag", "hand"]:
 			#get the pygame.Rect object for the grid
-			gridRect = self.data[grid]
+			gridRect = self.data[grid].copy()
 			#decrease grid dimensions by 1 (to prevent dropping tiles outside the bottom or right edge of the grid)
 			gridRect.height -= 1
 			gridRect.width -= 1
@@ -994,7 +994,18 @@ class Menu:
 			#go to the wait for player menu
 			self.select_menu(self.WAIT_PLAYER)
 		else:
-			gui.rendertext(self.background, lang.error_play, 16, None, [self.data["field"].centerx, self.size[1]-16], "center", color.text)
+			#calculate a pygame.Rect area that always covers the error messages
+			fieldRect = self.data["field"].copy()
+			rect = pygame.Rect(list(fieldRect.bottomleft) + [fieldRect.width, (self.size[1]-fieldRect.height)//2])
+			rect.top += 1
+			#redraw the background where the error message will go
+			if gui.is_rgb(color.background_game):
+				self.background.fill(color.background_game, rect)
+			else:
+				bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), self.size)
+				self.background.blit(bg.subsurface(rect), rect.topleft)
+			#render the error message
+			gui.rendertext(self.background, lang.error_play, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
 		#return the amount of (not) played tiles
 		return len(played)
 	
@@ -1021,7 +1032,18 @@ class Menu:
 			#go to the wait for player menu
 			self.select_menu(self.WAIT_PLAYER)
 		else:
-			gui.rendertext(self.background, lang.error_trade, 16, None, [self.data["field"].centerx, self.size[1]-16], "center", color.text)
+			#calculate a pygame.Rect area that always covers the error messages
+			fieldRect = self.data["field"].copy()
+			rect = pygame.Rect(list(fieldRect.bottomleft) + [fieldRect.width, (self.size[1]-fieldRect.height)//2])
+			rect.top += 1
+			#redraw the background where the error message will go
+			if gui.is_rgb(color.background_game):
+				self.background.fill(color.background_game, rect)
+			else:
+				bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), self.size)
+				self.background.blit(bg.subsurface(rect), rect.topleft)
+			#render the error message
+			gui.rendertext(self.background, lang.error_trade, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
 		#return the amount of (not) traded tiles
 		return len(trades)
 	
@@ -1241,6 +1263,10 @@ if __name__ == "__main__":
 					menus.select_menu(Menu.PAUSE, menus.get_menu())
 					#clear the update list of old updates
 					update = []
+					#reset the active, selected and sprite
+					active = None
+					selected = None
+					sprite = None
 					#get the new menu info
 					background = menus.get_background()
 					widgets = menus.get_widgets()

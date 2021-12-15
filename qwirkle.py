@@ -809,7 +809,11 @@ class Menu:
 		"""
 		#check whether the tile is on a valid grid
 		for grid in ["field", "bag", "hand"]:
+			#get the pygame.Rect object for the grid
 			gridRect = self.data[grid]
+			#decrease grid dimensions by 1 (to prevent dropping tiles outside the bottom or right edge of the grid)
+			gridRect.height -= 1
+			gridRect.width -= 1
 			#the tile is on the grid
 			if gridRect.collidepoint(tile.get_rect().center):
 				#calculate the new position for the tile
@@ -820,7 +824,7 @@ class Menu:
 				search.remove(tile)
 				for s in search:
 					#the current tile is at the requested grid position
-					if s.get_rect().collidepoint(tile.get_rect().center):
+					if s.get_position() == [gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2]:
 						#swap the positions of the current and active tile
 						s.set_position(self.data["oldpos"])
 						tile.set_position([gridRect.left + (xTile * 35) + 2, gridRect.top + (yTile * 35) + 2])

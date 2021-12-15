@@ -1005,7 +1005,10 @@ class Menu:
 				bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), self.size)
 				self.background.blit(bg.subsurface(rect), rect.topleft)
 			#render the error message
-			gui.rendertext(self.background, lang.error_play, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
+			if self.data["game"].get_first_move():
+				gui.rendertext(self.background, lang.error_first, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
+			else:
+				gui.rendertext(self.background, lang.error_play, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
 		#return the amount of (not) played tiles
 		return len(played)
 	
@@ -1043,7 +1046,10 @@ class Menu:
 				bg = pygame.transform.smoothscale(pygame.image.load(GRAPHICSDIR + color.background_game), self.size)
 				self.background.blit(bg.subsurface(rect), rect.topleft)
 			#render the error message
-			gui.rendertext(self.background, lang.error_trade, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
+			if self.data["game"].get_first_move():
+				gui.rendertext(self.background, lang.error_first, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
+			else:
+				gui.rendertext(self.background, lang.error_trade, 16, None, [fieldRect.centerx, self.size[1]-16], "center", color.error)
 		#return the amount of (not) traded tiles
 		return len(trades)
 	

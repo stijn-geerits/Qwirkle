@@ -300,10 +300,16 @@ class Menu:
 	def __get_menu_wait_player(self):
 		#get the surface for the game menu
 		surf = self.__get_menu_game()
-		#draw the game menu widgets on the surface
+		#prepare a layer for the widgets
+		w_layer = pygame.Surface(self.size)
+		w_layer.fill(color.alpha)
+		w_layer.set_colorkey(color.alpha)
+		#draw the widgets on the surface
 		widgets = self.__get_widgets_game()
 		for w in widgets:
-			w.blit_on(surf)
+			w.blit_on(w_layer)
+		#draw the widgets layer on the surface
+		surf.blit(w_layer, [0, 0])
 		
 		#create a semi transparent overlay
 		overlay = pygame.Surface(surf.get_size())
@@ -384,10 +390,16 @@ class Menu:
 	def __get_menu_game_over(self):
 		#get the surface for the game menu
 		surf = self.__get_menu_game()
-		#draw the game menu widgets on the surface
+		#prepare a layer for the widgets
+		w_layer = pygame.Surface(self.size)
+		w_layer.fill(color.alpha)
+		w_layer.set_colorkey(color.alpha)
+		#draw the widgets on the surface
 		widgets = self.__get_widgets_game()
 		for w in widgets:
-			w.blit_on(surf)
+			w.blit_on(w_layer)
+		#draw the widgets layer on the surface
+		surf.blit(w_layer, [0, 0])
 		
 		#create a semi transparent overlay
 		overlay = pygame.Surface(surf.get_size())
@@ -434,9 +446,15 @@ class Menu:
 			print("[qwirkle.py]Menu.__get_menu_pause:\x1b[91m Internal error, unknown previous menu passed.\x1b[00m")
 			surf = pygame.Surface(self.size)
 			widgets = []
+		#prepare a layer for the widgets
+		w_layer = pygame.Surface(self.size)
+		w_layer.fill(color.alpha)
+		w_layer.set_colorkey(color.alpha)
 		#draw the widgets on the surface
 		for w in widgets:
-			w.blit_on(surf)
+			w.blit_on(w_layer)
+		#draw the widgets layer on the surface
+		surf.blit(w_layer, [0, 0])
 		
 		#create a semi transparent overlay
 		overlay = pygame.Surface(surf.get_size())

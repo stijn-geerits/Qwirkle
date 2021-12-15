@@ -111,6 +111,11 @@ def main():
 
 
 def make_tiles_printable(tiles):
+    """
+    Returns console printable combinations of ids, colors and shapes made from a list of tiles.
+    :param tiles: list of tile objects that needs to be printed
+    :return: printable_tiles: list of combinations of id, color and shape that can be printed
+    """
     printable_tiles = []
     for tile in tiles:
         printable_tiles.append((tile.get_id(), tile.get_color(), tile.get_shape()))
@@ -118,6 +123,12 @@ def make_tiles_printable(tiles):
 
 
 def make_board_printable(board):
+    """
+    Makes a board that can be printed line-by-line to the console. The function takes tile objects in the given board
+    and adds the correct unicode character and color code to the printable board
+    :param board: 2D-array containing tile objects
+    :return: printable_board: 2D-array with strings containing color codes and unicode characters to be displayed
+    """
     # Color codes
     # 38;2;r;g;b
     colors = {"red": '\x1b[38;2;192;32;32m', 
@@ -150,6 +161,12 @@ def make_board_printable(board):
 
 
 def handle_player_input(action):
+    """
+    Handles tile selection and board position entry on the command line. Has different behaviour for playing and
+    trading tiles, which is selected with the action parameter.\n
+    :param action: string containing either "play" or "trade"
+    :return: None
+    """
     if action == "play":
         while True:
             print("Geef de id's van de blokjes en hun locaties die je wil plaatsen." + "\n" + "bv: 15;(3,5);25;(6,9)")

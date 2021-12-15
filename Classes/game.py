@@ -18,7 +18,8 @@ class Game:
             self.empty_tile = Tile(0, '', "empty", 0, tileset.get_tile("empty"))
         else:
             self.empty_tile = Tile(0, '', '', 0)
-        self.field = [[self.empty_tile for x in range(92)] for y in range(92)]
+        self.board_length = 92  # for test: 20
+        self.field = [[self.empty_tile for x in range(self.board_length)] for y in range(self.board_length)]
         magic_hand = random.randint(0, len(players) - 1)
         self.player_on_hand = players[magic_hand]
         self.last_move = None
@@ -116,7 +117,7 @@ class Game:
         # Save unchanged state of the board and hand, for rewind purposes
         # Needs to be COPIES of field and hand, otherwise they will change along
         # with the original and rewind will have no effect
-        prev_board = [[self.get_field((x, y)) for x in range(92)] for y in range(92)]
+        prev_board = [[self.get_field((x, y)) for x in range(self.board_length)] for y in range(self.board_length)]
         prev_hand = self.player_on_hand.get_hand().copy()
         prev_positions = [tile.get_position() for tile in prev_hand]
 

@@ -996,7 +996,7 @@ class Menu:
 		else:
 			#calculate a pygame.Rect area that always covers the error messages
 			fieldRect = self.data["field"].copy()
-			rect = pygame.Rect(list(fieldRect.bottomleft) + [fieldRect.width, (self.size[1]-fieldRect.height)//2])
+			rect = pygame.Rect(list(fieldRect.bottomleft) + [fieldRect.width, ((self.size[1]-fieldRect.height)//2)-1])
 			rect.top += 1
 			#redraw the background where the error message will go
 			if gui.is_rgb(color.background_game):
@@ -1034,7 +1034,7 @@ class Menu:
 		else:
 			#calculate a pygame.Rect area that always covers the error messages
 			fieldRect = self.data["field"].copy()
-			rect = pygame.Rect(list(fieldRect.bottomleft) + [fieldRect.width, (self.size[1]-fieldRect.height)//2])
+			rect = pygame.Rect(list(fieldRect.bottomleft) + [fieldRect.width, ((self.size[1]-fieldRect.height)//2)-1])
 			rect.top += 1
 			#redraw the background where the error message will go
 			if gui.is_rgb(color.background_game):

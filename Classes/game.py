@@ -59,6 +59,12 @@ class Game:
         starter = temp_max.index(self.maximum)
         return self.players[starter]
 
+    def get_first_move(self):
+        """"
+        Get first_move
+        """
+        return self.first_move
+
     def get_tile_dictionary(self):
         """
         Get tile dictionary
@@ -180,7 +186,7 @@ class Game:
         print(f"De xy lijnen zijn: {xylines}")
 
         # Controle lines
-        is_move_valid = self.__controle(xylines, self.first_move, tiles)
+        is_move_valid = self.__controle(xylines, tiles)
 
         if is_move_valid:
             print("De gespeelde blokjes zijn geldig")
@@ -290,7 +296,7 @@ class Game:
         else:
             return False
 
-    def __controle(self, xylines, first_move, play_tiles):
+    def __controle(self, xylines, play_tiles):
         """
         Checks if move is valid, uses above function
         """
@@ -306,7 +312,7 @@ class Game:
             for tile in xyline:  # controle op minstens 1 bestaand blokje in xy lijnen
                 if tile not in play_tiles:
                     tile_in_board = True
-                if first_move is True:
+                if self.first_move is True:
                     tile_in_board = True
             if self.__validate_line(xyline) is False:
                 print("Move not valid")

@@ -9,6 +9,21 @@ sys.path.insert(1, CLASSESDIR)
 from game import Game
 from player import Player
 
+# Color codes
+# 38;2;r;g;b
+COLORS = {"red": '\x1b[38;2;192;32;32m',
+          "orange": '\x1b[38;2;192;96;32m',
+          "yellow": '\x1b[38;2;192;192;32m',
+          "green": '\x1b[38;2;32;144;32m',
+          "blue": '\x1b[38;2;32;32;192m',
+          "purple": '\x1b[38;2;128;32;144m'}
+
+ENDCODE = "\x1b[00m"
+
+SHAPES = {"circle": chr(0x25cf), "x": "X",
+          "diamond": chr(0x25c6), "square": chr(0x25aa),
+          "star": chr(0x2738), "clover": chr(0x2663)}
+
 
 def main():
     # Init the game
@@ -116,9 +131,12 @@ def make_tiles_printable(tiles):
     :param tiles: list of tile objects that needs to be printed
     :return: printable_tiles: list of combinations of id, color and shape that can be printed
     """
-    printable_tiles = []
+    printable_tiles = ""
     for tile in tiles:
-        printable_tiles.append((tile.get_id(), tile.get_color(), tile.get_shape()))
+        color = tile.get_color()
+        shape = tile.get_shape()
+        tile_str = COLORS[color] + SHAPES[shape] + ENDCODE
+        printable_tiles += str(tile.get_id()) + tile_str + "    "
     return printable_tiles
 
 
@@ -129,19 +147,6 @@ def make_board_printable(board):
     :param board: 2D-array containing tile objects
     :return: printable_board: 2D-array with strings containing color codes and unicode characters to be displayed
     """
-    # Color codes
-    # 38;2;r;g;b
-    colors = {"red": '\x1b[38;2;192;32;32m', 
-              "orange": '\x1b[38;2;192;96;32m',
-              "yellow": '\x1b[38;2;192;192;32m', 
-              "green": '\x1b[38;2;32;144;32m',
-              "blue": '\x1b[38;2;32;32;192m',
-              "purple": '\x1b[38;2;128;32;144m'}
-
-    shapes = {"circle": chr(0x25cf), "x": "X",
-              "diamond": chr(0x25c6), "square": chr(0x25aa),
-              "star": chr(0x2738), "clover": chr(0x2663)}
-
     printable_board = []
     for row in board:
         printable_row = []
@@ -149,7 +154,7 @@ def make_board_printable(board):
             if tile.get_id() != 0:
                 color = tile.get_color()
                 shape = tile.get_shape()
-                tile_str = colors[color] + shapes[shape] + "\x1b[00m"
+                tile_str = COLORS[color] + SHAPES[shape] + ENDCODE
                 printable_row.append(tile_str)
 
             else:

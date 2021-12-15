@@ -2,7 +2,6 @@ import player
 import scoreboard
 import bag
 from tile import Tile
-import random
 import line
 
 
@@ -29,11 +28,22 @@ class Game:
         self.is_game_over = False
 
     def get_starting_player(self):
+        """
+        Decides the starting player
+        """
         temp_max = []
         for player in self.players:
+            blokken = []
+            hand_without_duplicates=[]
             hand = player.get_hand()
-            tile_colors = [tile.get_color() for tile in hand]
-            tile_shapes = [tile.get_shape() for tile in hand]
+            for tile in hand:
+                blok = [tile.get_shape(), tile.get_color()]
+                if blok not in blokken:
+                    blokken.append(blok)
+                    hand_without_duplicates.append(tile)
+
+            tile_colors = [tile.get_color() for tile in hand_without_duplicates]
+            tile_shapes = [tile.get_shape() for tile in hand_without_duplicates]
             found_colors = [0 for i in self.bag.colors]
             found_shapes = [0 for i in self.bag.shapes]
             for color in tile_colors:
@@ -49,6 +59,9 @@ class Game:
         return self.players[starter]
 
     def get_tile_dictionary(self):
+        """
+        Get tile dictionary
+        """
         return self.tile_dict
 
     def get_players(self):
@@ -99,6 +112,9 @@ class Game:
         return self.is_game_over
 
     def get_winning_player(self):
+        """
+        Decide the maximum score and returns player with this score
+        """
         scores = [self.get_player_score(p.get_id()) for p in self.players]
         winner = self.players[scores.index(max(scores))]
         return winner
@@ -317,7 +333,7 @@ class Game:
             end_tile = xyline[-1]
             start_cord = end_tile.get_position()
             end_cord = start_tile.get_position()
-            li.append( line.Line(start_cord, end_cord) )
+            li.append(line.Line(start_cord, end_cord))
         return li
 
     def switch_tiles(self, tiles):

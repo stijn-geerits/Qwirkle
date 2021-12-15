@@ -17,15 +17,21 @@ def main():
     player_id = 0
     spelers = []
     while not continu:
-        print("Maak u keuze:"+"\n"+"1:Speler toevoegen"+"\n"+"2:Spel starten")
-        keuze = int(input())
+        print("Maak u keuze:" + "\n" + "1:Speler toevoegen" + "\n" + "2:Spel starten")
+        error = False
+        while not error:
+            try:
+                keuze = int(input())
+                error = True
+            except Exception:
+                error = False
         if keuze == 1:
             player_id += 1
-            na = "Speler"+str(player_id)
+            na = "Speler" + str(player_id)
             speler = Player(player_id, na)
             print("Geef de naam van speler " + str(player_id) + ":")
             naam = input()
-            if naam !="":
+            if naam != "":
                 speler.change_name(naam)
             spelers.append(speler)
 
@@ -35,7 +41,9 @@ def main():
 
     board = make_board_printable(mygame.get_field())
     for row in board:
-        print(row)
+        for el in row:
+            print(el, end=' ')
+        print()
 
     while True:
         # Kies speler
@@ -54,7 +62,13 @@ def main():
             choice = str(input(":"))
         if choice == "1":
             # Handle player input with option play
-            play_tile_ids, play_positions = handle_player_input("play")
+            error = False
+            while not error:
+                try:
+                    play_tile_ids, play_positions = handle_player_input("play")
+                    error = True
+                except Exception:
+                    error = False
             # Get the tiles from the players hand by ID
             play_tiles = []
             for tile_id in play_tile_ids:
@@ -83,7 +97,14 @@ def main():
 
         elif choice == "2":
             # Handle the player input with option trade
-            trade_tile_ids = handle_player_input("trade")
+            error = False
+            while not error:
+                try:
+                    trade_tile_ids = handle_player_input("trade")
+                    error = True
+                except Exception:
+                    error = False
+
             # Get the tiles from players hand by ID
             trade_tiles = []
             for tile_id in trade_tile_ids:
@@ -131,9 +152,9 @@ def make_board_printable(board):
     """
     # Color codes
     # 38;2;r;g;b
-    colors = {"red": '\x1b[38;2;192;32;32m', 
+    colors = {"red": '\x1b[38;2;192;32;32m',
               "orange": '\x1b[38;2;192;96;32m',
-              "yellow": '\x1b[38;2;192;192;32m', 
+              "yellow": '\x1b[38;2;192;192;32m',
               "green": '\x1b[38;2;32;144;32m',
               "blue": '\x1b[38;2;32;32;192m',
               "purple": '\x1b[38;2;128;32;144m'}

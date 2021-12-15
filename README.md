@@ -1,4 +1,9 @@
-# Qwirkle
+# Getting started
+*Windows
+*Mac OS
+*linux
+
+# Requirements
 
 * Er zullen 108 blokken zijn.
 * Er zullen zes kleuren zijn: rood, oranje, geel, groen, blauw en paars.

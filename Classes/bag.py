@@ -14,15 +14,15 @@ class Bag:
         """
         tiles = []
         tile_id = 1
-        colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
-        shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
+        self.colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
+        self.shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
 
         # for testing
-        # colors = ('red', 'orange', 'yellow')
-        # shapes = ('circle', 'x')
+        # self.colors = ('red', 'orange', 'yellow')
+        # self.shapes = ('circle', 'x')
 
-        for color in colors:
-            for shape in shapes:
+        for color in self.colors:
+            for shape in self.shapes:
                 tiles.extend([Tile(tile_id + i, color, shape, 0) for i in range(3)])
                 tile_id += 3
 

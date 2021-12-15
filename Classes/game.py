@@ -20,14 +20,33 @@ class Game:
             self.empty_tile = Tile(0, '', '', 0)
         self.board_length = 92  # for test: 20
         self.field = [[self.empty_tile for x in range(self.board_length)] for y in range(self.board_length)]
-        magic_hand = random.randint(0, len(players) - 1)
-        self.player_on_hand = players[magic_hand]
         self.last_move = None
         for player in players:  # new
             player.add_to_hand(self.bag.take_tiles(6))
+        self.player_on_hand = self.get_starting_player()
         self.first_move = True
         self.skip_counter = 0
         self.is_game_over = False
+
+    def get_starting_player(self):
+        temp_max = []
+        for player in self.players:
+            hand = player.get_hand()
+            tile_colors = [tile.get_color() for tile in hand]
+            tile_shapes = [tile.get_shape() for tile in hand]
+            found_colors = [0 for i in self.bag.colors]
+            found_shapes = [0 for i in self.bag.shapes]
+            for color in tile_colors:
+                found_colors[self.bag.colors.index(color)] += 1
+            for shape in tile_shapes:
+                found_shapes[self.bag.shapes.index(shape)] += 1
+
+            maximum = max(found_colors + found_shapes)
+            temp_max.append(maximum)
+
+        self.maximum = max(temp_max)
+        starter = temp_max.index(self.maximum)
+        return self.players[starter]
 
     def get_tile_dictionary(self):
         return self.tile_dict
@@ -259,6 +278,12 @@ class Game:
         """
         tile_in_board = False
         found_line = False
+
+        # control if first move is correct
+        if self.first_move:
+            if len(play_tiles) < self.maximum:
+                return False
+
         for xyline in xylines:
             for tile in xyline:  # controle op minstens 1 bestaand blokje in xy lijnen
                 if tile not in play_tiles:
@@ -300,6 +325,8 @@ class Game:
         Take tiles from current players hand, trade them with bag and insert new in hand
         """
         valid_move = False
+        if self.first_move:
+            return True
         amount = self.bag.get_current_amount()
         if len(tiles) <= amount:
             valid_move = True

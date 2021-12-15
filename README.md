@@ -1,10 +1,10 @@
 # Getting started
 ## Windows:
-* Dowload the newest version of python on: https://www.python.org/downloads/
-* Install pygame by entering following command in to the cmd:  
-`pip install pygame`
-* Download this repository as a zip and extract the zip in a chosen folder.
-* Locate your cmd to that folder en enter:  
+* Download the latest version of python on: https://www.python.org/downloads/
+* Install pygame by entering the following command in to your cmd:  
+`python -m pip install pygame`
+* Either download this repository as a zip and extract it in a chosen folder.
+* Locate your cmd to that folder en enter the following command:  
 `python qwirkle.py`
 
 ## macOS:
@@ -14,7 +14,7 @@
 * Either download this repository as a zip and extract or clone it with  
 `git clone https://github.com/stijn-geerits/Qwirkle.git`
 * With your terminal in the correct directory, run the command  
-`python qwirkle.py`  
+`python3 qwirkle.py`  
 or  
 `./qwirkle.py`  
 (You may need to `chmod +x qwirkle.py`)

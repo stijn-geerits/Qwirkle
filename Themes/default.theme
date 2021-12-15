@@ -6,6 +6,7 @@ background_game = "background10.png"
 background_rules = "background10.png"
 background_settings = "background9.png"
 text = (26,28,44)
+error = (255,0,0)
 
 #selector
 selector_fill = (177,62,83)

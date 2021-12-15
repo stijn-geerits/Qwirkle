@@ -88,12 +88,14 @@ class Menu:
 	WAIT_PLAYER = 5
 	GAME = 6
 	GAME_OVER = 7
+	PAUSE = 8
 	
 	def __init__(self, window_size):
 		self.size = window_size
 		#set the widget templates
 		self.__set_widget_templates()
 		#initialize the main menu
+		self.menu = self.MAIN
 		self.select_menu(self.MAIN)
 		#initialize a variable for all sort of menu data
 		self.data = {}
@@ -169,6 +171,7 @@ class Menu:
 		Select another menu to display
 		"""
 		#save the menu value
+		prev_menu = self.menu
 		self.menu = menu
 		#set the surface and widgets for the current menu
 		if menu == self.EMPTY:
@@ -195,6 +198,9 @@ class Menu:
 		elif menu == self.GAME_OVER:
 			self.background = self.__get_menu_game_over()
 			self.widgets = self.__get_widgets_game_over()
+		elif menu == self.PAUSE:
+			self.background = self.__get_menu_pause(prev_menu)
+			self.widgets = self.__get_widgets_pause(prev_menu)
 		else:
 			print("[qwirkle.py]Menu.get_background:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[00m")
 			menu = self.select_menu(self.EMPTY)
@@ -399,6 +405,53 @@ class Menu:
 		#return the pygame.Surface object
 		return surf
 	
+	def __get_menu_pause(self, prev_menu):
+		#get the data for the previous menu
+		if prev_menu == self.EMPTY:
+			surf = self.__get_menu_empty()
+			widgets = []
+		elif prev_menu == self.MAIN:
+			surf = self.__get_menu_main()
+			widgets = self.__get_widgets_main()
+		elif prev_menu == self.NEW_GAME:
+			surf = self.__get_menu_new_game()
+			widgets = self.__get_widgets_new_game()
+		elif prev_menu == self.RULES:
+			surf = self.__get_menu_rules()
+			widgets = self.__get_widgets_rules()
+		elif prev_menu == self.SETTINGS:
+			surf = self.__get_menu_settings()
+			widgets = self.__get_widgets_settings()
+		elif prev_menu == self.WAIT_PLAYER:
+			surf = self.__get_menu_wait_player()
+			widgets = self.__get_widgets_wait_player()
+		elif prev_menu == self.GAME:
+			surf = self.__get_menu_game()
+			widgets = self.__get_widgets_game()
+		elif prev_menu == self.GAME_OVER:
+			surf = self.__get_menu_game_over()
+			widgets = self.__get_widgets_game_over()
+		else:
+			print("[qwirkle.py]Menu.__get_menu_pause:\x1b[91m Internal error, unknown previous menu passed.\x1b[00m")
+			surf = pygame.Surface(self.size)
+			widgets = []
+		#draw the widgets on the surface
+		for w in widgets:
+			w.blit_on(surf)
+		
+		#create a semi transparent overlay
+		overlay = pygame.Surface(surf.get_size())
+		overlay.fill(color.alpha)
+		overlay.set_alpha(204)
+		#draw the overlay
+		surf.blit(overlay, [0, 0])
+		
+		#render the pause text
+		gui.rendertext(surf, lang.pause, int(self.size[1]*.1), None, [self.size[0]//2, int(self.size[1]*.2)], "center", color.player_text)
+		
+		#return the pygame.Surface object
+		return surf
+	
 	def get_widgets(self):
 		"""
 		Returns the Widget objects for the current menu
@@ -589,6 +642,23 @@ class Menu:
 		#confirm button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_confirm_size), [self.size[0]-int(self.btn_game_size[0]*1.15), self.size[1]-8], "midbottom")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_confirm_template], lambda:self.select_menu(self.MAIN), lang.end_game, color.text)
+		widgets.append(btn)
+		
+		#return the Widget objects
+		return widgets
+	
+	def __get_widgets_pause(self, prev_menu):
+		#initialize the list of widgets
+		widgets = []
+		
+		# button objects #
+		#continue button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [self.size[0]//2, self.size[1]//2], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(prev_menu), lang.go_on, color.text)
+		widgets.append(btn)
+		#main menu button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [self.size[0]//2, int(self.size[1]*.6)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.to_main, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -1122,6 +1192,23 @@ if __name__ == "__main__":
 				loop = False
 			#keyboard events
 			elif event.type == pygame.KEYDOWN:
+				#pause the game
+				if event.key == pygame.K_ESCAPE and menus.get_menu() == Menu.GAME:
+					#select the pause menu
+					menus.select_menu(Menu.PAUSE)
+					#clear the update list of old updates
+					update = []
+					#get the new menu info
+					background = menus.get_background()
+					widgets = menus.get_widgets()
+					#clear the widgets and sprites layer
+					widgets_layer.fill(color.alpha)
+					sprites_layer.fill(color.alpha)
+					#add the surfaces, sprite and widgets to the update list
+					update.append(background)
+					update.append(sprite)
+					update.extend(widgets)
+					update.extend([widgets_layer, sprites_layer])
 				#sent pressed keys to input widget
 				if type(active) == gui.Input:
 					active.type(event)

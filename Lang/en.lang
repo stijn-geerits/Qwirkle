@@ -30,4 +30,7 @@ resolution_warning = "(requires restart)"
 apply_restart = "Apply and restart"
 error_play = "The current play is not valid"
 error_trade = "This amount of tiles can not be traded"
+pause = "Pause"
+go_on = "Continue"
+to_main = "Main menu"
 

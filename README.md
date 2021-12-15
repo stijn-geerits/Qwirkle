@@ -21,13 +21,13 @@ or
 
 
 ## Linux:
-* Install a python 3.X package (if it isn't already):
+* Install python 3.X and pip (if it isn't already):
   + On Debian based systems:  
-  `sudo apt-get install python3`
+  `sudo apt-get install python3 python3-pip`
   + On Fedora based systems:  
-  `sudo dnf install python3`
+  `sudo dnf install python3 python3-pip`
 * Install pygame:  
-`python3 pip install pygame`
+`python3 -m pip install pygame`
 * Either download this repository as a zip or clone it:  
   + Install git (if it isn't already)
     - On Debian based systems:  

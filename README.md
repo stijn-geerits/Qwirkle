@@ -1,6 +1,6 @@
 # Getting started
 ## Windows:
-* Dowload the latest version of python on: https://www.python.org/downloads/
+* Download the latest version of python on: https://www.python.org/downloads/
 * Install pygame by entering the following command in to your cmd:  
 `python3 pip install pygame`
 * Either download this repository as a zip and extract it in a chosen folder.

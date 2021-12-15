@@ -310,7 +310,7 @@ class Selector(Widget):
 		#return the selected index
 		return self.selected
 	
-	def get_rotate(self, rotate):
+	def get_rotate(self):
 		"""
 		Get whether the selector will loop around the list of options
 		"""

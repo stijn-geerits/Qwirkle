@@ -300,8 +300,9 @@ class Menu:
 		for w in widgets:
 			w.blit_on(surf)
 		
-		#create a semi transparent, black overlay
+		#create a semi transparent overlay
 		overlay = pygame.Surface(surf.get_size())
+		overlay.fill(color.alpha)
 		overlay.set_alpha(204)
 		#draw the overlay
 		surf.blit(overlay, [0, 0])
@@ -383,8 +384,9 @@ class Menu:
 		for w in widgets:
 			w.blit_on(surf)
 		
-		#create a semi transparent, black overlay
+		#create a semi transparent overlay
 		overlay = pygame.Surface(surf.get_size())
+		overlay.fill(color.alpha)
 		overlay.set_alpha(204)
 		#draw the overlay
 		surf.blit(overlay, [0, 0])
@@ -916,10 +918,14 @@ class Menu:
 			return
 		#go to the next player
 		self.data["game"].next_player(True)
-		#update the tiles
-		self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
-		#go to the wait for player menu
-		self.select_menu(self.WAIT_PLAYER)
+		#test if game is over
+		if self.data["game"].get_game_over():
+			self.select_menu(self.GAME_OVER)
+		else:
+			#update the tiles
+			self.data["tiles"] = self.data["game"].get_player_on_hand().get_hand()
+			#go to the wait for player menu
+			self.select_menu(self.WAIT_PLAYER)
 		#return with code 0
 		return 0
 

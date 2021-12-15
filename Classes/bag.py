@@ -17,6 +17,10 @@ class Bag:
         colors = ('red', 'orange', 'yellow', 'green', 'blue', 'purple')
         shapes = ('circle', 'x', 'diamond', 'square', 'star', 'clover')
 
+        # for testing
+        # colors = ('red', 'orange', 'yellow')
+        # shapes = ('circle', 'x')
+
         for color in colors:
             for shape in shapes:
                 tiles.extend([Tile(tile_id + i, color, shape, 0) for i in range(3)])

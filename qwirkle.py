@@ -166,12 +166,11 @@ class Menu:
 		"""
 		return self.menu
 	
-	def select_menu(self, menu):
+	def select_menu(self, menu, came_from=MAIN):
 		"""
 		Select another menu to display
 		"""
 		#save the menu value
-		prev_menu = self.menu
 		self.menu = menu
 		#set the surface and widgets for the current menu
 		if menu == self.EMPTY:
@@ -185,7 +184,7 @@ class Menu:
 			self.widgets = self.__get_widgets_new_game()
 		elif menu == self.RULES:
 			self.background = self.__get_menu_rules()
-			self.widgets = self.__get_widgets_rules()
+			self.widgets = self.__get_widgets_rules(came_from)
 		elif menu == self.SETTINGS:
 			self.background = self.__get_menu_settings()
 			self.widgets = self.__get_widgets_settings()
@@ -199,8 +198,8 @@ class Menu:
 			self.background = self.__get_menu_game_over()
 			self.widgets = self.__get_widgets_game_over()
 		elif menu == self.PAUSE:
-			self.background = self.__get_menu_pause(prev_menu)
-			self.widgets = self.__get_widgets_pause(prev_menu)
+			self.background = self.__get_menu_pause(came_from)
+			self.widgets = self.__get_widgets_pause(came_from)
 		else:
 			print("[qwirkle.py]Menu.get_background:\x1b[91m Unknown menu is set, defaulting to empty.\x1b[00m")
 			menu = self.select_menu(self.EMPTY)
@@ -517,14 +516,14 @@ class Menu:
 		#return the Widget objects
 		return widgets
 	
-	def __get_widgets_rules(self):
+	def __get_widgets_rules(self, go_to=MAIN):
 		#initialize a list of widgets
 		widgets = []
 		
 		# button objects #
 		#back button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [int(self.size[0]*.5), int(self.size[1]*.95)], "center")
-		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.back, color.text)
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(go_to), lang.back, color.text)
 		widgets.append(btn)
 		
 		#return the Widget objects
@@ -656,8 +655,12 @@ class Menu:
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [self.size[0]//2, self.size[1]//2], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(prev_menu), lang.go_on, color.text)
 		widgets.append(btn)
-		#main menu button
+		#rules button
 		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [self.size[0]//2, int(self.size[1]*.6)], "center")
+		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.RULES, self.GAME), lang.rules, color.text)
+		widgets.append(btn)
+		#main menu button
+		btnRect = gui.set_relpos(pygame.Rect([0, 0]+self.btn_size), [self.size[0]//2, int(self.size[1]*.7)], "center")
 		btn = button_builder(btnRect, [t.copy() for t in self.button_template], lambda:self.select_menu(self.MAIN), lang.to_main, color.text)
 		widgets.append(btn)
 		
@@ -1199,7 +1202,7 @@ if __name__ == "__main__":
 				#pause the game
 				if event.key == pygame.K_ESCAPE and menus.get_menu() == Menu.GAME:
 					#select the pause menu
-					menus.select_menu(Menu.PAUSE)
+					menus.select_menu(Menu.PAUSE, menus.get_menu())
 					#clear the update list of old updates
 					update = []
 					#get the new menu info
@@ -1218,7 +1221,7 @@ if __name__ == "__main__":
 					active.type(event)
 					update.append(active)
 			#check mouse button events
-			elif event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[pygame.BUTTON_LEFT - 1]:
+			elif event.type == pygame.MOUSEBUTTONDOWN and event.button == pygame.BUTTON_LEFT:
 				if menus.get_menu() == Menu.GAME:
 					sprite = menus.grab_tile(pygame.mouse.get_pos())
 				if type(selected) in [gui.Widget, gui.Button, gui.Input]:
@@ -1244,7 +1247,7 @@ if __name__ == "__main__":
 				#grab a tile
 				elif type(sprite) == Tile:
 					sprite_offset = [pygame.mouse.get_pos()[0] - sprite.get_position()[0], pygame.mouse.get_pos()[1] - sprite.get_position()[1]]
-			elif event.type == pygame.MOUSEBUTTONUP:
+			elif event.type == pygame.MOUSEBUTTONUP and event.button == pygame.BUTTON_LEFT:
 				#deselect a tile
 				if type(sprite) == Tile:
 					menus.drop_tile(sprite)

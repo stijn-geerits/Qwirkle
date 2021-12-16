@@ -363,8 +363,8 @@ class Menu:
 		surf.blit(grid, gridpos)
 		#draw the players and their scores
 		for p in range(player_count):
-			gui.rendertext(surf, players[p].get_name(), 24, None, [gridpos[0]+2, gridpos[1]+(p*31)+16], "midleft", color.text)
-			gui.rendertext(surf, str(int(self.data["game"].get_player_score(players[p].get_id()))), 24, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
+			gui.rendertext(surf, players[p].get_name(), 20, None, [gridpos[0]+2, gridpos[1]+(p*31)+16], "midleft", color.text)
+			gui.rendertext(surf, str(int(self.data["game"].get_player_score(players[p].get_id()))), 20, None, [gridpos[0]+grid.get_width()-2, gridpos[1]+(p*31)+16], "midright", color.text)
 		
 		#render the amount of tiles in the bag
 		gui.rendertext(surf, lang.tiles_in_bag %(self.data["game"].get_tiles_left()), 24, None, [self.size[0]-int(self.btn_game_size[0]*1.15), int(self.size[1]*.55)], "center", color.text)

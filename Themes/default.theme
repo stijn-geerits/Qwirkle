@@ -35,12 +35,12 @@ confirm_active_edge = (177,62,83)
 #input
 input_unavailable_fill = (148,176,194)
 input_unavailable_edge = (51,60,87)
-input_idle_fill = (244,244,244)
+input_idle_fill = (224,224,224)
 input_idle_edge = (51,60,87)
-input_hover_fill = (244,244,244)
+input_hover_fill = (115,239,247)
 input_hover_edge = (128, 128, 128)
-input_active_fill = (115,239,247)
-input_active_edge = (128, 128, 128)
+input_active_fill = (255,255,255)
+input_active_edge = (115,239,247)
 
 #grid
 grid_fill = (244,244,244)

@@ -268,7 +268,7 @@ class Menu:
 		#place the menu title
 		gui.rendertext(surf, lang.rules, int(self.size[1]*.1), None, [int(self.size[0]*.5), int(self.size[1]*.02)], "midtop", color.text)
 		#place the rules text
-		gui.rendertext(surf, lang.rules_text, int(self.size[1]*.04), None, [int(self.size[0]*.02), int(self.size[1]*.11)], color=color.text)
+		gui.rendertext(surf, lang.rules_text, int(self.size[1]*.038), None, [int(self.size[0]*.02), int(self.size[1]*.11)], color=color.text)
 		
 		#return the pygame.Surface object
 		return surf

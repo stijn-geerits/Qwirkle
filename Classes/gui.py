@@ -158,6 +158,7 @@ class Input(Widget):
 		Widget.__init__(self)
 		self.value = default_value
 		self.padding = text_padding
+		self.cursor = len(default_value)
 		return
 	
 	def get_value(self):
@@ -173,6 +174,7 @@ class Input(Widget):
 		value should contain a single line string
 		"""
 		self.value = value
+		self.cursor = len(value)
 		return
 	
 	def type(self, keys):
@@ -183,11 +185,24 @@ class Input(Widget):
 		if self.current_state == Widget.ACTIVE:
 			#end of input
 			if keys.key in [pygame.K_RETURN, pygame.K_KP_ENTER]:
-				Widget.set_current_state(self, Widget.HOVER)
-			#remove the last character from the value
-			elif keys.key in [pygame.K_BACKSPACE, pygame.K_DELETE]:
-				if len(self.value) > 0:
-					self.value = self.value[:-1]
+				self.cursor = len(self.value)
+				Widget.set_current_state(self, Widget.IDLE)
+			#move the cursor
+			elif keys.key == pygame.K_LEFT:
+				if self.cursor > 0:
+					self.cursor -= 1
+			elif keys.key == pygame.K_RIGHT:
+				if self.cursor < len(self.value):
+					self.cursor += 1
+			#remove the previous character from the value
+			elif keys.key == pygame.K_BACKSPACE:
+				if self.cursor > 0:
+					self.value = self.value[:self.cursor-1] + self.value[self.cursor:]
+					self.cursor -= 1
+			#remove the next character from the value
+			elif keys.key == pygame.K_DELETE:
+				if self.cursor < len(self.value):
+					self.value = self.value[:self.cursor] + self.value[self.cursor+1:]
 			#ignore the following key presses
 			elif keys.key in [pygame.K_ESCAPE, pygame.K_HOME, pygame.K_END, pygame.K_INSERT, pygame.K_TAB]:
 				self.value += ''
@@ -195,13 +210,17 @@ class Input(Widget):
 				self.value += ''
 			#add the typed character to the value
 			else:
-				self.value += keys.unicode
+				self.value = self.value[:self.cursor] + keys.unicode + self.value[self.cursor:]
+				#move the cursor
+				if keys.unicode != '':
+					self.cursor += 1
 				#check whether the text still fits within the input box
 				font = pygame.font.SysFont(None, self.states[self.current_state].get_height() - self.padding)
-				txtRect = font.render(self.value, True, (0, 0, 0)).get_rect()
-				#remove the last character
+				txtRect = font.render(self.value[:self.cursor]+'|'+self.value[self.cursor:], True, (0, 0, 0)).get_rect()
+				#remove the last character (text goes out of bounds)
 				if txtRect.width > (self.states[self.current_state].get_width() - 2 * self.padding):
-					self.value = self.value[:-1]
+					self.value = self.value[:self.cursor-1] + self.value[self.cursor:]
+					self.cursor -= 1
 		return
 	
 	def blit_on(self, surface):
@@ -213,7 +232,10 @@ class Input(Widget):
 		#calculate the font size for the text
 		fontsize = self.states[self.current_state].get_height() - self.padding
 		#render the value (move the rect object by the padding amount and only sent the topleft coordinate)
-		rendertext(surface, self.value, fontsize, None, self.get_rect().move(self.padding, 0).midleft, "midleft")
+		if self.current_state == self.ACTIVE:
+			rendertext(surface, self.value[:self.cursor]+'|'+self.value[self.cursor:], fontsize, None, self.get_rect().move(self.padding, 0).midleft, "midleft")
+		else:
+			rendertext(surface, self.value, fontsize, None, self.get_rect().move(self.padding, 0).midleft, "midleft")
 		return
 
 # Class for graphical selector widget #

@@ -1236,6 +1236,7 @@ if __name__ == "__main__":
 	window = pygame.display.set_mode(user.winsize)
 	pygame.display.set_caption(lang.qwirkle)
 	pygame.display.set_icon(pygame.image.load(GRAPHICSDIR + "icon.png"))
+	pygame.key.set_repeat(512, 64)
 	
 	# menu setup #
 	menus = Menu(user.winsize)

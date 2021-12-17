@@ -441,6 +441,19 @@ class Menu:
 		elif prev_menu == self.GAME:
 			surf = self.__get_menu_game()
 			widgets = self.__get_widgets_game()
+			#draw an overlay over the fields to hide the tiles
+			overlay = pygame.Surface(self.size)
+			#fill the overlay and set the colorkey
+			overlay.fill(color.alpha)
+			overlay.set_colorkey(color.alpha)
+			#set the transparency for the entire overlay
+			overlay.set_alpha(240)
+			#fill the grid areas with their background color
+			overlay.fill(color.grid_fill, self.data["field"])
+			overlay.fill(color.grid_fill, self.data["bag"])
+			overlay.fill(color.grid_fill, self.data["hand"])
+			#draw the overlay on the surface
+			surf.blit(overlay, [0, 0])
 		elif prev_menu == self.GAME_OVER:
 			surf = self.__get_menu_game_over()
 			widgets = self.__get_widgets_game_over()

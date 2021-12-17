@@ -81,7 +81,10 @@ def main():
             while not error:
                 try:
                     play_tile_ids, play_positions = handle_player_input("play")
-                    error = True
+                    if len(play_tile_ids) == len(play_positions):
+                        error = True
+                    else:
+                        error = False
                 except Exception:
                     error = False
             # Get the tiles from the players hand by ID
